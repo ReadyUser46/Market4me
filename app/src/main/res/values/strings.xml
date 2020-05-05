@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Market4me</string>
+
+    <string-array name="quantity_units">
+        <item>Kg</item>
+        <item>g</item>
+        <item>l</item>
+        <item>ml</item>
+        <item>other</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
