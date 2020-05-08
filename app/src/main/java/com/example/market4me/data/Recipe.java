@@ -26,10 +26,13 @@ public class Recipe {
         this.units = units;
         this.preparation = preparation;
     }
-    // Empty constructor
+    // Empty constructor that init arraylist
     public Recipe() {
         mRecipeList = new ArrayList<>();
     }
+
+
+
 
     public static void addRecipe (Recipe recipe){
         mRecipeList.add(recipe);

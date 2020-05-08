@@ -21,7 +21,7 @@ import com.example.market4me.data.Recipe;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecipeFragment extends Fragment {
+public class NewRecipeFragment extends Fragment {
 
     private Spinner mUnitSpinner0, mUnitSpinner1, mUnitSpinner2;
     private Button mSaveButton;
