@@ -1,5 +1,6 @@
 package com.example.market4me;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,6 +18,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.market4me.data.Recipe;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +40,8 @@ public class NewRecipeFragment extends Fragment {
     private List<Integer> mQuantitiesList;
     private List<String> mUnitsList;
 
+    private FirebaseFirestore db;
+    private CollectionReference recipesRef;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +54,11 @@ public class NewRecipeFragment extends Fragment {
         mIngredientsList = new ArrayList<>();
         mQuantitiesList = new ArrayList<>();
         mUnitsList = new ArrayList<>();
+
+        // init Firebase
+        db = FirebaseFirestore.getInstance();
+        recipesRef = db.collection("Recipes");
+
     }
 
     @Nullable
@@ -151,6 +161,8 @@ public class NewRecipeFragment extends Fragment {
                 }
             }
 
+            /*
+
             String [] ingredientsArray = mIngredientsList.toArray(new String [0]);
 
             int[] quantitiesArray = new int[mQuantitiesList.size()];
@@ -160,6 +172,7 @@ public class NewRecipeFragment extends Fragment {
             }
             String [] unitsArray = mUnitsList.toArray(new String[0]);
 
+            */
             Recipe recipe = new Recipe();
             recipe.setTitle(mTitleEditText.getText().toString());
             if (mPeopleEditText.getText().length() != 0 && mTimeEditText.getText().length()!=0){ // fix this with edittext material design
@@ -170,14 +183,22 @@ public class NewRecipeFragment extends Fragment {
             recipe.setPreparation(mPreparationEditText.getText().toString());
 
 
-            recipe.setIngredients(ingredientsArray);
-            recipe.setQuantities(quantitiesArray);
-            recipe.setUnits(unitsArray);
+            recipe.setIngredients(mIngredientsList);
+            recipe.setQuantities(mQuantitiesList);
+            recipe.setUnits(mUnitsList);
 
 
             Recipe.addRecipe(recipe);
 
             Toast.makeText(getContext(), "Receta completada", Toast.LENGTH_SHORT).show();
+
+            recipesRef.add(recipe);
+            Toast.makeText(getContext(), "FireStore Updated.", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(getContext(),RecipeListActivity.class);
+            startActivity(intent);
+
+
 
         }
     }

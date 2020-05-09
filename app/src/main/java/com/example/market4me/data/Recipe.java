@@ -9,15 +9,15 @@ public class Recipe {
     private static List<Recipe> mRecipeList;
 
     private String title;
-    private String [] ingredients;
+    private List<String> ingredients;
     private int people;
     private int time;
-    private int [] quantities;
-    private String [] units;
+    private List<Integer> quantities;
+    private List<String> units;
     private String preparation;
 
-    // Full constructor
-    public Recipe(String title, String[] ingredients, int people, int time, int[] quantities, String[] units, String preparation) {
+
+    public Recipe(String title, List<String> ingredients, int people, int time, List<Integer> quantities, List<String> units, String preparation) {
         this.title = title;
         this.ingredients = ingredients;
         this.people = people;
@@ -26,15 +26,15 @@ public class Recipe {
         this.units = units;
         this.preparation = preparation;
     }
+
+
     // Empty constructor that init arraylist
     public Recipe() {
         mRecipeList = new ArrayList<>();
     }
 
 
-
-
-    public static void addRecipe (Recipe recipe){
+    public static void addRecipe(Recipe recipe) {
         mRecipeList.add(recipe);
     }
 
@@ -48,11 +48,11 @@ public class Recipe {
         this.title = title;
     }
 
-    public String[] getIngredients() {
+    public List<String> getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(String[] ingredients) {
+    public void setIngredients(List<String> ingredients) {
         this.ingredients = ingredients;
     }
 
@@ -72,19 +72,19 @@ public class Recipe {
         this.time = time;
     }
 
-    public int[] getQuantities() {
+    public List<Integer> getQuantities() {
         return quantities;
     }
 
-    public void setQuantities(int[] quantities) {
+    public void setQuantities(List<Integer> quantities) {
         this.quantities = quantities;
     }
 
-    public String[] getUnits() {
+    public List<String> getUnits() {
         return units;
     }
 
-    public void setUnits(String[] units) {
+    public void setUnits(List<String> units) {
         this.units = units;
     }
 
