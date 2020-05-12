@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.market4me.data.Recipe;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.firebase.ui.firestore.ObservableSnapshotArray;
+import com.google.firebase.firestore.DocumentReference;
 
 public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapter.RecipeHolder> {
 
@@ -40,6 +42,13 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
         RecipeHolder holder = new RecipeHolder(view);
 
         return holder;
+    }
+
+
+    public void deleteRecipe(int position){
+        ObservableSnapshotArray<Recipe> observableSnapshotArray = getSnapshots();
+        DocumentReference documentReference = observableSnapshotArray.getSnapshot(position).getReference();
+        documentReference.delete();
     }
 
     class RecipeHolder extends RecyclerView.ViewHolder {
