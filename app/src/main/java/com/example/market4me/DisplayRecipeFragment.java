@@ -1,6 +1,7 @@
 package com.example.market4me;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +11,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.market4me.models.Recipe;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class DisplayRecipeFragment extends Fragment {
 
-
+    private Recipe mRecipe;
     private TextView mTitleDisplayed, mPeopleDisplayed, mTimeDisplayed, mIngredientsDisplayed, mNotesDisplayed;
+
+    private static final String TAG = "Snapshots";
 
 
     @Nullable
@@ -27,6 +37,27 @@ public class DisplayRecipeFragment extends Fragment {
         mTimeDisplayed = view.findViewById(R.id.tv_time_displayed);
         mIngredientsDisplayed = view.findViewById(R.id.tv_ingredients_displayed);
         mNotesDisplayed = view.findViewById(R.id.tv_notes_displayed);
+
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("Recipes").document("id").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+
+                    if (document.exists()) {
+                        mRecipe = document.toObject(Recipe.class);
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
 
         return view;
     }
