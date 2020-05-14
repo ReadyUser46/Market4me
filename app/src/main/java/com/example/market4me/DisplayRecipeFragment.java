@@ -1,7 +1,6 @@
 package com.example.market4me;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.market4me.models.Recipe;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class DisplayRecipeFragment extends Fragment {
 
@@ -25,6 +19,13 @@ public class DisplayRecipeFragment extends Fragment {
 
     private static final String TAG = "Snapshots";
 
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mRecipe = (Recipe) getActivity().getIntent().getSerializableExtra(DisplayRecipeActivity.EXTRA_RECIPE_OBJECT);
+    }
 
     @Nullable
     @Override
@@ -39,6 +40,9 @@ public class DisplayRecipeFragment extends Fragment {
         mNotesDisplayed = view.findViewById(R.id.tv_notes_displayed);
 
 
+        mTitleDisplayed.setText(mRecipe.getTitle());
+
+        /*
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("Recipes").document("id").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -58,6 +62,7 @@ public class DisplayRecipeFragment extends Fragment {
                 }
             }
         });
+        */
 
         return view;
     }

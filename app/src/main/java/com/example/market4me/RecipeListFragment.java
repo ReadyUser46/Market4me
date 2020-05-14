@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,10 +27,10 @@ public class RecipeListFragment extends Fragment {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference recipeRef = db.collection("Recipes");
     private RecipeAdapter mRecipeAdapter;
+    private Recipe mRecipe;
 
     private FloatingActionButton mFloatingActionButton;
 
-    private Recipe mRecipe;
 
     @Override
     public void onStart() {
@@ -109,6 +108,7 @@ public class RecipeListFragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(getActivity(),NewRecipeActivity.class);
+
             startActivity(intent);
         }
     }
@@ -117,7 +117,9 @@ public class RecipeListFragment extends Fragment {
         @Override
         public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
             mRecipe = documentSnapshot.toObject(Recipe.class);
-            Toast.makeText(getContext(),"text: "+mRecipe.getTitle(), Toast.LENGTH_SHORT).show();
+
+            Intent intent = DisplayRecipeActivity.newIntent(getContext(),mRecipe);
+            startActivity(intent);
 
         }
     }
