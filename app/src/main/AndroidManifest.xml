@@ -16,12 +16,19 @@
         <!-- IMPORTANTE -->
         <!-- Con el atributo anterior, ponemos la flechita en la barra superior, para poder volver a la actividad anterior -->
 
-        <activity android:name=".RecipeListActivity">
+        <activity
+            android:name=".RecipeListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".DisplayRecipeActivity">
+
+
+
         </activity>
     </application>
 

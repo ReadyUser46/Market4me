@@ -1,20 +1,25 @@
-package com.example.market4me;
+package com.example.market4me.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.market4me.data.Recipe;
+import com.example.market4me.R;
+import com.example.market4me.models.Recipe;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapter.RecipeHolder> {
+
+    private OnItemClickListener mListener;
 
     // RecyclerView Implemented
     /**
@@ -51,7 +56,7 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
         documentReference.delete();
     }
 
-    class RecipeHolder extends RecyclerView.ViewHolder {
+    class RecipeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView tvTittle, tvPeople, tvTime;
 
         public RecipeHolder(@NonNull View itemView) {
@@ -61,9 +66,35 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
             tvPeople = itemView.findViewById(R.id.tv_people);
             tvTime = itemView.findViewById(R.id.tv_time);
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
 
+                    if(position != RecyclerView.NO_POSITION && mListener != null){
+                        mListener.onItemClick(getSnapshots().getSnapshot(getAdapterPosition()),position);
+                    }
+                }
+            });
 
         }
+
+        @Override
+        public void onClick(View v) {
+
+            getSnapshots().getSnapshot(getAdapterPosition());
+
+            Toast.makeText(v.getContext(), "position: "+getAdapterPosition(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick (DocumentSnapshot documentSnapshot, int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener){
+        mListener = listener;
+
     }
 
 

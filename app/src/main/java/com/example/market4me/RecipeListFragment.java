@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,10 +14,12 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.market4me.data.Recipe;
+import com.example.market4me.adapters.RecipeAdapter;
+import com.example.market4me.models.Recipe;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -27,6 +30,8 @@ public class RecipeListFragment extends Fragment {
     private RecipeAdapter mRecipeAdapter;
 
     private FloatingActionButton mFloatingActionButton;
+
+    private Recipe mRecipe;
 
     @Override
     public void onStart() {
@@ -92,7 +97,11 @@ public class RecipeListFragment extends Fragment {
                 mRecipeAdapter.deleteRecipe(viewHolder.getAdapterPosition());
             }
         }).attachToRecyclerView(recyclerView);
+
+        mRecipeAdapter.setOnItemClickListener(new AdapterListener());
     }
+
+
 
 
     class FloatingButtonListener implements View.OnClickListener{
@@ -101,6 +110,15 @@ public class RecipeListFragment extends Fragment {
         public void onClick(View v) {
             Intent intent = new Intent(getActivity(),NewRecipeActivity.class);
             startActivity(intent);
+        }
+    }
+
+    class AdapterListener implements RecipeAdapter.OnItemClickListener{
+        @Override
+        public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
+            mRecipe = documentSnapshot.toObject(Recipe.class);
+            Toast.makeText(getContext(),"text: "+mRecipe.getTitle(), Toast.LENGTH_SHORT).show();
+
         }
     }
 }
