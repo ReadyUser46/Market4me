@@ -1,11 +1,9 @@
 package com.example.market4me;
 
-import android.os.Bundle;
+import android.content.Context;
+import android.content.Intent;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 public class RecipeListActivity extends SingleFragmentActivity {
 
@@ -14,4 +12,8 @@ public class RecipeListActivity extends SingleFragmentActivity {
         return new RecipeListFragment();
     }
 
+    // intent encapsulado hacia esta activity
+    public static Intent newIntent(Context context) {
+        return new Intent(context, DisplayRecipeActivity.class);
+    }
 }

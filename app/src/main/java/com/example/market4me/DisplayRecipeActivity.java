@@ -17,6 +17,7 @@ public class DisplayRecipeActivity extends SingleFragmentActivity {
     }
 
 
+    // intent encapsulado hacia esta activity
     public static Intent newIntent(Context context, Recipe recipe) {
 
         Intent intent = new Intent(context, DisplayRecipeActivity.class);

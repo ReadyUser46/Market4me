@@ -21,7 +21,6 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
 
     private OnItemClickListener mListener;
 
-    // RecyclerView Implemented
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
      * FirestoreRecyclerOptions} for configuration options.
