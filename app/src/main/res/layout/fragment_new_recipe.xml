@@ -9,33 +9,53 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="20dp"
         tools:context=".NewRecipeActivity">
 
 
-        <EditText
-            android:id="@+id/et_title"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_et_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:gravity="center"
-            android:hint="Título receta" />
+            android:layout_marginTop="40dp"
+            android:hint="@string/hint_title">
 
-        <EditText
-            android:id="@+id/et_people"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:hint="Personas" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        <EditText
-            android:id="@+id/et_time"
-            android:layout_width="wrap_content"
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_et_people"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:hint="Tiempo" />
+            android:hint="@string/hint_people">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_people"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="number" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_et_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_time">
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_time"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
 
@@ -78,27 +98,27 @@
 
             <EditText
                 android:id="@+id/et_ingredient1"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Ingrediente 2" />
+                android:hint="Ingrediente 2"
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/et_quantity1"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:hint="Cantidad2"
-                android:inputType="number" />
+                android:inputType="number"
+                android:visibility="gone" />
 
             <Spinner
                 android:id="@+id/spinner1"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2.2" />
+                android:layout_weight="2.2"
+                android:visibility="gone" />
 
 
         </LinearLayout>
@@ -112,36 +132,43 @@
 
             <EditText
                 android:id="@+id/et_ingredient2"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Ingrediente 3" />
+                android:hint="Ingrediente 3"
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/et_quantity2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:visibility="gone"
                 android:hint="Cantidad"
-                android:inputType="number" />
+                android:inputType="number"
+                android:visibility="gone" />
 
             <Spinner
                 android:id="@+id/spinner2"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2.2" />
+                android:layout_weight="2.2"
+                android:visibility="gone" />
 
 
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/et_preparation"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_et_preparation"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:hint="Preparación..." />
+            android:layout_marginTop="50dp"
+            android:hint="@string/hint_preparation">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_preparation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/but_save"
