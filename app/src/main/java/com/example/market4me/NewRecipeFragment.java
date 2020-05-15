@@ -11,13 +11,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.market4me.data.Recipe;
+import com.example.market4me.models.Recipe;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -26,12 +25,8 @@ import java.util.List;
 
 public class NewRecipeFragment extends Fragment {
 
-    private Spinner mUnitSpinner0, mUnitSpinner1, mUnitSpinner2;
     private Button mSaveButton;
     private EditText mTitleEditText, mPeopleEditText, mTimeEditText, mPreparationEditText;
-
-    private EditText mIngredientEditText0, mIngredientEditText1, mIngredientEditText2;
-    private EditText mQuantityEditText0, mQuantityEditText1, mQuantityEditText2;
 
     private List<EditText> mEditTextIngredientsList;
     private List<EditText> mEditTextQuantitiesList;
@@ -40,7 +35,6 @@ public class NewRecipeFragment extends Fragment {
     private List<Integer> mQuantitiesList;
     private List<String> mUnitsList;
 
-    private FirebaseFirestore db;
     private CollectionReference recipesRef;
 
     @Override
@@ -56,7 +50,7 @@ public class NewRecipeFragment extends Fragment {
         mUnitsList = new ArrayList<>();
 
         // init Firebase
-        db = FirebaseFirestore.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         recipesRef = db.collection("Recipes");
 
     }
@@ -78,6 +72,7 @@ public class NewRecipeFragment extends Fragment {
             mEditTextIngredientsList.get(i).addTextChangedListener(new showInvisibleLayouts(mEditTextIngredientsList.size(), i));
         }
 
+        // Custom listener para el button
         mSaveButton.setOnClickListener(new SaveButtonListener());
 
         return view;
@@ -91,15 +86,15 @@ public class NewRecipeFragment extends Fragment {
         mPeopleEditText = view.findViewById(R.id.et_people);
         mPreparationEditText = view.findViewById(R.id.et_preparation);
         mTimeEditText = view.findViewById(R.id.et_time);
-        mIngredientEditText0 = view.findViewById(R.id.et_ingredient0);
-        mIngredientEditText1 = view.findViewById(R.id.et_ingredient1);
-        mIngredientEditText2 = view.findViewById(R.id.et_ingredient2);
-        mQuantityEditText0 = view.findViewById(R.id.et_quantity0);
-        mQuantityEditText1 = view.findViewById(R.id.et_quantity1);
-        mQuantityEditText2 = view.findViewById(R.id.et_quantity2);
-        mUnitSpinner0 = view.findViewById(R.id.spinner0);
-        mUnitSpinner1 = view.findViewById(R.id.spinner1);
-        mUnitSpinner2 = view.findViewById(R.id.spinner2);
+        EditText mIngredientEditText0 = view.findViewById(R.id.et_ingredient0);
+        EditText mIngredientEditText1 = view.findViewById(R.id.et_ingredient1);
+        EditText mIngredientEditText2 = view.findViewById(R.id.et_ingredient2);
+        EditText mQuantityEditText0 = view.findViewById(R.id.et_quantity0);
+        EditText mQuantityEditText1 = view.findViewById(R.id.et_quantity1);
+        EditText mQuantityEditText2 = view.findViewById(R.id.et_quantity2);
+        Spinner mUnitSpinner0 = view.findViewById(R.id.spinner0);
+        Spinner mUnitSpinner1 = view.findViewById(R.id.spinner1);
+        Spinner mUnitSpinner2 = view.findViewById(R.id.spinner2);
 
         mEditTextIngredientsList.add(mIngredientEditText0);
         mEditTextIngredientsList.add(mIngredientEditText1);
@@ -113,6 +108,7 @@ public class NewRecipeFragment extends Fragment {
         mSpinnersList.add(mUnitSpinner1);
         mSpinnersList.add(mUnitSpinner2);
 
+        // SPINNER SETUP
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.quantity_units, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
@@ -132,9 +128,9 @@ public class NewRecipeFragment extends Fragment {
         public void onClick(View v) {
 
 
-            /*Con este buble for, recorremos todos los editTexts de ingredientes, cantidades y spinner,
-            * cogemos los valores que el usuario ha introducido y vamos poblando la lista de ingredientes, cantidades y spinner,
-            * para posteriormente, pasarselos al objeto receta*/
+            /*Con este bucle for, recorremos todos los editTexts de ingredientes, cantidades y spinner,
+             * cogemos los valores que el usuario ha introducido y vamos poblando la lista de ingredientes, cantidades y spinner,
+             * para posteriormente, pasarlos al objeto receta*/
             for (int i = 0; i < mEditTextIngredientsList.size(); i++) {
                 EditText et_ingredient = mEditTextIngredientsList.get(i);
                 EditText et_quantity = mEditTextQuantitiesList.get(i);
@@ -143,61 +139,31 @@ public class NewRecipeFragment extends Fragment {
                 if (et_ingredient != null && et_ingredient.isShown() && et_ingredient.getText().length() != 0) {
                     mUnitsList.add(spinner.getSelectedItem().toString());
                     mIngredientsList.add(et_ingredient.getText().toString());
-                    if (et_quantity.getText().length() == 0){ // fix this with edittext material design
+                    if (et_quantity.getText().length() == 0) { // fix this with editText material design
                         mQuantitiesList.add(0);
-                        Toast.makeText(getContext(), "Ingrediente " + mEditTextIngredientsList.indexOf(et_ingredient) + ": " + et_ingredient.getText().toString(), Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getContext(), "Cantidad " + mEditTextIngredientsList.indexOf(et_ingredient) + ": 0", Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getContext(), "Unidades " + mEditTextIngredientsList.indexOf(et_ingredient) + ": " + spinner.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
-
-                    }else{
-
+                    } else {
                         mQuantitiesList.add(Integer.parseInt(et_quantity.getText().toString()));
-                        Toast.makeText(getContext(), "Ingrediente " + mEditTextIngredientsList.indexOf(et_ingredient) + ": " + et_ingredient.getText().toString(), Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getContext(), "Cantidad " + mEditTextIngredientsList.indexOf(et_ingredient) + ": " + Integer.parseInt(et_quantity.getText().toString()), Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getContext(), "Unidades " + mEditTextIngredientsList.indexOf(et_ingredient) + ": " + spinner.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
-
                     }
-
                 }
             }
 
-            /*
-
-            String [] ingredientsArray = mIngredientsList.toArray(new String [0]);
-
-            int[] quantitiesArray = new int[mQuantitiesList.size()];
-            for (int i=0; i < quantitiesArray.length; i++)
-            {
-                quantitiesArray[i] = mQuantitiesList.get(i);
-            }
-            String [] unitsArray = mUnitsList.toArray(new String[0]);
-
-            */
             Recipe recipe = new Recipe();
             recipe.setTitle(mTitleEditText.getText().toString());
-            if (mPeopleEditText.getText().length() != 0 && mTimeEditText.getText().length()!=0){ // fix this with edittext material design
+            if (mPeopleEditText.getText().length() != 0 && mTimeEditText.getText().length() != 0) { // fix this with edittext material design
                 recipe.setPeople(Integer.parseInt(mPeopleEditText.getText().toString()));
                 recipe.setTime(Integer.parseInt(mTimeEditText.getText().toString()));
-
             }
             recipe.setPreparation(mPreparationEditText.getText().toString());
-
-
             recipe.setIngredients(mIngredientsList);
             recipe.setQuantities(mQuantitiesList);
             recipe.setUnits(mUnitsList);
 
+            Recipe.addRecipe(recipe); // añadir la receta a una lista de recetas
 
-            Recipe.addRecipe(recipe);
+            recipesRef.add(recipe); // upload la receta a fireStore
+            Intent intent = RecipeListActivity.newIntent(getContext());
 
-            Toast.makeText(getContext(), "Receta completada", Toast.LENGTH_SHORT).show();
-
-            recipesRef.add(recipe);
-            Toast.makeText(getContext(), "FireStore Updated.", Toast.LENGTH_SHORT).show();
-
-            Intent intent = new Intent(getContext(),RecipeListActivity.class);
             startActivity(intent);
-
 
 
         }
@@ -206,7 +172,7 @@ public class NewRecipeFragment extends Fragment {
     class showInvisibleLayouts implements TextWatcher { //Inner class which implements a custom listener for text changes.
 
         /*Todos los ingredientes, cantidades y unidades están ocultos menos el primero.
-        * A medida que pulsamos en uno de ellos y cambia el texto, hace otro visible*/
+         * A medida que pulsamos en uno de ellos y cambia el texto, hace otro visible*/
 
         EditText currentEtIngredient, nextEtIngredient, currentEtQuantity, nextEtQuantity;
         Spinner currentSpinner, nextSpinner;

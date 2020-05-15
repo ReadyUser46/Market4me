@@ -13,10 +13,12 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.market4me.data.Recipe;
+import com.example.market4me.adapters.RecipeAdapter;
+import com.example.market4me.models.Recipe;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -25,8 +27,10 @@ public class RecipeListFragment extends Fragment {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference recipeRef = db.collection("Recipes");
     private RecipeAdapter mRecipeAdapter;
+    private Recipe mRecipe;
 
     private FloatingActionButton mFloatingActionButton;
+
 
     @Override
     public void onStart() {
@@ -92,7 +96,11 @@ public class RecipeListFragment extends Fragment {
                 mRecipeAdapter.deleteRecipe(viewHolder.getAdapterPosition());
             }
         }).attachToRecyclerView(recyclerView);
+
+        mRecipeAdapter.setOnItemClickListener(new AdapterListener());
     }
+
+
 
 
     class FloatingButtonListener implements View.OnClickListener{
@@ -100,7 +108,19 @@ public class RecipeListFragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(getActivity(),NewRecipeActivity.class);
+
             startActivity(intent);
+        }
+    }
+
+    class AdapterListener implements RecipeAdapter.OnItemClickListener{
+        @Override
+        public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
+            mRecipe = documentSnapshot.toObject(Recipe.class);
+
+            Intent intent = DisplayRecipeActivity.newIntent(getContext(),mRecipe);
+            startActivity(intent);
+
         }
     }
 }

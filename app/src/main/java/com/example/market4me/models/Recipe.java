@@ -1,9 +1,10 @@
-package com.example.market4me.data;
+package com.example.market4me.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Recipe {
+public class Recipe implements Serializable {
 
 
     private static List<Recipe> mRecipeList;

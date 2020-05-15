@@ -1,27 +1,19 @@
 package com.example.market4me;
 
-import android.os.Bundle;
+import android.content.Context;
+import android.content.Intent;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
-public class RecipeListActivity extends AppCompatActivity {
+public class RecipeListActivity extends SingleFragmentActivity {
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_container);
+    protected Fragment createFragment() {
+        return new RecipeListFragment();
+    }
 
-        FragmentManager fm = getSupportFragmentManager();
-        //Fragment fragment = new RecipeListFragment();
-        Fragment fragment = fm.findFragmentById(R.id.fragment_container);
-
-        if (fragment == null){
-            fragment = new RecipeListFragment();
-            fm.beginTransaction().add(R.id.fragment_container,fragment).commit();
-        }
-
+    // intent encapsulado hacia esta activity
+    public static Intent newIntent(Context context) {
+        return new Intent(context, DisplayRecipeActivity.class);
     }
 }
