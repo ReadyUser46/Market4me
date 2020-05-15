@@ -1,5 +1,6 @@
 package com.example.market4me;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
@@ -37,6 +39,13 @@ public class NewRecipeFragment extends Fragment {
 
     private CollectionReference recipesRef;
 
+    private EditText mIngredientEditText0, mQuantityEditText0;
+    private Spinner mUnitSpinner0;
+
+
+    private LinearLayout rootLayout;
+    private List<EditText> createdIngredients, createdQuantities;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +57,7 @@ public class NewRecipeFragment extends Fragment {
         mIngredientsList = new ArrayList<>();
         mQuantitiesList = new ArrayList<>();
         mUnitsList = new ArrayList<>();
+        createdIngredients = new ArrayList<>();
 
         // init Firebase
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -61,6 +71,14 @@ public class NewRecipeFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_new_recipe, container, false);
 
+
+        rootLayout = view.findViewById(R.id.linearlayout_ingredients);
+
+
+
+
+
+
         viewBinder(view); // Binding of every element on the screen to his view + spinners
 
         /* Recorremos el array de EditTexts de ingredientes y en cada uno, podemos un listener para el texto.
@@ -69,8 +87,9 @@ public class NewRecipeFragment extends Fragment {
          *  Dentro del for loop, se los pasamos.*/
 
         for (int i = 0; i < mEditTextIngredientsList.size(); i++) {
-            mEditTextIngredientsList.get(i).addTextChangedListener(new showInvisibleLayouts(mEditTextIngredientsList.size(), i));
+            mEditTextIngredientsList.get(i).addTextChangedListener(new AddEditTexts(getContext()));
         }
+
 
         // Custom listener para el button
         mSaveButton.setOnClickListener(new SaveButtonListener());
@@ -86,13 +105,13 @@ public class NewRecipeFragment extends Fragment {
         mPeopleEditText = view.findViewById(R.id.et_people);
         mPreparationEditText = view.findViewById(R.id.et_preparation);
         mTimeEditText = view.findViewById(R.id.et_time);
-        EditText mIngredientEditText0 = view.findViewById(R.id.et_ingredient0);
+        mIngredientEditText0 = view.findViewById(R.id.et_ingredient0);
         EditText mIngredientEditText1 = view.findViewById(R.id.et_ingredient1);
         EditText mIngredientEditText2 = view.findViewById(R.id.et_ingredient2);
-        EditText mQuantityEditText0 = view.findViewById(R.id.et_quantity0);
+        mQuantityEditText0 = view.findViewById(R.id.et_quantity0);
         EditText mQuantityEditText1 = view.findViewById(R.id.et_quantity1);
         EditText mQuantityEditText2 = view.findViewById(R.id.et_quantity2);
-        Spinner mUnitSpinner0 = view.findViewById(R.id.spinner0);
+        mUnitSpinner0 = view.findViewById(R.id.spinner0);
         Spinner mUnitSpinner1 = view.findViewById(R.id.spinner1);
         Spinner mUnitSpinner2 = view.findViewById(R.id.spinner2);
 
@@ -169,18 +188,12 @@ public class NewRecipeFragment extends Fragment {
         }
     }
 
-    class showInvisibleLayouts implements TextWatcher { //Inner class which implements a custom listener for text changes.
+    class AddEditTexts implements TextWatcher { //Inner class which implements a custom listener for text changes.
 
-        /*Todos los ingredientes, cantidades y unidades están ocultos menos el primero.
-         * A medida que pulsamos en uno de ellos y cambia el texto, hace otro visible*/
+        Context context;
 
-        EditText currentEtIngredient, nextEtIngredient, currentEtQuantity, nextEtQuantity;
-        Spinner currentSpinner, nextSpinner;
-        int listSize, position;
-
-        public showInvisibleLayouts(int listSize, int position) {
-            this.listSize = listSize;
-            this.position = position;
+        public AddEditTexts(Context context) {
+            this.context = context;
         }
 
         @Override
@@ -191,21 +204,35 @@ public class NewRecipeFragment extends Fragment {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-            currentEtIngredient = mEditTextIngredientsList.get(position);
-            currentEtQuantity = mEditTextQuantitiesList.get(position);
-            currentSpinner = mSpinnersList.get(position);
+            // LinearLayout temporal
+            LinearLayout tempLinearLayout = new LinearLayout(context);
+            tempLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
+            LinearLayout.LayoutParams tempLinearLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            tempLinearLayout.setLayoutParams(tempLinearLayoutParams);
 
-            if (position < listSize - 1 && s.length() != 0) { // para no salirnos de la lista de editText ingredientes y evitar mostrar el siguiente al ultimo
+            // nuevo editText para ingredientes y añadido el linearLayout temporal
+            EditText newIngredient = new EditText(context);
+            LinearLayout.LayoutParams ingredientParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+            newIngredient.setHint("Ingrediente");
+            newIngredient.setHintTextColor(getResources().getColor(R.color.colorHint));
+            tempLinearLayout.addView(newIngredient, ingredientParams);
 
-                nextEtIngredient = mEditTextIngredientsList.get(position + 1);
-                nextEtQuantity = mEditTextQuantitiesList.get(position + 1);
-                nextSpinner = mSpinnersList.get(position + 1);
+            newIngredient.addTextChangedListener(this);
+            //createdIngredients.add(newIngredient);
 
-                nextEtIngredient.setVisibility(View.VISIBLE);
-                nextEtQuantity.setVisibility(View.VISIBLE);
-                nextSpinner.setVisibility(View.VISIBLE);
+            // nuevo editText para cantidades y añadido el linearLayout temporal
+            EditText newQuantity = new EditText(context);
+            LinearLayout.LayoutParams quantityParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+            newQuantity.setHint("Cantidad");
+            newQuantity.setHintTextColor(getResources().getColor(R.color.colorHint));
+            tempLinearLayout.addView(newQuantity, quantityParams);
 
-            }
+
+            // Se añade tot lo anterior al linear layout parent.
+            rootLayout.addView(tempLinearLayout, 4);
+
+
+
         }
 
         @Override
