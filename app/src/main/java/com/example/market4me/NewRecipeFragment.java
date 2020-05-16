@@ -154,6 +154,7 @@ public class NewRecipeFragment extends Fragment {
 
                 newTilIngredient.addView(newIngredient, textInputEditTextParams);
                 newTilIngredient.setHint("Ingrediente");
+                newTilIngredient.setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT);
 
 
                 // nuevo textInputEditText para cantidades y added to linearLayout temporal
