@@ -4,13 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
@@ -32,33 +32,33 @@ public class NewRecipeFragment extends Fragment {
     private Button mSaveButton;
     private TextInputEditText mTitleEditText, mPeopleEditText, mTimeEditText, mPreparationEditText;
     private TextInputEditText mIngredientEditText0, mQuantityEditText0;
+    private Spinner mUnitSpinner0;
     private ArrayAdapter<CharSequence> spinnerAdapter;
 
-    private List<EditText> mEditTextIngredientsList;
-    private List<EditText> mEditTextQuantitiesList;
-    private List<Spinner> mSpinnersList;
+
     private List<String> mIngredientsList;
     private List<Integer> mQuantitiesList;
     private List<String> mUnitsList;
+    private List<TextInputEditText> mIngredientEditTexts;
+    private List<TextInputEditText> mQuantityEditTexts;
+    private List<Spinner> mSpinners;
 
     private CollectionReference recipesRef;
-
-
     private LinearLayout rootLayout;
-    private List<EditText> createdIngredients, createdQuantities;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // init arraylists
-        mEditTextIngredientsList = new ArrayList<>();
-        mEditTextQuantitiesList = new ArrayList<>();
-        mSpinnersList = new ArrayList<>();
         mIngredientsList = new ArrayList<>();
         mQuantitiesList = new ArrayList<>();
         mUnitsList = new ArrayList<>();
-        createdIngredients = new ArrayList<>();
+        mIngredientEditTexts = new ArrayList<>();
+        mQuantityEditTexts = new ArrayList<>();
+        mSpinners = new ArrayList<>();
+
+
 
         // init Firebase
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -75,6 +75,10 @@ public class NewRecipeFragment extends Fragment {
 
 
         viewBinder(view); // Binding of every element on the screen to his view + spinners
+
+        mIngredientEditTexts.add(mIngredientEditText0);
+        mQuantityEditTexts.add(mQuantityEditText0);
+        mSpinners.add(mUnitSpinner0);
 
         /* Recorremos el array de EditTexts de ingredientes y en cada uno, podemos un listener para el texto.
          *  El listener es un custom listener que hemos creado nosotros, como clase aparte e implementa la interfaz TextWatcher.
@@ -100,7 +104,7 @@ public class NewRecipeFragment extends Fragment {
         mTimeEditText = view.findViewById(R.id.et_time);
         mIngredientEditText0 = view.findViewById(R.id.et_ingredient0);
         mQuantityEditText0 = view.findViewById(R.id.et_quantity0);
-        Spinner mUnitSpinner0 = view.findViewById(R.id.spinner0);
+        mUnitSpinner0 = view.findViewById(R.id.spinner0);
 
 
         // SPINNER SETUP
@@ -117,9 +121,9 @@ public class NewRecipeFragment extends Fragment {
     class AddEditTexts implements TextWatcher { //Inner class which implements a custom listener for text changes.
 
         Context context;
-
         int position;
         boolean isActivated;
+
 
         public AddEditTexts(Context context, int position, boolean isActivated) {
             this.context = context;
@@ -129,6 +133,11 @@ public class NewRecipeFragment extends Fragment {
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (isActivated) {
 
                 // LinearLayout temporal
@@ -149,6 +158,7 @@ public class NewRecipeFragment extends Fragment {
 
                 // nuevo textInputEditText para cantidades y added to linearLayout temporal
                 TextInputEditText newQuantity = new TextInputEditText(getContext());
+                newQuantity.setInputType(InputType.TYPE_CLASS_NUMBER);
                 TextInputLayout newTilQuantity = new TextInputLayout(getContext());
                 LinearLayout.LayoutParams quantityTilParams = ViewCreator.layoutParams(getContext(), -1, -2, 2f);
 
@@ -166,6 +176,10 @@ public class NewRecipeFragment extends Fragment {
                 tempLinearLayout.addView(newTilQuantity, quantityTilParams);
                 tempLinearLayout.addView(newSpinner, spinnerParams);
 
+                mIngredientEditTexts.add(newIngredient);
+                mQuantityEditTexts.add(newQuantity);
+                mSpinners.add(newSpinner);
+
                 rootLayout.addView(tempLinearLayout, position);
 
                 // Aumentamos posición y añadimos listener al editText generado.
@@ -176,10 +190,6 @@ public class NewRecipeFragment extends Fragment {
             }
 
             isActivated = false;
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
 
 
         }
@@ -201,12 +211,12 @@ public class NewRecipeFragment extends Fragment {
             /*Con este bucle for, recorremos todos los editTexts de ingredientes, cantidades y spinner,
              * cogemos los valores que el usuario ha introducido y vamos poblando la lista de ingredientes, cantidades y spinner,
              * para posteriormente, pasarlos al objeto receta*/
-            for (int i = 0; i < mEditTextIngredientsList.size(); i++) {
-                EditText et_ingredient = mEditTextIngredientsList.get(i);
-                EditText et_quantity = mEditTextQuantitiesList.get(i);
-                Spinner spinner = mSpinnersList.get(i);
+            for (int i = 0; i < mIngredientEditTexts.size(); i++) {
+                TextInputEditText et_ingredient = mIngredientEditTexts.get(i);
+                TextInputEditText et_quantity = mQuantityEditTexts.get(i);
+                Spinner spinner = mSpinners.get(i);
 
-                if (et_ingredient != null && et_ingredient.isShown() && et_ingredient.getText().length() != 0) {
+                if (et_ingredient != null && et_ingredient.getText().length() != 0) {
                     mUnitsList.add(spinner.getSelectedItem().toString());
                     mIngredientsList.add(et_ingredient.getText().toString());
                     if (et_quantity.getText().length() == 0) { // fix this with editText material design
