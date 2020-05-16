@@ -1,5 +1,6 @@
 package com.example.market4me;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
@@ -17,6 +19,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.market4me.models.Recipe;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -26,7 +30,9 @@ import java.util.List;
 public class NewRecipeFragment extends Fragment {
 
     private Button mSaveButton;
-    private EditText mTitleEditText, mPeopleEditText, mTimeEditText, mPreparationEditText;
+    private TextInputEditText mTitleEditText, mPeopleEditText, mTimeEditText, mPreparationEditText;
+    private TextInputEditText mIngredientEditText0, mQuantityEditText0;
+    private ArrayAdapter<CharSequence> spinnerAdapter;
 
     private List<EditText> mEditTextIngredientsList;
     private List<EditText> mEditTextQuantitiesList;
@@ -36,6 +42,10 @@ public class NewRecipeFragment extends Fragment {
     private List<String> mUnitsList;
 
     private CollectionReference recipesRef;
+
+
+    private LinearLayout rootLayout;
+    private List<EditText> createdIngredients, createdQuantities;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +58,7 @@ public class NewRecipeFragment extends Fragment {
         mIngredientsList = new ArrayList<>();
         mQuantitiesList = new ArrayList<>();
         mUnitsList = new ArrayList<>();
+        createdIngredients = new ArrayList<>();
 
         // init Firebase
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -60,6 +71,8 @@ public class NewRecipeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_new_recipe, container, false);
+        rootLayout = view.findViewById(R.id.linearlayout_ingredients);
+
 
         viewBinder(view); // Binding of every element on the screen to his view + spinners
 
@@ -68,9 +81,8 @@ public class NewRecipeFragment extends Fragment {
          *  Dentro de esa clase, se crea constructor, que pide dos argumentos, current edit text y el siguiente.
          *  Dentro del for loop, se los pasamos.*/
 
-        for (int i = 0; i < mEditTextIngredientsList.size(); i++) {
-            mEditTextIngredientsList.get(i).addTextChangedListener(new showInvisibleLayouts(mEditTextIngredientsList.size(), i));
-        }
+        // Custom listener para el editText
+        mIngredientEditText0.addTextChangedListener(new AddEditTexts(getContext(), 4, true));
 
         // Custom listener para el button
         mSaveButton.setOnClickListener(new SaveButtonListener());
@@ -86,37 +98,95 @@ public class NewRecipeFragment extends Fragment {
         mPeopleEditText = view.findViewById(R.id.et_people);
         mPreparationEditText = view.findViewById(R.id.et_preparation);
         mTimeEditText = view.findViewById(R.id.et_time);
-        EditText mIngredientEditText0 = view.findViewById(R.id.et_ingredient0);
-        EditText mIngredientEditText1 = view.findViewById(R.id.et_ingredient1);
-        EditText mIngredientEditText2 = view.findViewById(R.id.et_ingredient2);
-        EditText mQuantityEditText0 = view.findViewById(R.id.et_quantity0);
-        EditText mQuantityEditText1 = view.findViewById(R.id.et_quantity1);
-        EditText mQuantityEditText2 = view.findViewById(R.id.et_quantity2);
+        mIngredientEditText0 = view.findViewById(R.id.et_ingredient0);
+        mQuantityEditText0 = view.findViewById(R.id.et_quantity0);
         Spinner mUnitSpinner0 = view.findViewById(R.id.spinner0);
-        Spinner mUnitSpinner1 = view.findViewById(R.id.spinner1);
-        Spinner mUnitSpinner2 = view.findViewById(R.id.spinner2);
 
-        mEditTextIngredientsList.add(mIngredientEditText0);
-        mEditTextIngredientsList.add(mIngredientEditText1);
-        mEditTextIngredientsList.add(mIngredientEditText2);
-
-        mEditTextQuantitiesList.add(mQuantityEditText0);
-        mEditTextQuantitiesList.add(mQuantityEditText1);
-        mEditTextQuantitiesList.add(mQuantityEditText2);
-
-        mSpinnersList.add(mUnitSpinner0);
-        mSpinnersList.add(mUnitSpinner1);
-        mSpinnersList.add(mUnitSpinner2);
 
         // SPINNER SETUP
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.quantity_units, android.R.layout.simple_spinner_item);
+        spinnerAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.quantity_units, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to each spinner
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mUnitSpinner0.setAdapter(spinnerAdapter);
 
-        for (Spinner sp : mSpinnersList) {
-            sp.setAdapter(adapter);
+
+    }
+
+
+    class AddEditTexts implements TextWatcher { //Inner class which implements a custom listener for text changes.
+
+        Context context;
+
+        int position;
+        boolean isActivated;
+
+        public AddEditTexts(Context context, int position, boolean isActivated) {
+            this.context = context;
+            this.position = position;
+            this.isActivated = isActivated;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            if (isActivated) {
+
+                // LinearLayout temporal
+                LinearLayout tempLinearLayout = ViewCreator.linearLayout(getContext(), 0);
+                tempLinearLayout.setLayoutParams(ViewCreator.layoutParams(getContext(), -1, -1));
+
+
+                // nuevo textInputEditText para ingredientes y added to linearLayout temporal
+                TextInputEditText newIngredient = new TextInputEditText(getContext());
+                LinearLayout.LayoutParams textInputEditTextParams = ViewCreator.layoutParams(getContext(), -1, -1);
+
+                TextInputLayout newTilIngredient = new TextInputLayout(getContext());
+                LinearLayout.LayoutParams ingredientTilParams = ViewCreator.layoutParams(getContext(), -1, -2, 1f);
+
+                newTilIngredient.addView(newIngredient, textInputEditTextParams);
+                newTilIngredient.setHint("Ingrediente");
+
+
+                // nuevo textInputEditText para cantidades y added to linearLayout temporal
+                TextInputEditText newQuantity = new TextInputEditText(getContext());
+                TextInputLayout newTilQuantity = new TextInputLayout(getContext());
+                LinearLayout.LayoutParams quantityTilParams = ViewCreator.layoutParams(getContext(), -1, -2, 2f);
+
+                newTilQuantity.addView(newQuantity, textInputEditTextParams);
+                newTilQuantity.setHint("Cantidad");
+
+
+                // nuevo Spinner para ingredientes y add to linearLayout temporal
+                Spinner newSpinner = new Spinner(getContext());
+                LinearLayout.LayoutParams spinnerParams = ViewCreator.layoutParams(getContext(), -1, -2, 2.2f);
+                newSpinner.setAdapter(spinnerAdapter);
+
+                // Add EditText and spinner to the LinearLayout Horizontal and this LL to the rootView
+                tempLinearLayout.addView(newTilIngredient, ingredientTilParams);
+                tempLinearLayout.addView(newTilQuantity, quantityTilParams);
+                tempLinearLayout.addView(newSpinner, spinnerParams);
+
+                rootLayout.addView(tempLinearLayout, position);
+
+                // Aumentamos posición y añadimos listener al editText generado.
+                position++;
+                newIngredient.addTextChangedListener(new AddEditTexts(getContext(), position, true));
+
+
+            }
+
+            isActivated = false;
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
         }
 
     }
@@ -168,53 +238,6 @@ public class NewRecipeFragment extends Fragment {
 
         }
     }
-
-    class showInvisibleLayouts implements TextWatcher { //Inner class which implements a custom listener for text changes.
-
-        /*Todos los ingredientes, cantidades y unidades están ocultos menos el primero.
-         * A medida que pulsamos en uno de ellos y cambia el texto, hace otro visible*/
-
-        EditText currentEtIngredient, nextEtIngredient, currentEtQuantity, nextEtQuantity;
-        Spinner currentSpinner, nextSpinner;
-        int listSize, position;
-
-        public showInvisibleLayouts(int listSize, int position) {
-            this.listSize = listSize;
-            this.position = position;
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            currentEtIngredient = mEditTextIngredientsList.get(position);
-            currentEtQuantity = mEditTextQuantitiesList.get(position);
-            currentSpinner = mSpinnersList.get(position);
-
-            if (position < listSize - 1 && s.length() != 0) { // para no salirnos de la lista de editText ingredientes y evitar mostrar el siguiente al ultimo
-
-                nextEtIngredient = mEditTextIngredientsList.get(position + 1);
-                nextEtQuantity = mEditTextQuantitiesList.get(position + 1);
-                nextSpinner = mSpinnersList.get(position + 1);
-
-                nextEtIngredient.setVisibility(View.VISIBLE);
-                nextEtQuantity.setVisibility(View.VISIBLE);
-                nextSpinner.setVisibility(View.VISIBLE);
-
-            }
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    }
-
-
 }
 
 

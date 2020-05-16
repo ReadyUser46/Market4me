@@ -3,8 +3,8 @@
     <string name="hint_title">Título</string>
     <string name="hint_people">Personas</string>
     <string name="hint_time">Tiempo</string>
-    <string name="hint_ingredients">Ingredientes</string>
-    <string name="hint_quantities">Cantidades</string>
+    <string name="hint_ingredient">Ingrediente</string>
+    <string name="hint_quantity">Cantidad</string>
     <string name="hint_preparation">Pon tus notas o la preparación aquí</string>
 
 
