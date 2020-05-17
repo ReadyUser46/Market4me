@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.market4me.models.Recipe;
+import com.example.market4me.utils.ViewCreator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.CollectionReference;
@@ -29,12 +30,15 @@ import java.util.List;
 
 public class NewRecipeFragment extends Fragment {
 
-    private Button mSaveButton;
-    private TextInputEditText mTitleEditText, mPeopleEditText, mTimeEditText, mPreparationEditText;
-    private TextInputEditText mIngredientEditText0, mQuantityEditText0;
+    private TextInputEditText mTitleEditText, mPeopleEditText, mTimeEditText, mPreparationEditText,
+            mIngredientEditText0, mQuantityEditText0;
+    private TextInputLayout mTilTitle, mTilPeople, mTilTime, mTilIngredient, mTilQuantity,
+            mTilPreparation;
+    private String mTitle, mPreparation;
+    private int mTime, mPeople;
     private Spinner mUnitSpinner0;
+    private Button mSaveButton;
     private ArrayAdapter<CharSequence> spinnerAdapter;
-
 
     private List<String> mIngredientsList;
     private List<Integer> mQuantitiesList;
@@ -59,7 +63,6 @@ public class NewRecipeFragment extends Fragment {
         mSpinners = new ArrayList<>();
 
 
-
         // init Firebase
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         recipesRef = db.collection("Recipes");
@@ -80,16 +83,16 @@ public class NewRecipeFragment extends Fragment {
         mQuantityEditTexts.add(mQuantityEditText0);
         mSpinners.add(mUnitSpinner0);
 
-        /* Recorremos el array de EditTexts de ingredientes y en cada uno, podemos un listener para el texto.
-         *  El listener es un custom listener que hemos creado nosotros, como clase aparte e implementa la interfaz TextWatcher.
-         *  Dentro de esa clase, se crea constructor, que pide dos argumentos, current edit text y el siguiente.
-         *  Dentro del for loop, se los pasamos.*/
-
-        // Custom listener para el editText
+        mTimeEditText.addTextChangedListener(new RemoveError(mTilTime));
+        mTitleEditText.addTextChangedListener(new RemoveError(mTilTitle));
+        mPeopleEditText.addTextChangedListener(new RemoveError(mTilPeople));
+        mQuantityEditText0.addTextChangedListener(new RemoveError(mTilQuantity));
         mIngredientEditText0.addTextChangedListener(new AddEditTexts(getContext(), 4, true));
+
 
         // Custom listener para el button
         mSaveButton.setOnClickListener(new SaveButtonListener());
+
 
         return view;
     }
@@ -97,15 +100,21 @@ public class NewRecipeFragment extends Fragment {
 
     private void viewBinder(View view) {
 
-        mSaveButton = view.findViewById(R.id.but_save);
+        mTilTitle = view.findViewById(R.id.til_et_title);
+        mTilPeople = view.findViewById(R.id.til_et_people);
+        mTilTime = view.findViewById(R.id.til_et_time);
+        mTilIngredient = view.findViewById(R.id.til_et_ingredient0);
+        mTilQuantity = view.findViewById(R.id.til_et_quantity0);
+
         mTitleEditText = view.findViewById(R.id.et_title);
         mPeopleEditText = view.findViewById(R.id.et_people);
-        mPreparationEditText = view.findViewById(R.id.et_preparation);
         mTimeEditText = view.findViewById(R.id.et_time);
         mIngredientEditText0 = view.findViewById(R.id.et_ingredient0);
         mQuantityEditText0 = view.findViewById(R.id.et_quantity0);
-        mUnitSpinner0 = view.findViewById(R.id.spinner0);
+        mPreparationEditText = view.findViewById(R.id.et_preparation);
 
+        mUnitSpinner0 = view.findViewById(R.id.spinner0);
+        mSaveButton = view.findViewById(R.id.but_save);
 
         // SPINNER SETUP
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -115,6 +124,92 @@ public class NewRecipeFragment extends Fragment {
         mUnitSpinner0.setAdapter(spinnerAdapter);
 
 
+    }
+
+
+    class SaveButtonListener implements View.OnClickListener { //Inner class which implements a custom listener
+
+        @Override
+        public void onClick(View v) {
+
+
+
+            //el contenido del edittext no es ""? pues la variable toma el valor de lo que hay en el et. Que es ""? pues toma 0
+            mPeople = !mPeopleEditText.getText().toString().trim().equals("") ? Integer.parseInt(mPeopleEditText.getText().toString()) : 0;
+            mTime = !mTimeEditText.getText().toString().trim().equals("") ? Integer.parseInt(mTimeEditText.getText().toString()) : 0;
+            mTitle = mTitleEditText.getText().toString();
+            mPreparation = mPreparationEditText.getText().toString();
+
+            /*Con este bucle for, recorremos todos los editTexts de ingredientes, cantidades y spinner,
+             * cogemos los valores que el usuario ha introducido y vamos poblando la lista de ingredientes, cantidades y spinner,
+             * para posteriormente, pasarlos al objeto receta*/
+            for (int i = 0; i < mIngredientEditTexts.size(); i++) {
+                TextInputEditText et_ingredient = mIngredientEditTexts.get(i);
+                TextInputEditText et_quantity = mQuantityEditTexts.get(i);
+                Spinner spinner = mSpinners.get(i);
+
+                mIngredientsList.add(et_ingredient.getText().toString());
+                //mIngredientsList.set(i,et_ingredient.getText().toString());
+                int tmp_int = !et_quantity.getText().toString().trim().equals("") ? Integer.parseInt(et_quantity.getText().toString()) : 0;
+                mQuantitiesList.add(tmp_int);
+                //mQuantitiesList.set(i,tmp_int);
+                mUnitsList.add(spinner.getSelectedItem().toString());
+                //mUnitsList.set(i,spinner.getSelectedItem().toString());
+            }
+
+
+            if (validateFields()) { // Ningún editText queda vacío o es 0
+
+                Recipe recipe = new Recipe();
+                recipe.setTitle(mTitle);
+                recipe.setPeople(mPeople);
+                recipe.setTime(mTime);
+                recipe.setPreparation(mPreparation);
+                recipe.setIngredients(mIngredientsList);
+                recipe.setQuantities(mQuantitiesList);
+                recipe.setUnits(mUnitsList);
+
+                Recipe.addRecipe(recipe); // añadir la receta a una lista de recetas
+
+                recipesRef.add(recipe); // upload la receta a fireStore
+                Intent intent = RecipeListActivity.newIntent(getContext());
+                startActivity(intent);
+            }
+
+            mIngredientsList = new ArrayList<>();
+            mQuantitiesList = new ArrayList<>();
+            mUnitsList = new ArrayList<>();
+
+        }
+
+        private boolean validateFields() {
+            boolean validate = true;
+
+
+            if (mTitle.length() == 0) {
+                mTilTitle.setError(getString(R.string.title_error));
+                validate = false;
+            }
+            if (mPeople == 0) {
+                mTilPeople.setError(getString(R.string.people_error));
+                validate = false;
+            }
+            if (mTime == 0) {
+                mTilTime.setError(getString(R.string.time_error));
+                validate = false;
+            }
+            if (mIngredientsList.get(0).length() == 0) {
+                mTilIngredient.setError(getString(R.string.ingredient0_error));
+                validate = false;
+            }
+            if (mQuantitiesList.get(0) == 0) {
+                mTilQuantity.setError(getString(R.string.quantity0_error));
+                validate = false;
+            }
+
+            return validate;
+
+        }
     }
 
 
@@ -138,6 +233,19 @@ public class NewRecipeFragment extends Fragment {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            if (s.length() > 0) mTilIngredient.setError(null);
+            addNewEditTexts();
+
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+
+        public void addNewEditTexts() {
             if (isActivated) {
 
                 // LinearLayout temporal
@@ -191,61 +299,32 @@ public class NewRecipeFragment extends Fragment {
             }
 
             isActivated = false;
-
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
         }
 
     }
 
+    class RemoveError implements TextWatcher {
 
-    class SaveButtonListener implements View.OnClickListener { //Inner class which implements a custom listener
+        TextInputLayout mTextInputLayout;
+
+        public RemoveError(TextInputLayout textInputLayout) {
+            mTextInputLayout = textInputLayout;
+        }
 
         @Override
-        public void onClick(View v) {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+        }
 
-            /*Con este bucle for, recorremos todos los editTexts de ingredientes, cantidades y spinner,
-             * cogemos los valores que el usuario ha introducido y vamos poblando la lista de ingredientes, cantidades y spinner,
-             * para posteriormente, pasarlos al objeto receta*/
-            for (int i = 0; i < mIngredientEditTexts.size(); i++) {
-                TextInputEditText et_ingredient = mIngredientEditTexts.get(i);
-                TextInputEditText et_quantity = mQuantityEditTexts.get(i);
-                Spinner spinner = mSpinners.get(i);
-
-                if (et_ingredient != null && et_ingredient.getText().length() != 0) {
-                    mUnitsList.add(spinner.getSelectedItem().toString());
-                    mIngredientsList.add(et_ingredient.getText().toString());
-                    if (et_quantity.getText().length() == 0) { // fix this with editText material design
-                        mQuantitiesList.add(0);
-                    } else {
-                        mQuantitiesList.add(Integer.parseInt(et_quantity.getText().toString()));
-                    }
-                }
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (s.length() > 0) {
+                mTextInputLayout.setError(null);
             }
+        }
 
-            Recipe recipe = new Recipe();
-            recipe.setTitle(mTitleEditText.getText().toString());
-            if (mPeopleEditText.getText().length() != 0 && mTimeEditText.getText().length() != 0) { // fix this with edittext material design
-                recipe.setPeople(Integer.parseInt(mPeopleEditText.getText().toString()));
-                recipe.setTime(Integer.parseInt(mTimeEditText.getText().toString()));
-            }
-            recipe.setPreparation(mPreparationEditText.getText().toString());
-            recipe.setIngredients(mIngredientsList);
-            recipe.setQuantities(mQuantitiesList);
-            recipe.setUnits(mUnitsList);
-
-            Recipe.addRecipe(recipe); // añadir la receta a una lista de recetas
-
-            recipesRef.add(recipe); // upload la receta a fireStore
-            Intent intent = RecipeListActivity.newIntent(getContext());
-
-            startActivity(intent);
-
+        @Override
+        public void afterTextChanged(Editable s) {
 
         }
     }

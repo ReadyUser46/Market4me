@@ -5,7 +5,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+
+    android:background="@color/backgroundColor">
 
 
     <LinearLayout
@@ -22,12 +24,11 @@
             android:id="@+id/til_et_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="24dp"
             android:hint="@string/hint_title"
             app:endIconMode="clear_text"
-            app:startIconDrawable="@drawable/ic_short_text_grey_24dp"
-
-            >
+            app:errorEnabled="true"
+            app:startIconDrawable="@drawable/ic_short_text_grey_24dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_title"
@@ -40,8 +41,10 @@
             android:id="@+id/til_et_people"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:startIconDrawable="@drawable/ic_people_black_24dp"
-            android:hint="@string/hint_people">
+            android:layout_marginTop="8dp"
+            android:hint="@string/hint_people"
+            app:errorEnabled="true"
+            app:startIconDrawable="@drawable/ic_people_black_24dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_people"
@@ -55,11 +58,15 @@
             android:id="@+id/til_et_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_time">
+            app:errorEnabled="true"
+            android:layout_marginTop="8dp"
+            android:hint="@string/hint_time"
+            app:startIconDrawable="@drawable/ic_access_grey_black_24dp">
 
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_time"
+
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:inputType="number" />
@@ -68,6 +75,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal">
 
 
@@ -75,6 +83,7 @@
                 android:id="@+id/til_et_ingredient0"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:errorEnabled="true"
                 android:layout_weight="1"
                 android:hint="@string/hint_ingredient"
                 app:endIconMode="clear_text">
@@ -88,7 +97,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_et_quantity0"
-
+                app:errorEnabled="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -115,9 +124,11 @@
             android:id="@+id/til_et_preparation"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="40dp"
             android:hint="@string/hint_preparation"
-            app:endIconMode="clear_text">
+            app:endIconMode="clear_text"
+
+            app:startIconDrawable="@drawable/ic_note_grey_24dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_preparation"
@@ -125,12 +136,15 @@
                 android:layout_height="match_parent" />
         </com.google.android.material.textfield.TextInputLayout>
 
+
         <Button
             android:id="@+id/but_save"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:text="Save" />
+            android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:text="@string/saveButton" />
 
     </LinearLayout>
 

@@ -29,8 +29,6 @@ public class RecipeListFragment extends Fragment {
     private RecipeAdapter mRecipeAdapter;
     private Recipe mRecipe;
 
-    private FloatingActionButton mFloatingActionButton;
-
 
     @Override
     public void onStart() {
@@ -57,12 +55,10 @@ public class RecipeListFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_recipes_recyclerview, container, false);
         setUpRecyclerView(v);
 
-        mFloatingActionButton = v.findViewById(R.id.floatingButton);
-        mFloatingActionButton.setOnClickListener(new FloatingButtonListener());
+        FloatingActionButton floatingActionButton = v.findViewById(R.id.floatingButton);
+        floatingActionButton.setOnClickListener(new FloatingButtonListener());
 
         return v;
-
-
     }
 
     private void setUpRecyclerView(View v) {
@@ -76,7 +72,7 @@ public class RecipeListFragment extends Fragment {
                 .setQuery(query, Recipe.class)
                 .build();
 
-        mRecipeAdapter = new RecipeAdapter(options);
+        mRecipeAdapter = new RecipeAdapter(options, getContext()); // le pasamos el context para poder tener acceso a string resources
         RecyclerView recyclerView = v.findViewById(R.id.recipesRecyclerView);
         recyclerView.setHasFixedSize(true); // Si todas las views tienen el mismo tamaño, se optimiza el código mucho poniendo a true.
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -101,24 +97,22 @@ public class RecipeListFragment extends Fragment {
     }
 
 
-
-
-    class FloatingButtonListener implements View.OnClickListener{
+    class FloatingButtonListener implements View.OnClickListener {
 
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(getActivity(),NewRecipeActivity.class);
+            Intent intent = new Intent(getActivity(), NewRecipeActivity.class);
 
             startActivity(intent);
         }
     }
 
-    class AdapterListener implements RecipeAdapter.OnItemClickListener{
+    class AdapterListener implements RecipeAdapter.OnItemClickListener {
         @Override
         public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
             mRecipe = documentSnapshot.toObject(Recipe.class);
 
-            Intent intent = DisplayRecipeActivity.newIntent(getContext(),mRecipe);
+            Intent intent = DisplayRecipeActivity.newIntent(getContext(), mRecipe);
             startActivity(intent);
 
         }
