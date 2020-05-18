@@ -1,11 +1,11 @@
-package com.example.market4me;
+package com.example.market4me.utils;
 
 import android.content.Context;
 import android.widget.LinearLayout;
 
-class ViewCreator {
+public class ViewCreator {
 
-    static LinearLayout linearLayout(Context context, int orientation) {
+    public static LinearLayout linearLayout(Context context, int orientation) {
 
 
         /* Orientation:
@@ -18,7 +18,7 @@ class ViewCreator {
         return linearLayout;
     }
 
-    static LinearLayout.LayoutParams layoutParams(Context context, int width, int height) {
+    public static LinearLayout.LayoutParams layoutParams(Context context, int width, int height) {
 
         /*  width & height:
          ** -1 = LinearLayout.LayoutParams.MATCH_PARENT
@@ -26,7 +26,7 @@ class ViewCreator {
         return new LinearLayout.LayoutParams(width, height);
     }
 
-    static LinearLayout.LayoutParams layoutParams(Context context, int width, int height, float weight) {
+    public static LinearLayout.LayoutParams layoutParams(Context context, int width, int height, float weight) {
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width, height);
         layoutParams.weight = weight;

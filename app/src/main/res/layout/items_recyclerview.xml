@@ -6,7 +6,7 @@
     android:layout_marginStart="8dp"
     android:layout_marginTop="8dp"
     android:layout_marginEnd="8dp"
-    app:cardBackgroundColor="#f48fb1">
+    app:cardBackgroundColor="@color/recipe_card_recyclerview">
 
 
     <RelativeLayout
@@ -23,6 +23,7 @@
             android:maxLines="1"
             android:text="Titulooooooooooo"
             android:textSize="22sp" />
+
 
 
         <TextView

@@ -6,6 +6,13 @@
     <string name="hint_ingredient">Ingrediente</string>
     <string name="hint_quantity">Cantidad</string>
     <string name="hint_preparation">Pon tus notas o la preparación aquí</string>
+    <string name="saveButton">Guardar</string>
+
+    <string name="title_error">Elige un título</string>
+    <string name="people_error">Elige el número de personas</string>
+    <string name="time_error">Elige la duración</string>
+    <string name="ingredient0_error">Elige un ingrediente</string>
+    <string name="quantity0_error">Elige la cantidad</string>
 
 
     <string-array name="quantity_units">

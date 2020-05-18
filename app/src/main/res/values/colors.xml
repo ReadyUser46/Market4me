@@ -5,4 +5,9 @@
     <color name="colorAccent">#03DAC5</color>
 
     <color name="colorHint">#808080</color>
+
+    <color name="colorAccentTork">#0277bd</color>
+    <color name="recipe_card_recyclerview">#58a5f0</color>
+    <color name="backgroundColor">#f3e5f5</color>
+
 </resources>
