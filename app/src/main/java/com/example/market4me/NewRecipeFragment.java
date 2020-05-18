@@ -2,7 +2,10 @@ package com.example.market4me;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -11,8 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,17 +33,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import static android.app.Activity.RESULT_OK;
 
 public class NewRecipeFragment extends Fragment {
 
     private TextInputEditText mTitleEditText, mPeopleEditText, mTimeEditText, mPreparationEditText,
             mIngredientEditText0, mQuantityEditText0;
-    private TextInputLayout mTilTitle, mTilPeople, mTilTime, mTilIngredient, mTilQuantity,
-            mTilPreparation;
-    private String mTitle, mPreparation;
+    private TextInputLayout mTilTitle, mTilPeople, mTilTime, mTilIngredient, mTilQuantity;
+
+    private String mTitle;
     private int mTime, mPeople;
     private Spinner mUnitSpinner0;
-    private Button mSaveButton;
     private ArrayAdapter<CharSequence> spinnerAdapter;
 
     private List<String> mIngredientsList;
@@ -49,6 +57,12 @@ public class NewRecipeFragment extends Fragment {
 
     private CollectionReference recipesRef;
     private LinearLayout rootLayout;
+    private ImageButton mImageButton;
+    private Button mSaveButton;
+    private ImageView mThumbnailPhoto;
+
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,9 +108,37 @@ public class NewRecipeFragment extends Fragment {
         mSaveButton.setOnClickListener(new SaveButtonListener());
 
 
+        // Comprobamos que el dispositivo tiene una camara antes de darle funcionalidad al boton
+        // y que el packagemanager tiene alguna app que pueda manejar este intent
+        mImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PackageManager packageManager = Objects.requireNonNull(getActivity()).getPackageManager();
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+                        && takePictureIntent.resolveActivity(packageManager) != null) {
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                }else {
+                    Toast.makeText(getActivity(),getActivity().getString(R.string.no_camera_error),Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
         return view;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
+
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            mThumbnailPhoto.setImageBitmap(imageBitmap);
+        }
+    }
 
     private void viewBinder(View view) {
 
@@ -115,6 +157,8 @@ public class NewRecipeFragment extends Fragment {
 
         mUnitSpinner0 = view.findViewById(R.id.spinner0);
         mSaveButton = view.findViewById(R.id.but_save);
+        mImageButton = view.findViewById(R.id.ibtn_take_picture);
+        mThumbnailPhoto = view.findViewById(R.id.imageview_thumbnail_photo);
 
         // SPINNER SETUP
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -126,19 +170,17 @@ public class NewRecipeFragment extends Fragment {
 
     }
 
-
     class SaveButtonListener implements View.OnClickListener { //Inner class which implements a custom listener
 
         @Override
         public void onClick(View v) {
 
 
-
             //el contenido del edittext no es ""? pues la variable toma el valor de lo que hay en el et. Que es ""? pues toma 0
             mPeople = !mPeopleEditText.getText().toString().trim().equals("") ? Integer.parseInt(mPeopleEditText.getText().toString()) : 0;
             mTime = !mTimeEditText.getText().toString().trim().equals("") ? Integer.parseInt(mTimeEditText.getText().toString()) : 0;
             mTitle = mTitleEditText.getText().toString();
-            mPreparation = mPreparationEditText.getText().toString();
+            String preparation = mPreparationEditText.getText().toString();
 
             /*Con este bucle for, recorremos todos los editTexts de ingredientes, cantidades y spinner,
              * cogemos los valores que el usuario ha introducido y vamos poblando la lista de ingredientes, cantidades y spinner,
@@ -148,15 +190,14 @@ public class NewRecipeFragment extends Fragment {
                 TextInputEditText et_quantity = mQuantityEditTexts.get(i);
                 Spinner spinner = mSpinners.get(i);
 
-                mIngredientsList.add(et_ingredient.getText().toString());
-                //mIngredientsList.set(i,et_ingredient.getText().toString());
                 int tmp_int = !et_quantity.getText().toString().trim().equals("") ? Integer.parseInt(et_quantity.getText().toString()) : 0;
-                mQuantitiesList.add(tmp_int);
-                //mQuantitiesList.set(i,tmp_int);
-                mUnitsList.add(spinner.getSelectedItem().toString());
-                //mUnitsList.set(i,spinner.getSelectedItem().toString());
+                String tmp_str = et_ingredient.getText().toString();
+                if (tmp_str.length() > 0 || tmp_int != 0) {
+                    mIngredientsList.add(tmp_str);
+                    mQuantitiesList.add(tmp_int);
+                    mUnitsList.add(spinner.getSelectedItem().toString());
+                }
             }
-
 
             if (validateFields()) { // Ningún editText queda vacío o es 0
 
@@ -164,7 +205,7 @@ public class NewRecipeFragment extends Fragment {
                 recipe.setTitle(mTitle);
                 recipe.setPeople(mPeople);
                 recipe.setTime(mTime);
-                recipe.setPreparation(mPreparation);
+                recipe.setPreparation(preparation);
                 recipe.setIngredients(mIngredientsList);
                 recipe.setQuantities(mQuantitiesList);
                 recipe.setUnits(mUnitsList);
@@ -175,6 +216,9 @@ public class NewRecipeFragment extends Fragment {
                 Intent intent = RecipeListActivity.newIntent(getContext());
                 startActivity(intent);
             }
+
+            //volvemos a inicializar los arraylist para que se borre el contenido que tenían y no haya conflicto
+            //con el metodo .add en en caso de que el usuario no escriba ningún ingrediente.
 
             mIngredientsList = new ArrayList<>();
             mQuantitiesList = new ArrayList<>();
@@ -198,11 +242,11 @@ public class NewRecipeFragment extends Fragment {
                 mTilTime.setError(getString(R.string.time_error));
                 validate = false;
             }
-            if (mIngredientsList.get(0).length() == 0) {
+            if (mIngredientsList.size() == 0) {
                 mTilIngredient.setError(getString(R.string.ingredient0_error));
                 validate = false;
             }
-            if (mQuantitiesList.get(0) == 0) {
+            if (mQuantitiesList.size() == 0) {
                 mTilQuantity.setError(getString(R.string.quantity0_error));
                 validate = false;
             }
@@ -211,7 +255,6 @@ public class NewRecipeFragment extends Fragment {
 
         }
     }
-
 
     class AddEditTexts implements TextWatcher { //Inner class which implements a custom listener for text changes.
 

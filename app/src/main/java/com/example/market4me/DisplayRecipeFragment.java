@@ -62,7 +62,9 @@ public class DisplayRecipeFragment extends Fragment {
             ultraString.append(" de ").append(mIngredients.get(i));
             ultraString.append("\n");
 
+
         }
+
 
         // Set texts to textviews
         mTitleDisplayed.setText(mRecipe.getTitle());

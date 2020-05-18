@@ -74,8 +74,9 @@
                 android:id="@+id/tv_ingredients_displayed"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="Ingredients"
-                android:padding="16dp" />
+                android:padding="16dp"
+                android:textSize="18sp" />
+
 
         </androidx.cardview.widget.CardView>
 

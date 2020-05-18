@@ -13,6 +13,7 @@
     <string name="time_error">Elige la duración</string>
     <string name="ingredient0_error">Elige un ingrediente</string>
     <string name="quantity0_error">Elige la cantidad</string>
+    <string name="no_camera_error">El dispositivo no tiene cámara</string>
 
 
     <string-array name="quantity_units">
