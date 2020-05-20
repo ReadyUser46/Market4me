@@ -1,13 +1,17 @@
 package com.example.market4me.models;
 
+import android.content.Context;
+import android.net.Uri;
+
+import java.io.File;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Recipe implements Serializable {
 
-
-    private static List<Recipe> mRecipeList;
 
     private String title;
     private List<String> ingredients;
@@ -16,6 +20,9 @@ public class Recipe implements Serializable {
     private List<Integer> quantities;
     private List<String> units;
     private String preparation;
+    private String photoName;
+
+    //private String photoName;
 
 
     public Recipe(String title, List<String> ingredients, int people, int time, List<Integer> quantities, List<String> units, String preparation) {
@@ -26,17 +33,13 @@ public class Recipe implements Serializable {
         this.quantities = quantities;
         this.units = units;
         this.preparation = preparation;
+
     }
 
 
-    // Empty constructor that init arraylist
+    // Empty constructor for FireStore Cloud
     public Recipe() {
-        mRecipeList = new ArrayList<>();
-    }
 
-
-    public static void addRecipe(Recipe recipe) {
-        mRecipeList.add(recipe);
     }
 
     // Getters and Setters for atributes
@@ -95,5 +98,21 @@ public class Recipe implements Serializable {
 
     public void setPreparation(String preparation) {
         this.preparation = preparation;
+    }
+
+    public String getPhotoName() {
+        return photoName;
+    }
+
+    public void setPhotoName(String photoName) {
+        this.photoName = photoName;
+    }
+
+    public File getPhotoFile(Context context) {
+
+        // Create file location
+        File storageDir = context.getFilesDir();
+
+        return new File(storageDir, photoName);
     }
 }

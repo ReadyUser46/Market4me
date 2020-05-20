@@ -96,7 +96,6 @@ public class RecipeListFragment extends Fragment {
         mRecipeAdapter.setOnItemClickListener(new AdapterListener());
     }
 
-
     class FloatingButtonListener implements View.OnClickListener {
 
         @Override

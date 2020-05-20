@@ -58,9 +58,9 @@
             android:id="@+id/til_et_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true"
             android:layout_marginTop="8dp"
             android:hint="@string/hint_time"
+            app:errorEnabled="true"
             app:startIconDrawable="@drawable/ic_access_grey_black_24dp">
 
 
@@ -83,10 +83,10 @@
                 android:id="@+id/til_et_ingredient0"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:errorEnabled="true"
                 android:layout_weight="1"
                 android:hint="@string/hint_ingredient"
-                app:endIconMode="clear_text">
+                app:endIconMode="clear_text"
+                app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_ingredient0"
@@ -97,11 +97,11 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_et_quantity0"
-                app:errorEnabled="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:hint="@string/hint_quantity">
+                android:hint="@string/hint_quantity"
+                app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_quantity0"
@@ -136,15 +136,38 @@
                 android:layout_height="match_parent" />
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <Button
-            android:id="@+id/but_save"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="24dp"
-            android:text="@string/saveButton" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/but_save"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="60dp"
+                android:text="@string/saveButton" />
+
+            <ImageButton
+                android:id="@+id/ibtn_take_picture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:contentDescription="TakePicture"
+                android:src="@drawable/ic_photo_camera_black_24dp"
+                />
+
+            <ImageView
+                android:id="@+id/imageview_thumbnail_photo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="MiniaturaFoto" />
+
+
+        </LinearLayout>
+
 
     </LinearLayout>
 
