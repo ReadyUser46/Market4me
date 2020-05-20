@@ -1,7 +1,12 @@
 package com.example.market4me.models;
 
+import android.content.Context;
+
+import java.io.File;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Recipe implements Serializable {
@@ -95,5 +100,17 @@ public class Recipe implements Serializable {
 
     public void setPreparation(String preparation) {
         this.preparation = preparation;
+    }
+
+    public File getPhotoFile(Context context) {
+
+        // Create an file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "IMG_" + timeStamp + ".jpg";
+        // Create file location
+        File storageDir = context.getFilesDir();
+
+
+        return new File(storageDir, imageFileName);
     }
 }

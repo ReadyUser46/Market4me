@@ -3,12 +3,15 @@ package com.example.market4me;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +21,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.example.market4me.models.Recipe;
@@ -31,11 +34,13 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
+
 
 public class NewRecipeFragment extends Fragment {
 
@@ -61,12 +66,19 @@ public class NewRecipeFragment extends Fragment {
     private Button mSaveButton;
     private ImageView mThumbnailPhoto;
 
+    private Recipe mRecipe;
+
+    private File mPhotoFile;
+
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mRecipe = new Recipe();
+        mPhotoFile = mRecipe.getPhotoFile(getActivity());
 
         // init arraylists
         mIngredientsList = new ArrayList<>();
@@ -86,6 +98,11 @@ public class NewRecipeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Log.i("patapum", "Context.getFilesDir =" + getContext().getFilesDir());
+        File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        Log.i("patapum", "Context.getExternalFilesDir =" + storageDir);
+
 
         View view = inflater.inflate(R.layout.fragment_new_recipe, container, false);
         rootLayout = view.findViewById(R.id.linearlayout_ingredients);
@@ -109,19 +126,42 @@ public class NewRecipeFragment extends Fragment {
 
 
         // Comprobamos que el dispositivo tiene una camara antes de darle funcionalidad al boton
-        // y que el packagemanager tiene alguna app que pueda manejar este intent
+        // y que el packagemanager tiene alguna app que pueda manejar este intent. Boolean canTakePhoto
+
+        final Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        final PackageManager packageManager = Objects.requireNonNull(getActivity()).getPackageManager();
+
+        boolean canTakePhoto = mPhotoFile != null &&
+                packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) &&
+                takePictureIntent.resolveActivity(packageManager) != null;
+
+        mImageButton.setEnabled(canTakePhoto);
+
         mImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PackageManager packageManager = Objects.requireNonNull(getActivity()).getPackageManager();
-                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
-                        && takePictureIntent.resolveActivity(packageManager) != null) {
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                }else {
-                    Toast.makeText(getActivity(),getActivity().getString(R.string.no_camera_error),Toast.LENGTH_SHORT).show();
+
+                Uri photoUri = FileProvider.getUriForFile(getContext(),
+                        "com.example.market4me.fileprovider",
+                        mPhotoFile);
+
+                // si le damos un output a la foto, no habrá data en onActivityResult para la miniatura
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+
+                List<ResolveInfo> cameraActivities = packageManager.queryIntentActivities(takePictureIntent,
+                        PackageManager.MATCH_DEFAULT_ONLY);
+
+                for (ResolveInfo activity : cameraActivities) {
+                    getActivity().grantUriPermission(activity.activityInfo.packageName,
+                            photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
                 }
+                Log.i("patapum", "photoUri = " + photoUri);
+
+
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+
             }
         });
 
@@ -131,14 +171,30 @@ public class NewRecipeFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            mThumbnailPhoto.setImageBitmap(imageBitmap);
+            //Bundle extras = data.getExtras();
+            //Bitmap imageBitmap = (Bitmap) extras.get("data");
+            //mThumbnailPhoto.setImageBitmap(imageBitmap);
+
+            Uri photoUri = FileProvider.getUriForFile(getContext(),
+                    "com.example.market4me.fileprovider",
+                    mPhotoFile);
+
+            /*FirebaseStorage mStorage = FirebaseStorage.getInstance();
+            StorageReference storageReference = mStorage.getReference().child("Pictures").child(photoUri.getLastPathSegment());
+            storageReference.putFile(photoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(getActivity(), "Uploading finished", Toast.LENGTH_SHORT).show();
+
+                }
+            });*/
         }
     }
+
 
     private void viewBinder(View view) {
 
@@ -201,18 +257,18 @@ public class NewRecipeFragment extends Fragment {
 
             if (validateFields()) { // Ningún editText queda vacío o es 0
 
-                Recipe recipe = new Recipe();
-                recipe.setTitle(mTitle);
-                recipe.setPeople(mPeople);
-                recipe.setTime(mTime);
-                recipe.setPreparation(preparation);
-                recipe.setIngredients(mIngredientsList);
-                recipe.setQuantities(mQuantitiesList);
-                recipe.setUnits(mUnitsList);
 
-                Recipe.addRecipe(recipe); // añadir la receta a una lista de recetas
+                mRecipe.setTitle(mTitle);
+                mRecipe.setPeople(mPeople);
+                mRecipe.setTime(mTime);
+                mRecipe.setPreparation(preparation);
+                mRecipe.setIngredients(mIngredientsList);
+                mRecipe.setQuantities(mQuantitiesList);
+                mRecipe.setUnits(mUnitsList);
 
-                recipesRef.add(recipe); // upload la receta a fireStore
+                Recipe.addRecipe(mRecipe); // añadir la receta a una lista de recetas
+
+                recipesRef.add(mRecipe); // upload la receta a fireStore
                 Intent intent = RecipeListActivity.newIntent(getContext());
                 startActivity(intent);
             }

@@ -6,6 +6,10 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+    <!-- Le indicamos a google play que esta app escribe y lee en memoria (para guardar las fotos)  -->
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
 
     <application
         android:allowBackup="true"
@@ -28,10 +32,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DisplayRecipeActivity">
+
+        <activity android:name=".DisplayRecipeActivity" />
 
 
-        </activity>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.market4me.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
     </application>
 
 </manifest>
