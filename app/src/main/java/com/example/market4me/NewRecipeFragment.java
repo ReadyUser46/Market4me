@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -40,7 +39,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -54,14 +52,18 @@ import static android.app.Activity.RESULT_OK;
 
 public class NewRecipeFragment extends Fragment {
 
-    private TextInputEditText mTitleEditText, mPeopleEditText, mTimeEditText, mPreparationEditText,
-            mIngredientEditText0, mQuantityEditText0;
+    // MEMBER VARIABLES
+    private TextInputEditText mTitleEditText, mPeopleEditText, mTimeEditText, mPreparationEditText;
+    private TextInputEditText mIngredientEditText0, mQuantityEditText0;
     private TextInputLayout mTilTitle, mTilPeople, mTilTime, mTilIngredient, mTilQuantity;
+    private Spinner mUnitSpinner0;
+    private Button mSaveButton;
+
+    private ArrayAdapter<CharSequence> spinnerAdapter;
 
     private String mTitle;
+    private String mPhotoName;
     private int mTime, mPeople;
-    private Spinner mUnitSpinner0;
-    private ArrayAdapter<CharSequence> spinnerAdapter;
 
     private List<String> mIngredientsList;
     private List<Integer> mQuantitiesList;
@@ -71,20 +73,15 @@ public class NewRecipeFragment extends Fragment {
     private List<Spinner> mSpinners;
 
     private CollectionReference recipesRef;
-    private LinearLayout rootLayout;
+
     private ImageButton mImageButton;
-    private Button mSaveButton;
     private ImageView mThumbnailPhoto;
+    private Uri mPhotoUri;
 
     private Recipe mRecipe;
 
-    private File mPhotoFile;
-    private Uri mPhotoUri;
-
-    private String mPhotoName;
-
+    // CONSTANTS
     private static final int REQUEST_IMAGE_CAPTURE = 1;
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,6 +102,7 @@ public class NewRecipeFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         recipesRef = db.collection("Recipes");
 
+
     }
 
     @Nullable
@@ -117,72 +115,25 @@ public class NewRecipeFragment extends Fragment {
 
 
         View view = inflater.inflate(R.layout.fragment_new_recipe, container, false);
-        rootLayout = view.findViewById(R.id.linearlayout_ingredients);
 
-
-        viewBinder(view); // Binding of every element on the screen to his view + spinners
+        findViews(view); // Binding of every element on the screen to his view + spinners
 
         mIngredientEditTexts.add(mIngredientEditText0);
         mQuantityEditTexts.add(mQuantityEditText0);
         mSpinners.add(mUnitSpinner0);
 
-        mTimeEditText.addTextChangedListener(new RemoveError(mTilTime));
-        mTitleEditText.addTextChangedListener(new RemoveError(mTilTitle));
-        mPeopleEditText.addTextChangedListener(new RemoveError(mTilPeople));
-        mQuantityEditText0.addTextChangedListener(new RemoveError(mTilQuantity));
-        mIngredientEditText0.addTextChangedListener(new AddEditTexts(getContext(), 4, true));
+        mTimeEditText.addTextChangedListener(new RemoveErrorListener(mTilTime));
+        mTitleEditText.addTextChangedListener(new RemoveErrorListener(mTilTitle));
+        mPeopleEditText.addTextChangedListener(new RemoveErrorListener(mTilPeople));
+        mQuantityEditText0.addTextChangedListener(new RemoveErrorListener(mTilQuantity));
+        mIngredientEditText0.addTextChangedListener(new AddEditTextsListener(getContext(), 4, true, view));
 
 
-        // Custom listener para el button
+        // Custom listener para guardar
         mSaveButton.setOnClickListener(new SaveButtonListener());
 
-
-        // Comprobamos que el dispositivo tiene una camara antes de darle funcionalidad al boton
-        // y que el packagemanager tiene alguna app que pueda manejar este intent. Boolean canTakePhoto
-
-        final Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        final PackageManager packageManager = Objects.requireNonNull(getActivity()).getPackageManager();
-
-        // Create a file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        mPhotoName = "IMG_" + timeStamp + ".jpg";
-        mPhotoFile = new File(getActivity().getFilesDir(), mPhotoName);
-
-        boolean canTakePhoto = mPhotoFile != null &&
-                packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) &&
-                takePictureIntent.resolveActivity(packageManager) != null;
-
-        mImageButton.setEnabled(canTakePhoto);
-
-        mImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                mPhotoUri = FileProvider.getUriForFile(getContext(),
-                        "com.example.market4me.fileprovider",
-                        mPhotoFile);
-
-
-                // si le damos un output a la foto, no habrá data en onActivityResult para la miniatura
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoUri);
-
-                List<ResolveInfo> cameraActivities = packageManager.queryIntentActivities(takePictureIntent,
-                        PackageManager.MATCH_DEFAULT_ONLY);
-
-                for (ResolveInfo activity : cameraActivities) {
-                    getActivity().grantUriPermission(activity.activityInfo.packageName,
-                            mPhotoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
-                }
-                Log.i("patapum", "mPhotoUri_intent = " + mPhotoUri);
-
-
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-
-            }
-        });
-
+        // Custom listener para la camara
+        mImageButton.setOnClickListener(new CameraIntentListener());
 
         return view;
     }
@@ -221,7 +172,7 @@ public class NewRecipeFragment extends Fragment {
         }
     }
 
-    private void viewBinder(View view) {
+    private void findViews(View view) {
 
         mTilTitle = view.findViewById(R.id.til_et_title);
         mTilPeople = view.findViewById(R.id.til_et_people);
@@ -249,6 +200,13 @@ public class NewRecipeFragment extends Fragment {
         mUnitSpinner0.setAdapter(spinnerAdapter);
 
 
+    }
+
+    private File createPhotoFile() {
+        // Create a file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        mPhotoName = "IMG_" + timeStamp + ".jpg";
+        return new File(getActivity().getFilesDir(), mPhotoName);
     }
 
     class SaveButtonListener implements View.OnClickListener { //Inner class which implements a custom listener
@@ -339,17 +297,65 @@ public class NewRecipeFragment extends Fragment {
         }
     }
 
-    class AddEditTexts implements TextWatcher { //Inner class which implements a custom listener for text changes.
+    class CameraIntentListener implements View.OnClickListener {
+
+
+        @Override
+        public void onClick(View v) {
+
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            PackageManager packageManager = Objects.requireNonNull(getActivity()).getPackageManager();
+
+
+            // Comprobamos que el dispositivo tiene una camara antes de darle funcionalidad al boton
+            // y que el packagemanager tiene alguna app que pueda manejar este intent. Boolean canTakePhoto
+            if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) &&
+                    takePictureIntent.resolveActivity(packageManager) != null) {
+
+
+                File mPhotoFile = createPhotoFile();
+
+                mPhotoUri = FileProvider.getUriForFile(getContext(),
+                        "com.example.market4me.fileprovider",
+                        mPhotoFile);
+
+
+                // si le damos un output a la foto, no habrá data en onActivityResult para la miniatura
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoUri);
+
+                List<ResolveInfo> cameraActivities = packageManager.queryIntentActivities(takePictureIntent,
+                        PackageManager.MATCH_DEFAULT_ONLY);
+
+                for (ResolveInfo activity : cameraActivities) {
+                    getActivity().grantUriPermission(activity.activityInfo.packageName,
+                            mPhotoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+                }
+                Log.i("patapum", "mPhotoUri_intent = " + mPhotoUri);
+
+
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            } else {
+                Toast.makeText(getActivity(), getActivity().getString(R.string.no_camera_error), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    class AddEditTextsListener implements TextWatcher { //Inner class which implements a custom listener for text changes.
 
         Context context;
         int position;
         boolean isActivated;
+        View view;
+        LinearLayout rootLayout;
 
 
-        public AddEditTexts(Context context, int position, boolean isActivated) {
+        private AddEditTextsListener(Context context, int position, boolean isActivated, View view) {
             this.context = context;
             this.position = position;
             this.isActivated = isActivated;
+            this.view = view;
+            rootLayout = view.findViewById(R.id.linearlayout_ingredients);
         }
 
         @Override
@@ -371,7 +377,7 @@ public class NewRecipeFragment extends Fragment {
 
         }
 
-        public void addNewEditTexts() {
+        private void addNewEditTexts() {
             if (isActivated) {
 
                 // LinearLayout temporal
@@ -419,7 +425,7 @@ public class NewRecipeFragment extends Fragment {
 
                 // Aumentamos posición y añadimos listener al editText generado.
                 position++;
-                newIngredient.addTextChangedListener(new AddEditTexts(getContext(), position, true));
+                newIngredient.addTextChangedListener(new AddEditTextsListener(getContext(), position, true, view));
 
 
             }
@@ -429,11 +435,11 @@ public class NewRecipeFragment extends Fragment {
 
     }
 
-    class RemoveError implements TextWatcher {
+    class RemoveErrorListener implements TextWatcher {
 
         TextInputLayout mTextInputLayout;
 
-        public RemoveError(TextInputLayout textInputLayout) {
+        public RemoveErrorListener(TextInputLayout textInputLayout) {
             mTextInputLayout = textInputLayout;
         }
 
