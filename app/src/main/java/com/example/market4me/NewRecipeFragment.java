@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,21 +22,30 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.example.market4me.models.Recipe;
 import com.example.market4me.utils.ViewCreator;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -69,6 +79,9 @@ public class NewRecipeFragment extends Fragment {
     private Recipe mRecipe;
 
     private File mPhotoFile;
+    private Uri mPhotoUri;
+
+    private String mPhotoName;
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -78,7 +91,6 @@ public class NewRecipeFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mRecipe = new Recipe();
-        mPhotoFile = mRecipe.getPhotoFile(getActivity());
 
         // init arraylists
         mIngredientsList = new ArrayList<>();
@@ -131,6 +143,11 @@ public class NewRecipeFragment extends Fragment {
         final Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         final PackageManager packageManager = Objects.requireNonNull(getActivity()).getPackageManager();
 
+        // Create a file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        mPhotoName = "IMG_" + timeStamp + ".jpg";
+        mPhotoFile = new File(getActivity().getFilesDir(), mPhotoName);
+
         boolean canTakePhoto = mPhotoFile != null &&
                 packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) &&
                 takePictureIntent.resolveActivity(packageManager) != null;
@@ -142,25 +159,26 @@ public class NewRecipeFragment extends Fragment {
             public void onClick(View v) {
 
 
-                Uri photoUri = FileProvider.getUriForFile(getContext(),
+                mPhotoUri = FileProvider.getUriForFile(getContext(),
                         "com.example.market4me.fileprovider",
                         mPhotoFile);
 
+
                 // si le damos un output a la foto, no habrá data en onActivityResult para la miniatura
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoUri);
 
                 List<ResolveInfo> cameraActivities = packageManager.queryIntentActivities(takePictureIntent,
                         PackageManager.MATCH_DEFAULT_ONLY);
 
                 for (ResolveInfo activity : cameraActivities) {
                     getActivity().grantUriPermission(activity.activityInfo.packageName,
-                            photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                            mPhotoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
                 }
-                Log.i("patapum", "photoUri = " + photoUri);
+                Log.i("patapum", "mPhotoUri_intent = " + mPhotoUri);
 
 
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 
             }
         });
@@ -175,26 +193,33 @@ public class NewRecipeFragment extends Fragment {
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
-            //Bundle extras = data.getExtras();
-            //Bitmap imageBitmap = (Bitmap) extras.get("data");
-            //mThumbnailPhoto.setImageBitmap(imageBitmap);
 
-            Uri photoUri = FileProvider.getUriForFile(getContext(),
-                    "com.example.market4me.fileprovider",
-                    mPhotoFile);
+            Log.i("patapum", "mPhotoUri_onActivityResult = " + mPhotoUri);
 
-            /*FirebaseStorage mStorage = FirebaseStorage.getInstance();
-            StorageReference storageReference = mStorage.getReference().child("Pictures").child(photoUri.getLastPathSegment());
-            storageReference.putFile(photoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(getActivity(), "Uploading finished", Toast.LENGTH_SHORT).show();
+            /*Picasso.get()
+                    .load(mPhotoUri)
+                    .into(mThumbnailPhoto);*/
 
-                }
-            });*/
+            Glide.
+                    with(getActivity())
+                    .load(mPhotoUri)
+                    .into(mThumbnailPhoto);
+
+            if (mPhotoUri != null) {
+
+
+                FirebaseStorage mStorage = FirebaseStorage.getInstance();
+                StorageReference storageReference = mStorage.getReference().child("Pictures").child(mPhotoName);
+                storageReference.putFile(mPhotoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(getActivity(), "Uploading finished", Toast.LENGTH_LONG).show();
+
+                    }
+                });
+            }
         }
     }
-
 
     private void viewBinder(View view) {
 
@@ -266,7 +291,9 @@ public class NewRecipeFragment extends Fragment {
                 mRecipe.setQuantities(mQuantitiesList);
                 mRecipe.setUnits(mUnitsList);
 
-                Recipe.addRecipe(mRecipe); // añadir la receta a una lista de recetas
+                mRecipe.setPhotoName(mPhotoName);
+
+                mPhotoName = mRecipe.getPhotoName();
 
                 recipesRef.add(mRecipe); // upload la receta a fireStore
                 Intent intent = RecipeListActivity.newIntent(getContext());

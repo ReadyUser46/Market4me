@@ -4,13 +4,19 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.example.market4me.models.Recipe;
+import com.example.market4me.utils.GlideApp;
+import com.example.market4me.utils.MyAppGlideModule;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
@@ -18,6 +24,9 @@ public class DisplayRecipeFragment extends Fragment {
 
     private Recipe mRecipe;
     private TextView mTitleDisplayed, mPeopleDisplayed, mTimeDisplayed, mIngredientsDisplayed, mNotesDisplayed;
+    private ImageView mRecipeImage;
+
+    private FirebaseStorage mStorage;
 
 
     @Override
@@ -25,8 +34,9 @@ public class DisplayRecipeFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mRecipe = (Recipe) getActivity().getIntent().getSerializableExtra(DisplayRecipeActivity.EXTRA_RECIPE_OBJECT);
-    }
+        mStorage = FirebaseStorage.getInstance();
 
+    }
 
     @Nullable
     @Override
@@ -39,12 +49,12 @@ public class DisplayRecipeFragment extends Fragment {
         mTimeDisplayed = view.findViewById(R.id.tv_time_displayed);
         mIngredientsDisplayed = view.findViewById(R.id.tv_ingredients_displayed);
         mNotesDisplayed = view.findViewById(R.id.tv_notes_displayed);
+        mRecipeImage = view.findViewById(R.id.imageview_displayed);
 
         viewBinder();
 
         return view;
     }
-
 
     private void viewBinder() {
         // Cogemos ingredientes, cantidades y unidades del objeto receta que el usuario y los
@@ -62,7 +72,6 @@ public class DisplayRecipeFragment extends Fragment {
             ultraString.append(" de ").append(mIngredients.get(i));
             ultraString.append("\n");
 
-
         }
 
 
@@ -72,5 +81,23 @@ public class DisplayRecipeFragment extends Fragment {
         mTimeDisplayed.setText("Tiempo: " + mRecipe.getTime());
         mIngredientsDisplayed.setText(ultraString.toString());
         mNotesDisplayed.setText(mRecipe.getPreparation());
+
+        // Retrieve image from Firebase Storage
+
+        if (mRecipe.getPhotoName().trim().equals("") || mRecipe.getPhotoName() == null) {
+
+            // No hay foto
+
+        } else {
+            StorageReference storagedPhotoReference = mStorage.getReference().child("Pictures").child(mRecipe.getPhotoName());
+
+
+            GlideApp.with(getActivity())
+                    .load(storagedPhotoReference)
+                    .into(mRecipeImage);
+
+        }
     }
+
+
 }

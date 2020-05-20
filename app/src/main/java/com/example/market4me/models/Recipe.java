@@ -1,6 +1,7 @@
 package com.example.market4me.models;
 
 import android.content.Context;
+import android.net.Uri;
 
 import java.io.File;
 import java.io.Serializable;
@@ -12,8 +13,6 @@ import java.util.List;
 public class Recipe implements Serializable {
 
 
-    private static List<Recipe> mRecipeList;
-
     private String title;
     private List<String> ingredients;
     private int people;
@@ -21,6 +20,9 @@ public class Recipe implements Serializable {
     private List<Integer> quantities;
     private List<String> units;
     private String preparation;
+    private String photoName;
+
+    //private String photoName;
 
 
     public Recipe(String title, List<String> ingredients, int people, int time, List<Integer> quantities, List<String> units, String preparation) {
@@ -31,17 +33,13 @@ public class Recipe implements Serializable {
         this.quantities = quantities;
         this.units = units;
         this.preparation = preparation;
+
     }
 
 
-    // Empty constructor that init arraylist
+    // Empty constructor for FireStore Cloud
     public Recipe() {
-        mRecipeList = new ArrayList<>();
-    }
 
-
-    public static void addRecipe(Recipe recipe) {
-        mRecipeList.add(recipe);
     }
 
     // Getters and Setters for atributes
@@ -102,15 +100,19 @@ public class Recipe implements Serializable {
         this.preparation = preparation;
     }
 
+    public String getPhotoName() {
+        return photoName;
+    }
+
+    public void setPhotoName(String photoName) {
+        this.photoName = photoName;
+    }
+
     public File getPhotoFile(Context context) {
 
-        // Create an file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "IMG_" + timeStamp + ".jpg";
         // Create file location
         File storageDir = context.getFilesDir();
 
-
-        return new File(storageDir, imageFileName);
+        return new File(storageDir, photoName);
     }
 }
