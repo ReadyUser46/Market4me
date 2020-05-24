@@ -18,6 +18,8 @@ import com.example.market4me.models.Recipe;
 import com.example.market4me.utils.GlideApp;
 import com.example.market4me.utils.MyAppGlideModule;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -63,6 +65,19 @@ public class DisplayRecipeFragment extends Fragment {
         CollapsingToolbarLayout collapsingToolbar = view.findViewById(R.id.collapsingToolbarDisplay);
         collapsingToolbar.setTitle("MiReceta");
 
+        // Retrieve image from Firebase Storage
+        if (mRecipe.getPhotoName() == null || mRecipe.getPhotoName().trim().equals("")) {
+
+            Snackbar.make(view, "No hay foto", BaseTransientBottomBar.LENGTH_LONG).show();
+
+        } else {
+            StorageReference storagedPhotoReference = mStorage.getReference().child("Pictures").child(mRecipe.getPhotoName());
+
+
+            GlideApp.with(getActivity())
+                    .load(storagedPhotoReference)
+                    .into(mRecipeImage);
+        }
 
         return view;
     }
@@ -85,7 +100,6 @@ public class DisplayRecipeFragment extends Fragment {
 
         }
 
-
         // Set texts to textviews
         mTitleDisplayed.setText(mRecipe.getTitle());
         mPeopleDisplayed.setText("Personas: " + mRecipe.getPeople());
@@ -93,21 +107,7 @@ public class DisplayRecipeFragment extends Fragment {
         mIngredientsDisplayed.setText(ultraString.toString());
         mNotesDisplayed.setText(mRecipe.getPreparation());
 
-        // Retrieve image from Firebase Storage
 
-        /*if (mRecipe.getPhotoName().trim().equals("") || mRecipe.getPhotoName() == null) {
-
-            // No hay foto
-
-        } else {
-            StorageReference storagedPhotoReference = mStorage.getReference().child("Pictures").child(mRecipe.getPhotoName());
-
-
-            GlideApp.with(getActivity())
-                    .load(storagedPhotoReference)
-                    .into(mRecipeImage);
-
-        }*/
     }
 
 
