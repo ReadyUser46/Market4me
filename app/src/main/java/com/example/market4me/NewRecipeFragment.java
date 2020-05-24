@@ -25,6 +25,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
@@ -117,6 +119,12 @@ public class NewRecipeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_new_recipe, container, false);
 
         findViews(view); // Binding of every element on the screen to his view + spinners
+
+        // Toolbar implementation
+        Toolbar toolbarNewRecipe = view.findViewById(R.id.toolbarNewRecipe);
+        toolbarNewRecipe.setTitle(R.string.new_recipe_title);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarNewRecipe);
+
 
         mIngredientEditTexts.add(mIngredientEditText0);
         mQuantityEditTexts.add(mQuantityEditText0);

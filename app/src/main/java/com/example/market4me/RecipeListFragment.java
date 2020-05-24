@@ -6,12 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.market4me.adapters.RecipeAdapter;
 import com.example.market4me.models.Recipe;
@@ -52,13 +55,19 @@ public class RecipeListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_recipes_recyclerview, container, false);
-        setUpRecyclerView(v);
+        View view = inflater.inflate(R.layout.fragment_recipes_recyclerview, container, false);
+        setUpRecyclerView(view);
 
-        FloatingActionButton floatingActionButton = v.findViewById(R.id.floatingButton);
+        FloatingActionButton floatingActionButton = view.findViewById(R.id.floatingButton);
         floatingActionButton.setOnClickListener(new FloatingButtonListener());
 
-        return v;
+        // Implementar Toolbar
+        Toolbar toolbar = view.findViewById(R.id.toolbarRecipesList);
+        toolbar.setTitle(R.string.recipe_list_title);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
+
+        return view;
     }
 
     private void setUpRecyclerView(View v) {

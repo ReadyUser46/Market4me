@@ -9,12 +9,15 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.market4me.models.Recipe;
 import com.example.market4me.utils.GlideApp;
 import com.example.market4me.utils.MyAppGlideModule;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -53,6 +56,14 @@ public class DisplayRecipeFragment extends Fragment {
 
         viewBinder();
 
+        // Toolbar implementation
+        Toolbar toolbarDisplay = view.findViewById(R.id.toolbarDisplayRecipe);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarDisplay);
+
+        CollapsingToolbarLayout collapsingToolbar = view.findViewById(R.id.collapsingToolbarDisplay);
+        collapsingToolbar.setTitle("MiReceta");
+
+
         return view;
     }
 
@@ -84,7 +95,7 @@ public class DisplayRecipeFragment extends Fragment {
 
         // Retrieve image from Firebase Storage
 
-        if (mRecipe.getPhotoName().trim().equals("") || mRecipe.getPhotoName() == null) {
+        /*if (mRecipe.getPhotoName().trim().equals("") || mRecipe.getPhotoName() == null) {
 
             // No hay foto
 
@@ -96,7 +107,7 @@ public class DisplayRecipeFragment extends Fragment {
                     .load(storagedPhotoReference)
                     .into(mRecipeImage);
 
-        }
+        }*/
     }
 
 
