@@ -1,7 +1,12 @@
 package com.example.market4me;
 
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,16 +24,18 @@ import androidx.appcompat.widget.Toolbar;
 import com.example.market4me.adapters.RecipeAdapter;
 import com.example.market4me.models.Recipe;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 public class RecipeListFragment extends Fragment {
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference recipeRef = db.collection("Recipes");
+    private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+    private CollectionReference recipeRef = firebaseFirestore.collection("Recipes");
     private RecipeAdapter mRecipeAdapter;
     private Recipe mRecipe;
 
@@ -37,6 +44,8 @@ public class RecipeListFragment extends Fragment {
     public void onStart() {
         super.onStart();
         mRecipeAdapter.startListening();
+
+
     }
 
     @Override
@@ -66,7 +75,6 @@ public class RecipeListFragment extends Fragment {
         toolbar.setTitle(R.string.recipe_list_title);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
-
         return view;
     }
 
@@ -74,7 +82,6 @@ public class RecipeListFragment extends Fragment {
 
         //Al constructor del adapter hay que pasarle un objeto FirestoreRecyclerOptions.
         //No es más que un objeto que le dice al adapter en que orden mostrar los elementos
-
         Query query = recipeRef.orderBy("title", Query.Direction.ASCENDING);
 
         FirestoreRecyclerOptions<Recipe> options = new FirestoreRecyclerOptions.Builder<Recipe>()
@@ -89,8 +96,10 @@ public class RecipeListFragment extends Fragment {
 
 
         // Deslizar para borrar
-
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            private Drawable deleteIcon = getActivity().getDrawable(R.drawable.ic_delete_grey_24dp);
+            private final ColorDrawable background = new ColorDrawable(Color.WHITE);
+
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
@@ -99,9 +108,14 @@ public class RecipeListFragment extends Fragment {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 mRecipeAdapter.deleteRecipe(viewHolder.getAdapterPosition());
+
             }
+
+
         }).attachToRecyclerView(recyclerView);
 
+
+        // listener
         mRecipeAdapter.setOnItemClickListener(new AdapterListener());
     }
 
@@ -115,6 +129,7 @@ public class RecipeListFragment extends Fragment {
         }
     }
 
+    // Listener adapter class, check adapters.RecipeAdapter as well
     class AdapterListener implements RecipeAdapter.OnItemClickListener {
         @Override
         public void onItemClick(DocumentSnapshot documentSnapshot, int position) {

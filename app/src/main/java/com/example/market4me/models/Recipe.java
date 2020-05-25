@@ -22,10 +22,8 @@ public class Recipe implements Serializable {
     private String preparation;
     private String photoName;
 
-    //private String photoName;
 
-
-    public Recipe(String title, List<String> ingredients, int people, int time, List<Integer> quantities, List<String> units, String preparation) {
+    public Recipe(String title, List<String> ingredients, int people, int time, List<Integer> quantities, List<String> units, String preparation, String photoName) {
         this.title = title;
         this.ingredients = ingredients;
         this.people = people;
@@ -33,13 +31,11 @@ public class Recipe implements Serializable {
         this.quantities = quantities;
         this.units = units;
         this.preparation = preparation;
-
+        this.photoName = photoName;
     }
-
 
     // Empty constructor for FireStore Cloud
     public Recipe() {
-
     }
 
     // Getters and Setters for atributes
@@ -108,11 +104,11 @@ public class Recipe implements Serializable {
         this.photoName = photoName;
     }
 
-    public File getPhotoFile(Context context) {
+    /*public File getPhotoFile(Context context) {
 
         // Create file location
         File storageDir = context.getFilesDir();
 
         return new File(storageDir, photoName);
-    }
+    }*/
 }

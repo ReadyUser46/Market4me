@@ -16,6 +16,7 @@
     <string name="no_camera_error">El dispositivo no tiene cámara</string>
     <string name="recipe_list_title">Mis Recetas</string>
     <string name="new_recipe_title">Nueva Receta</string>
+    <string name="recipe_deleted_snackbar">Receta eliminada</string>
 
 
     <string-array name="quantity_units">

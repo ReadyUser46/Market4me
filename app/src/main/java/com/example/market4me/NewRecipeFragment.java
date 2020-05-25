@@ -74,7 +74,7 @@ public class NewRecipeFragment extends Fragment {
     private List<TextInputEditText> mQuantityEditTexts;
     private List<Spinner> mSpinners;
 
-    private CollectionReference recipesRef;
+    private CollectionReference mRecipesRef;
 
     private ImageButton mImageButton;
     private ImageView mThumbnailPhoto;
@@ -102,7 +102,7 @@ public class NewRecipeFragment extends Fragment {
 
         // init Firebase
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        recipesRef = db.collection("Recipes");
+        mRecipesRef = db.collection("Recipes");
 
 
     }
@@ -142,6 +142,21 @@ public class NewRecipeFragment extends Fragment {
 
         // Custom listener para la camara
         mImageButton.setOnClickListener(new CameraIntentListener());
+
+        for (int i = 0; i < 20; i++) {
+            mRecipe.setTitle("Receta " + i);
+            mRecipe.setPeople(1);
+            mRecipe.setTime(1);
+            mIngredientsList.add("patatas");
+            mQuantitiesList.add(1);
+            mUnitsList.add("Kg");
+            mRecipe.setIngredients(mIngredientsList);
+            mRecipe.setQuantities(mQuantitiesList);
+            mRecipe.setUnits(mUnitsList);
+
+            mRecipesRef.add(mRecipe);
+
+        }
 
         return view;
     }
@@ -261,7 +276,7 @@ public class NewRecipeFragment extends Fragment {
 
                 mPhotoName = mRecipe.getPhotoName();
 
-                recipesRef.add(mRecipe); // upload la receta a fireStore
+                mRecipesRef.add(mRecipe); // upload la receta a fireStore
                 Intent intent = RecipeListActivity.newIntent(getContext());
                 startActivity(intent);
             }
