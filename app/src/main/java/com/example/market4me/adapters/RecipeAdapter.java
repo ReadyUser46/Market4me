@@ -1,6 +1,7 @@
 package com.example.market4me.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +16,27 @@ import com.example.market4me.models.Recipe;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+
+/*ADAPTER CLASS*/
 public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapter.RecipeHolder> {
 
-    Context mContext;
-
+    private Context mContext;
     private OnItemClickListener mListener;
+    private ViewGroup mViewGroupRecycler;
+    private Recipe mRecipeDeleted;
+
+    private final String TAG = "patapum";
+
 
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
@@ -38,27 +52,53 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
     @Override
     protected void onBindViewHolder(@NonNull RecipeHolder holder, int position, @NonNull Recipe model) {
         holder.tvTittle.setText(model.getTitle());
-        holder.tvTime.setText(String.format("%s: %s hora", mContext.getString(R.string.hint_time),String.valueOf(model.getTime())));
+        holder.tvTime.setText(String.format("%s: %s hora", mContext.getString(R.string.hint_time), String.valueOf(model.getTime())));
         holder.tvPeople.setText(String.format("%s: %s", mContext.getString(R.string.hint_people), String.valueOf(model.getPeople())));
     }
 
     @NonNull
     @Override
     public RecipeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
+        mViewGroupRecycler = parent;
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.items_recyclerview, parent, false);
         RecipeHolder holder = new RecipeHolder(view);
+
 
         return holder;
     }
 
+    public void deleteUndoRecipe(int position) {
 
-    public void deleteRecipe(int position) {
+        //Snapshot y Document Reference de la receta que hemos hecho swipe
         ObservableSnapshotArray<Recipe> observableSnapshotArray = getSnapshots();
-        DocumentReference documentReference = observableSnapshotArray.getSnapshot(position).getReference();
-        documentReference.delete();
+        DocumentSnapshot recipeSnapshotDeleted = observableSnapshotArray.getSnapshot(position);
+        final Recipe recipeUndo = recipeSnapshotDeleted.toObject(Recipe.class);
+        final DocumentReference documentReference = recipeSnapshotDeleted.getReference();
+
+        //Delete Recipe
+        documentReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.i(TAG, "OnSuccess; Item deleted");
+            }
+        });
+
+        //Undo Delete Recipe
+        Snackbar undoSnackbar = Snackbar
+                .make(mViewGroupRecycler, R.string.recipe_deleted_snackbar, BaseTransientBottomBar.LENGTH_LONG)
+                .setAction("undo", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        documentReference.set(recipeUndo);
+                    }
+                });
+
+        undoSnackbar.show();
+
     }
 
+
+    /*HOLDER CLASS*/
     class RecipeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView tvTittle, tvPeople, tvTime;
 
