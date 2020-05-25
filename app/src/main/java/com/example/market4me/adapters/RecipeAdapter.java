@@ -67,13 +67,15 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
         return holder;
     }
 
-    public void deleteRecipe(int position) {
+    public void deleteUndoRecipe(int position) {
 
+        //Snapshot y Document Reference de la receta que hemos hecho swipe
         ObservableSnapshotArray<Recipe> observableSnapshotArray = getSnapshots();
         DocumentSnapshot recipeSnapshotDeleted = observableSnapshotArray.getSnapshot(position);
         final Recipe recipeUndo = recipeSnapshotDeleted.toObject(Recipe.class);
         final DocumentReference documentReference = recipeSnapshotDeleted.getReference();
 
+        //Delete Recipe
         documentReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -81,6 +83,7 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
             }
         });
 
+        //Undo Delete Recipe
         Snackbar undoSnackbar = Snackbar
                 .make(mViewGroupRecycler, R.string.recipe_deleted_snackbar, BaseTransientBottomBar.LENGTH_LONG)
                 .setAction("undo", new View.OnClickListener() {
