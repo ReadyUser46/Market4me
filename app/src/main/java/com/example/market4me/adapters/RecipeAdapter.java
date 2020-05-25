@@ -99,7 +99,7 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
 
 
     /*HOLDER CLASS*/
-    class RecipeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class RecipeHolder extends RecyclerView.ViewHolder {
         TextView tvTittle, tvPeople, tvTime;
 
         public RecipeHolder(@NonNull View itemView) {
@@ -122,13 +122,7 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
 
         }
 
-        @Override
-        public void onClick(View v) {
 
-            getSnapshots().getSnapshot(getAdapterPosition());
-
-            Toast.makeText(v.getContext(), "position: " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
-        }
     }
 
     public interface OnItemClickListener {
