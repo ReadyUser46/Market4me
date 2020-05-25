@@ -84,6 +84,16 @@ public class NewRecipeFragment extends Fragment {
 
     // CONSTANTS
     private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final String ARG_RECIPE = "recipe_object";
+
+    /*public static NewRecipeFragment newInstance(Recipe recipe){
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(ARG_RECIPE,recipe);
+
+        NewRecipeFragment fragment = new NewRecipeFragment();
+        fragment.setArguments(bundle);
+        return fragment;
+    }*/
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -272,13 +282,13 @@ public class NewRecipeFragment extends Fragment {
                 mRecipe.setIngredients(mIngredientsList);
                 mRecipe.setQuantities(mQuantitiesList);
                 mRecipe.setUnits(mUnitsList);
-
                 mRecipe.setPhotoName(mPhotoName);
-
                 mPhotoName = mRecipe.getPhotoName();
 
                 mRecipesRef.add(mRecipe); // upload la receta a fireStore
-                Intent intent = RecipeListActivity.newIntent(getContext());
+
+
+                Intent intent = RecipeListActivity.newIntent(getContext()); // intent
                 startActivity(intent);
             }
 

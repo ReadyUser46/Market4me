@@ -9,7 +9,7 @@ import com.example.market4me.models.Recipe;
 
 public class DisplayRecipeActivity extends SingleFragmentActivity {
 
-    public static final String EXTRA_RECIPE_OBJECT = "pass.recipe.object.from.recyclerview";
+    private static final String EXTRA_RECIPE_OBJECT = "pass.recipe.object.from.recyclerview";
 
     @Override
     protected Fragment createFragment() {
