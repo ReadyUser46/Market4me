@@ -22,7 +22,7 @@ public class NewRecipeActivity extends SingleFragmentActivity {
     // intent encapsulado hacia esta activity
     public static Intent newIntent(Context context, Recipe recipe) {
 
-        Intent intent = new Intent(context, DisplayRecipeActivity.class);
+        Intent intent = new Intent(context, NewRecipeActivity.class);
         intent.putExtra(EXTRA_RECIPE_OBJECT2, recipe);
 
         return intent;

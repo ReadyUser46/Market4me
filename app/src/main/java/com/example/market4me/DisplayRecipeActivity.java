@@ -9,11 +9,13 @@ import com.example.market4me.models.Recipe;
 
 public class DisplayRecipeActivity extends SingleFragmentActivity {
 
-    private static final String EXTRA_RECIPE_OBJECT = "pass.recipe.object.from.recyclerview";
+    public static final String EXTRA_RECIPE_OBJECT = "pass.recipe.object.from.recyclerview";
 
     @Override
     protected Fragment createFragment() {
-        return new DisplayRecipeFragment();
+
+        Recipe recipe = (Recipe) getIntent().getSerializableExtra(EXTRA_RECIPE_OBJECT);
+        return DisplayRecipeFragment.newInstance(recipe);
     }
 
 

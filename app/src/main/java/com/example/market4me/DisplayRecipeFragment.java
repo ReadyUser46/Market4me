@@ -28,19 +28,31 @@ import java.util.List;
 
 public class DisplayRecipeFragment extends Fragment {
 
+    // MEMBER VARIABLES
     private Recipe mRecipe;
     private TextView mTitleDisplayed, mPeopleDisplayed, mTimeDisplayed, mIngredientsDisplayed, mNotesDisplayed;
     private FloatingActionButton mFabEdit;
     private FirebaseStorage mStorage;
 
+    // CONSTANTS
+    private static final String ARG_RECIPE = "recipe_object";
+
+    public static DisplayRecipeFragment newInstance(Recipe recipe) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(ARG_RECIPE, recipe);
+
+        DisplayRecipeFragment fragment = new DisplayRecipeFragment();
+        fragment.setArguments(bundle);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //mRecipe = (Recipe) getActivity().getIntent().getSerializableExtra(DisplayRecipeActivity.EXTRA_RECIPE_OBJECT);
-
-
         mStorage = FirebaseStorage.getInstance();
+        mRecipe = (Recipe) getArguments().getSerializable(ARG_RECIPE);
+
 
     }
 
@@ -122,8 +134,8 @@ public class DisplayRecipeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    Intent intent = new Intent(getActivity(), NewRecipeActivity.class);
-                    //Intent intent = NewRecipeActivity.newIntent(getContext(), mRecipe);
+                    //Intent intent = new Intent(getActivity(), NewRecipeActivity.class);
+                    Intent intent = NewRecipeActivity.newIntent(getActivity(), mRecipe);
                     startActivity(intent);
 
                 } catch (NullPointerException e) {

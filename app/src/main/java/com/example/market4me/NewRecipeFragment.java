@@ -82,38 +82,41 @@ public class NewRecipeFragment extends Fragment {
 
     private Recipe mRecipe;
 
+    private boolean mFlagExtras;
+    private int blockPosition;
+
     // CONSTANTS
     private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final String ARG_RECIPE = "recipe_object";
-
-    /*public static NewRecipeFragment newInstance(Recipe recipe){
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(ARG_RECIPE,recipe);
-
-        NewRecipeFragment fragment = new NewRecipeFragment();
-        fragment.setArguments(bundle);
-        return fragment;
-    }*/
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mRecipe = new Recipe();
-
-        // init arraylists
-        mIngredientsList = new ArrayList<>();
-        mQuantitiesList = new ArrayList<>();
-        mUnitsList = new ArrayList<>();
-        mIngredientEditTexts = new ArrayList<>();
-        mQuantityEditTexts = new ArrayList<>();
-        mSpinners = new ArrayList<>();
-
-
         // init Firebase
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         mRecipesRef = db.collection("Recipes");
 
+        // init arraylists
+        mIngredientEditTexts = new ArrayList<>();
+        mQuantityEditTexts = new ArrayList<>();
+        mSpinners = new ArrayList<>();
+
+        // get intent extras
+        mRecipe = (Recipe) getActivity().getIntent().getSerializableExtra(NewRecipeActivity.EXTRA_RECIPE_OBJECT2);
+        if (mRecipe == null) {
+            mRecipe = new Recipe();
+
+            mIngredientsList = new ArrayList<>();
+            mQuantitiesList = new ArrayList<>();
+            mUnitsList = new ArrayList<>();
+
+        } else {
+            Log.i("patapum", "Hay intent extras");
+            mFlagExtras = true;
+            mIngredientsList = mRecipe.getIngredients();
+            mQuantitiesList = mRecipe.getQuantities();
+            mUnitsList = mRecipe.getUnits();
+        }
 
     }
 
@@ -121,31 +124,85 @@ public class NewRecipeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        Log.i("patapum", "Context.getFilesDir =" + getContext().getFilesDir());
-        File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        Log.i("patapum", "Context.getExternalFilesDir =" + storageDir);
-
-
+        // Inflamos el layout
         View view = inflater.inflate(R.layout.fragment_new_recipe, container, false);
 
-        findViews(view); // Binding of every element on the screen to his view + spinners
+        // Binding of every element on the screen to his view + spinners
+        findViews(view);
 
         // Toolbar implementation
         Toolbar toolbarNewRecipe = view.findViewById(R.id.toolbarNewRecipe);
         toolbarNewRecipe.setTitle(R.string.new_recipe_title);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarNewRecipe);
 
-
+        // Añadimos los elementos inflados del layout a los arrayList
         mIngredientEditTexts.add(mIngredientEditText0);
         mQuantityEditTexts.add(mQuantityEditText0);
         mSpinners.add(mUnitSpinner0);
 
+
+        // Editar Receta
+        if (mFlagExtras) {
+            mTitleEditText.setText(mRecipe.getTitle());
+            mPeopleEditText.setText(String.valueOf(mRecipe.getPeople()));
+            mTimeEditText.setText(String.valueOf(mRecipe.getTime()));
+            mPreparationEditText.setText(mRecipe.getPreparation());
+            mIngredientEditText0.setText(mIngredientsList.get(0));
+            mQuantityEditText0.setText(String.valueOf(mQuantitiesList.get(0)));
+
+            mIngredientEditTexts.add(mIngredientEditText0);
+            mQuantityEditTexts.add(mQuantityEditText0);
+
+            ViewCreator viewCreator = new ViewCreator();
+            blockPosition = 4;
+            for (int i = 1; i < mIngredientsList.size(); i++) {
+
+                // new block
+                viewCreator.newBlockEditTexts(getContext(), spinnerAdapter);
+                TextInputEditText newIngredientET = viewCreator.getNewIngredientET();
+                TextInputEditText newQuantityET = viewCreator.getNewQuantityET();
+                Spinner newSpinner = viewCreator.getNewSpinner();
+
+                newIngredientET.setText(mIngredientsList.get(i));
+                newQuantityET.setText(String.valueOf(mQuantitiesList.get(i)));
+
+                mIngredientEditTexts.add(newIngredientET);
+                mQuantityEditTexts.add(newQuantityET);
+                mSpinners.add(newSpinner);
+
+                LinearLayout rootLayout = view.findViewById(R.id.linearlayout_ingredients);
+                rootLayout.addView(viewCreator.getTempLinearLayout(), blockPosition);
+                int nextBlockPosition = blockPosition + 1;
+
+                // Aumentamos posición y añadimos listener al editText generado.
+                newIngredientET.addTextChangedListener(new AddEditTextsListener(getContext(), nextBlockPosition, false, view));
+                blockPosition++;
+
+            }
+
+            viewCreator.newBlockEditTexts(getContext(), spinnerAdapter);
+            TextInputEditText newIngredientET = viewCreator.getNewIngredientET();
+            TextInputEditText newQuantityET = viewCreator.getNewQuantityET();
+            Spinner newSpinner = viewCreator.getNewSpinner();
+
+            mIngredientEditTexts.add(newIngredientET);
+            mQuantityEditTexts.add(newQuantityET);
+            mSpinners.add(newSpinner);
+
+            LinearLayout rootLayout = view.findViewById(R.id.linearlayout_ingredients);
+            rootLayout.addView(viewCreator.getTempLinearLayout(), blockPosition);
+
+            // Aumentamos posición y añadimos listener al editText generado.
+            blockPosition++;
+            newIngredientET.addTextChangedListener(new AddEditTextsListener(getContext(), blockPosition, true, view));
+        }
+
+        // Listener para todos los editTexts
         mTimeEditText.addTextChangedListener(new RemoveErrorListener(mTilTime));
         mTitleEditText.addTextChangedListener(new RemoveErrorListener(mTilTitle));
         mPeopleEditText.addTextChangedListener(new RemoveErrorListener(mTilPeople));
         mQuantityEditText0.addTextChangedListener(new RemoveErrorListener(mTilQuantity));
-        mIngredientEditText0.addTextChangedListener(new AddEditTextsListener(getContext(), 4, true, view));
-
+        mIngredientEditText0.addTextChangedListener(new AddEditTextsListener(getContext(), blockPosition, true, view));
 
         // Custom listener para guardar
         mSaveButton.setOnClickListener(new SaveButtonListener());
@@ -153,8 +210,8 @@ public class NewRecipeFragment extends Fragment {
         // Custom listener para la camara
         mImageButton.setOnClickListener(new CameraIntentListener());
 
-        // Populate FireStore database for testing
-        /*for (int i = 0; i < 20; i++) {
+        /*Populate FireStore database for testing
+        for (int i = 0; i < 20; i++) {
             mRecipe.setTitle("Receta " + i);
             mRecipe.setPeople(1);
             mRecipe.setTime(1);
@@ -401,70 +458,33 @@ public class NewRecipeFragment extends Fragment {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             if (s.length() > 0) mTilIngredient.setError(null);
-            addNewEditTexts();
 
+            //Añadimos bloque EditTexts con listeners
+            if (isActivated) {
+
+                ViewCreator viewCreator = new ViewCreator();
+                viewCreator.newBlockEditTexts(context, spinnerAdapter);
+
+                mIngredientEditTexts.add(viewCreator.getNewIngredientET());
+                mQuantityEditTexts.add(viewCreator.getNewQuantityET());
+                mSpinners.add(viewCreator.getNewSpinner());
+
+                rootLayout.addView(viewCreator.getTempLinearLayout(), position);
+
+                // Aumentamos posición y añadimos listener al editText generado.
+                position++;
+                viewCreator.getNewIngredientET().addTextChangedListener(new AddEditTextsListener(getContext(), position, true, view));
+
+
+            }
+
+            isActivated = false;
 
         }
 
         @Override
         public void afterTextChanged(Editable s) {
 
-        }
-
-        private void addNewEditTexts() {
-            if (isActivated) {
-
-                // LinearLayout temporal
-                LinearLayout tempLinearLayout = ViewCreator.linearLayout(getContext(), 0);
-                tempLinearLayout.setLayoutParams(ViewCreator.layoutParams(getContext(), -1, -1));
-
-
-                // nuevo textInputEditText para ingredientes y added to linearLayout temporal
-                TextInputEditText newIngredient = new TextInputEditText(getContext());
-                LinearLayout.LayoutParams textInputEditTextParams = ViewCreator.layoutParams(getContext(), -1, -1);
-
-                TextInputLayout newTilIngredient = new TextInputLayout(getContext());
-                LinearLayout.LayoutParams ingredientTilParams = ViewCreator.layoutParams(getContext(), -1, -2, 1f);
-
-                newTilIngredient.addView(newIngredient, textInputEditTextParams);
-                newTilIngredient.setHint("Ingrediente");
-                newTilIngredient.setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT);
-
-
-                // nuevo textInputEditText para cantidades y added to linearLayout temporal
-                TextInputEditText newQuantity = new TextInputEditText(getContext());
-                newQuantity.setInputType(InputType.TYPE_CLASS_NUMBER);
-                TextInputLayout newTilQuantity = new TextInputLayout(getContext());
-                LinearLayout.LayoutParams quantityTilParams = ViewCreator.layoutParams(getContext(), -1, -2, 2f);
-
-                newTilQuantity.addView(newQuantity, textInputEditTextParams);
-                newTilQuantity.setHint("Cantidad");
-
-
-                // nuevo Spinner para ingredientes y add to linearLayout temporal
-                Spinner newSpinner = new Spinner(getContext());
-                LinearLayout.LayoutParams spinnerParams = ViewCreator.layoutParams(getContext(), -1, -2, 2.2f);
-                newSpinner.setAdapter(spinnerAdapter);
-
-                // Add EditText and spinner to the LinearLayout Horizontal and this LL to the rootView
-                tempLinearLayout.addView(newTilIngredient, ingredientTilParams);
-                tempLinearLayout.addView(newTilQuantity, quantityTilParams);
-                tempLinearLayout.addView(newSpinner, spinnerParams);
-
-                mIngredientEditTexts.add(newIngredient);
-                mQuantityEditTexts.add(newQuantity);
-                mSpinners.add(newSpinner);
-
-                rootLayout.addView(tempLinearLayout, position);
-
-                // Aumentamos posición y añadimos listener al editText generado.
-                position++;
-                newIngredient.addTextChangedListener(new AddEditTextsListener(getContext(), position, true, view));
-
-
-            }
-
-            isActivated = false;
         }
 
     }
