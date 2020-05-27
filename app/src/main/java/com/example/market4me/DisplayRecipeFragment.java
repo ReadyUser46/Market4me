@@ -28,19 +28,36 @@ import java.util.List;
 
 public class DisplayRecipeFragment extends Fragment {
 
+    // MEMBER VARIABLES
     private Recipe mRecipe;
+    private String mRecipeId;
     private TextView mTitleDisplayed, mPeopleDisplayed, mTimeDisplayed, mIngredientsDisplayed, mNotesDisplayed;
     private FloatingActionButton mFabEdit;
     private FirebaseStorage mStorage;
 
+    // CONSTANTS
+    private static final String ARG_RECIPE = "recipe_object";
+    private static final String ARG_RECIPE_ID = "recipe_id";
+
+
+    public static DisplayRecipeFragment newInstance(Recipe recipe, String recipeId) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(ARG_RECIPE, recipe);
+        bundle.putString(ARG_RECIPE_ID, recipeId);
+
+        DisplayRecipeFragment fragment = new DisplayRecipeFragment();
+        fragment.setArguments(bundle);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //mRecipe = (Recipe) getActivity().getIntent().getSerializableExtra(DisplayRecipeActivity.EXTRA_RECIPE_OBJECT);
-
-
         mStorage = FirebaseStorage.getInstance();
+        mRecipe = (Recipe) getArguments().getSerializable(ARG_RECIPE);
+        mRecipeId = getArguments().getString(ARG_RECIPE_ID);
+
 
     }
 
@@ -79,6 +96,15 @@ public class DisplayRecipeFragment extends Fragment {
                     .into(mRecipeImage);
         }
 
+        // FAB listener
+        mFabEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Intent intent = new Intent(getActivity(), NewRecipeActivity.class);
+                Intent intent = NewRecipeActivity.newIntent(getActivity(), mRecipe, mRecipeId);
+                startActivity(intent);
+            }
+        });
 
         return view;
     }
@@ -111,29 +137,5 @@ public class DisplayRecipeFragment extends Fragment {
 
 
     }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        Log.i("patapum", "mRecipe: " + mRecipe);
-        // FAB listener
-        mFabEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Intent intent = new Intent(getActivity(), NewRecipeActivity.class);
-                    //Intent intent = NewRecipeActivity.newIntent(getContext(), mRecipe);
-                    startActivity(intent);
-
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-
-    }
-
 
 }
