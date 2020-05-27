@@ -14,6 +14,9 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -94,6 +97,7 @@ public class NewRecipeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         // init Firebase
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -224,6 +228,29 @@ public class NewRecipeFragment extends Fragment {
                 });
             }
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate(R.menu.new_recipe_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.save_menu_icon:
+                new SaveButtonListener().onClick(null);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+
     }
 
     private void findViews(View view) {
