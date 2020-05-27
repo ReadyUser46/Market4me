@@ -130,8 +130,8 @@ public class RecipeListFragment extends Fragment {
         @Override
         public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
             mRecipe = documentSnapshot.toObject(Recipe.class);
-
-            Intent intent = DisplayRecipeActivity.newIntent(getContext(), mRecipe);
+            String recipeId = documentSnapshot.getId();
+            Intent intent = DisplayRecipeActivity.newIntent(getContext(), mRecipe, recipeId);
             startActivity(intent);
 
         }

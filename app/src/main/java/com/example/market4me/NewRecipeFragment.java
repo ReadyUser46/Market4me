@@ -84,9 +84,9 @@ public class NewRecipeFragment extends Fragment {
     private Uri mPhotoUri;
 
     private Recipe mRecipe;
+    private String mRecipeId;
 
     private boolean mFlagExtras;
-    private int blockPosition;
 
     // CONSTANTS
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -105,23 +105,21 @@ public class NewRecipeFragment extends Fragment {
         mIngredientTils = new ArrayList<>();
         mQuantityTils = new ArrayList<>();
         mSpinners = new ArrayList<>();
+        mIngredientsList = new ArrayList<>();
+        mQuantitiesList = new ArrayList<>();
+        mUnitsList = new ArrayList<>();
 
 
         // get intent extras
         mRecipe = (Recipe) getActivity().getIntent().getSerializableExtra(NewRecipeActivity.EXTRA_RECIPE_OBJECT2);
+        mRecipeId = getActivity().getIntent().getStringExtra(NewRecipeActivity.EXTRA_RECIPE_ID2);
+        Log.i("patapum", "mRecipeId= " + mRecipeId);
+
         if (mRecipe == null) {
             mRecipe = new Recipe();
-
-            mIngredientsList = new ArrayList<>();
-            mQuantitiesList = new ArrayList<>();
-            mUnitsList = new ArrayList<>();
-
         } else {
             Log.i("patapum", "Hay intent extras");
             mFlagExtras = true;
-            mIngredientsList = mRecipe.getIngredients();
-            mQuantitiesList = mRecipe.getQuantities();
-            mUnitsList = mRecipe.getUnits();
         }
 
     }
@@ -142,91 +140,27 @@ public class NewRecipeFragment extends Fragment {
         toolbarNewRecipe.setTitle(R.string.new_recipe_title);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarNewRecipe);
 
-        // Create new block
-        /* Cuando creamos la view, al mismo tiempo, creamos y situamos el primer bloque de editTexts
-         *  Le adjuntamos el listener también */
-
-        blockPosition = 3;
-        ViewCreator viewCreator = new ViewCreator();
-
-        viewCreator.newBlockEditTexts(getContext());
-        TextInputEditText ingredientET = viewCreator.getNewIngredientET();
-        TextInputEditText quantityET = viewCreator.getNewQuantityET();
-        TextInputLayout tilIngredient = viewCreator.getNewTilIngredient();
-        TextInputLayout tilQuantity = viewCreator.getNewTilQuantity();
-        Spinner spinner = viewCreator.getNewSpinner();
-
-        mIngredientEditTexts.add(ingredientET);
-        mQuantityEditTexts.add(quantityET);
-        mIngredientTils.add(tilIngredient);
-        mQuantityTils.add(tilQuantity);
-        mSpinners.add(spinner);
-
-        mRootLayout.addView(viewCreator.getTempLinearLayout(), blockPosition);
-
-        /* listeners attached */
-        ingredientET.addTextChangedListener(new AddEditTextsListener(
-                getContext(),
-                blockPosition,
-                true,
-                tilIngredient));
-        quantityET.addTextChangedListener(new RemoveErrorListener(tilQuantity));
-
-        // Editar Receta
-        /*if (mFlagExtras) {
+        // Edit or New Recipe
+        int blockPosition = 3;
+        if (mFlagExtras) {
             mTitleEditText.setText(mRecipe.getTitle());
             mPeopleEditText.setText(String.valueOf(mRecipe.getPeople()));
             mTimeEditText.setText(String.valueOf(mRecipe.getTime()));
             mPreparationEditText.setText(mRecipe.getPreparation());
-            mIngredientEditText0.setText(mIngredientsList.get(0));
-            mQuantityEditText0.setText(String.valueOf(mQuantitiesList.get(0)));
+            mIngredientsList = mRecipe.getIngredients();
+            mQuantitiesList = mRecipe.getQuantities();
+            mUnitsList = mRecipe.getUnits();
 
-            mIngredientEditTexts.add(mIngredientEditText0);
-            mQuantityEditTexts.add(mQuantityEditText0);
-
-            ViewCreator viewCreator = new ViewCreator();
-            blockPosition = 4;
-            for (int i = 1; i < mIngredientsList.size(); i++) {
-
-                // new block
-                viewCreator.newBlockEditTexts(getContext(), spinnerAdapter);
-                TextInputEditText newIngredientET = viewCreator.getNewIngredientET();
-                TextInputEditText newQuantityET = viewCreator.getNewQuantityET();
-                Spinner newSpinner = viewCreator.getNewSpinner();
-
-                newIngredientET.setText(mIngredientsList.get(i));
-                newQuantityET.setText(String.valueOf(mQuantitiesList.get(i)));
-
-                mIngredientEditTexts.add(newIngredientET);
-                mQuantityEditTexts.add(newQuantityET);
-                mSpinners.add(newSpinner);
-
-                LinearLayout rootLayout = view.findViewById(R.id.linearlayout_ingredients);
-                rootLayout.addView(viewCreator.getTempLinearLayout(), blockPosition);
-                int nextBlockPosition = blockPosition + 1;
-
-                // Aumentamos posición y añadimos listener al editText generado.
-                newIngredientET.addTextChangedListener(new AddEditTextsListener(getContext(), nextBlockPosition, false, view));
+            for (int i = 0; i < mIngredientsList.size(); i++) {
+                addBlockEditTexts(blockPosition, i, false);
                 blockPosition++;
-
             }
-
-            viewCreator.newBlockEditTexts(getContext(), spinnerAdapter);
-            TextInputEditText newIngredientET = viewCreator.getNewIngredientET();
-            TextInputEditText newQuantityET = viewCreator.getNewQuantityET();
-            Spinner newSpinner = viewCreator.getNewSpinner();
-
-            mIngredientEditTexts.add(newIngredientET);
-            mQuantityEditTexts.add(newQuantityET);
-            mSpinners.add(newSpinner);
-
-            LinearLayout rootLayout = view.findViewById(R.id.linearlayout_ingredients);
-            rootLayout.addView(viewCreator.getTempLinearLayout(), blockPosition);
-
-            // Aumentamos posición y añadimos listener al editText generado.
-            blockPosition++;
-            newIngredientET.addTextChangedListener(new AddEditTextsListener(getContext(), blockPosition, true, view));
-        }*/
+            addBlockEditTexts(blockPosition, 9999, true);
+        } else {
+            // Create new block
+            /* Crear y situar el primer bloque de editTexts en tiempo real. Le adjuntamos el listener también */
+            addBlockEditTexts(blockPosition, 0, true);
+        }
 
         // Listener para todos los editTexts excepto el bloque
         mTimeEditText.addTextChangedListener(new RemoveErrorListener(mTilTime));
@@ -309,6 +243,42 @@ public class NewRecipeFragment extends Fragment {
         mImageButton = view.findViewById(R.id.ibtn_take_picture);
         mThumbnailPhoto = view.findViewById(R.id.imageview_thumbnail_photo);
 
+    }
+
+    private void addBlockEditTexts(int blockPosition, int index, boolean activated) {
+        ViewCreator viewCreator = new ViewCreator();
+
+        viewCreator.newBlockEditTexts(getContext());
+        TextInputEditText ingredientET = viewCreator.getNewIngredientET();
+        TextInputEditText quantityET = viewCreator.getNewQuantityET();
+        TextInputLayout tilIngredient = viewCreator.getNewTilIngredient();
+        TextInputLayout tilQuantity = viewCreator.getNewTilQuantity();
+        Spinner spinner = viewCreator.getNewSpinner();
+
+        try { /*edit recipe*/
+            if (mFlagExtras && index < mIngredientsList.size()) {
+                ingredientET.setText(mIngredientsList.get(index));
+                quantityET.setText(String.valueOf(mQuantitiesList.get(index)));
+            }
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+
+        mIngredientEditTexts.add(ingredientET);
+        mQuantityEditTexts.add(quantityET);
+        mIngredientTils.add(tilIngredient);
+        mQuantityTils.add(tilQuantity);
+        mSpinners.add(spinner);
+
+        mRootLayout.addView(viewCreator.getTempLinearLayout(), blockPosition);
+
+        /* listeners */
+        ingredientET.addTextChangedListener(new AddEditTextsListener(
+                getContext(),
+                blockPosition,
+                activated,
+                tilIngredient));
+        quantityET.addTextChangedListener(new RemoveErrorListener(tilQuantity));
     }
 
     private File createPhotoFile() {
@@ -410,7 +380,9 @@ public class NewRecipeFragment extends Fragment {
                 mRecipe.setPhotoName(mPhotoName);
                 mPhotoName = mRecipe.getPhotoName();
 
-                mRecipesRef.add(mRecipe); // upload la receta a fireStore
+                if (mFlagExtras) {
+                    mRecipesRef.document(mRecipeId).set(mRecipe);
+                } else mRecipesRef.add(mRecipe); // upload la receta a fireStore
 
 
                 Intent intent = RecipeListActivity.newIntent(getContext()); // intent
@@ -494,7 +466,7 @@ public class NewRecipeFragment extends Fragment {
             //Añadimos bloque EditTexts con listeners
             if (isActivated) {
 
-                blockPosition++;
+                position++;
                 ViewCreator viewCreator = new ViewCreator();
                 viewCreator.newBlockEditTexts(getContext());
                 TextInputEditText ingredientET = viewCreator.getNewIngredientET();
@@ -509,14 +481,13 @@ public class NewRecipeFragment extends Fragment {
                 mQuantityTils.add(tilQuantity);
                 mSpinners.add(spinner);
 
-                mRootLayout.addView(viewCreator.getTempLinearLayout(), blockPosition);
-                //int nextBlockPosition = blockPosition + 1;
+                mRootLayout.addView(viewCreator.getTempLinearLayout(), position);
 
                 /* listeners attached */
                 ingredientET.addTextChangedListener(new AddEditTextsListener(
                         getContext(),
-                        blockPosition,
-                        true,
+                        position,
+                        isActivated,
                         tilIngredient));
                 quantityET.addTextChangedListener(new RemoveErrorListener(tilQuantity));
 
