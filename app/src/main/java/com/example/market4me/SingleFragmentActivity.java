@@ -19,8 +19,6 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_frame_layout);
 
-
-
         /*
         Al iniciar la activity, se infla un layout que tiene un contenedor para fragments
         *Para mostrar el fragment, hay que añadirlo a su contenedor con add y darselo al fragment manager
