@@ -6,14 +6,14 @@
     <group android:checkableBehavior="single">
 
         <item
+            android:id="@+id/nav_new_recipe"
+            android:icon="@drawable/ic_announcement_black_24dp"
+            android:title="@string/new_recipe_title" />
+
+        <item
             android:id="@+id/nav_list"
             android:icon="@drawable/ic_list_black_24dp"
             android:title="@string/nav_lista_recetas" />
-
-        <item
-            android:id="@+id/nav_about"
-            android:icon="@drawable/ic_announcement_black_24dp"
-            android:title="@string/nav_about" />
 
         <item
             android:id="@+id/nav_contact"

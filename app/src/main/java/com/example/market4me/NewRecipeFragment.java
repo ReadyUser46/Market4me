@@ -92,6 +92,7 @@ public class NewRecipeFragment extends Fragment {
     private String mRecipeId;
 
     private boolean mFlagExtras;
+    private DrawerLayout mDrawer;
 
     // CONSTANTS
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -194,6 +195,20 @@ public class NewRecipeFragment extends Fragment {
             mRecipesRef.add(mRecipe);
 
         }*/
+
+        // Navigation Drawer
+        mDrawer = getActivity().findViewById(R.id.drawer_layout);
+
+        // Navigation Drawer Icon (Burger)
+        ActionBarDrawerToggle toggleBurger = new ActionBarDrawerToggle(
+                getActivity(),
+                mDrawer,
+                toolbarNewRecipe,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        mDrawer.addDrawerListener(toggleBurger);
+        toggleBurger.syncState();
+
 
         return view;
     }
@@ -558,6 +573,8 @@ public class NewRecipeFragment extends Fragment {
 
         }
     }
+
+
 }
 
 

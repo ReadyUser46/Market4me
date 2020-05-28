@@ -12,7 +12,10 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,6 +37,8 @@ public class RecipeListFragment extends Fragment {
     private CollectionReference recipeRef = firebaseFirestore.collection("Recipes");
     private RecipeAdapter mRecipeAdapter;
     private Recipe mRecipe;
+    private DrawerLayout mDrawer;
+
 
 
     @Override
@@ -49,7 +54,6 @@ public class RecipeListFragment extends Fragment {
         super.onStop();
         mRecipeAdapter.stopListening(); //Mientras la app esté en background, el recyclerview no actualiza nada, para no gastar recursos
     }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,6 +74,21 @@ public class RecipeListFragment extends Fragment {
         Toolbar toolbar = view.findViewById(R.id.toolbarRecipesList);
         toolbar.setTitle(R.string.recipe_list_title);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
+
+        // Navigation Drawer
+        mDrawer = getActivity().findViewById(R.id.drawer_layout);
+
+        // Navigation Drawer Icon (Burger)
+        ActionBarDrawerToggle toggleBurger = new ActionBarDrawerToggle(
+                getActivity(),
+                mDrawer,
+                toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        mDrawer.addDrawerListener(toggleBurger);
+        toggleBurger.syncState();
+
 
         return view;
     }
