@@ -5,4 +5,5 @@
     android:layout_height="?attr/actionBarSize"
     android:elevation="8dp"
     app:layout_scrollFlags="scroll|enterAlways"
-    app:layout_collapseMode="pin"></androidx.appcompat.widget.Toolbar>
+    app:layout_collapseMode="pin"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark" />

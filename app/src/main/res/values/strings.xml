@@ -17,6 +17,12 @@
     <string name="recipe_list_title">Mis Recetas</string>
     <string name="new_recipe_title">Nueva Receta</string>
     <string name="recipe_deleted_snackbar">Receta eliminada</string>
+    <string name="nav_lista_recetas">Recetas</string>
+    <string name="nav_contact">Contacto</string>
+    <string name="nav_about">Acerca de</string>
+    <string name="options">Opciones</string>
+    <string name="nav_options">Opciones</string>
+    <string name="share">Compartir</string>
 
 
     <string-array name="quantity_units">

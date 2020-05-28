@@ -28,25 +28,21 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    // RecyclerView, CardView, MaterialDesign
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation "com.google.android.material:material:1.1.0" //com.google.support.design
+    implementation "com.google.android.material:material:1.1.0"
 
-
+    // FireStore
     implementation 'com.google.firebase:firebase-firestore:21.4.3'
     implementation 'com.firebaseui:firebase-ui-firestore:6.2.1'
     implementation 'com.google.firebase:firebase-storage:19.1.1'
     implementation 'com.firebaseui:firebase-ui-storage:6.2.1'
 
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    // Glide
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
-
-
-
-    implementation 'androidx.multidex:multidex:2.0.1'
-    //Android 5.0 (API level 21) and higher uses ART which supports multidexing.Therefore, if your minSdkVersion is 21 or higher, the multidex support library is not needed.
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
