@@ -1,15 +1,21 @@
 package com.example.market4me;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
+
+    private DrawerLayout mDrawer;
 
 
     protected abstract Fragment createFragment();
@@ -17,7 +23,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_frame_layout);
+        setContentView(R.layout.activity_frame_layout2);
 
         /*
         Al iniciar la activity, se infla un layout que tiene un contenedor para fragments
@@ -30,13 +36,33 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fragmentManager)
         */
 
+        // FRAGMENT MANAGER
         FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.fragment_container);
+        Fragment fragment = fm.findFragmentById(R.id.fragment_container2);
 
         if(fragment == null){
             fragment = createFragment();
-            fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
+            fm.beginTransaction().add(R.id.fragment_container2, fragment).commit();
 
         }
+
+        // Navigation Drawer
+        //mDrawer = findViewById(R.id.drawer_layout);
+
+        // Navigation Drawer Icon (Burger)
+        ActionBarDrawerToggle toggleBurger = new ActionBarDrawerToggle(
+                this,
+                mDrawer,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        //toggleBurger.syncState();
+    }
+
+    @Override
+    public void onBackPressed() {
+        /* Esto es para cuando pulsemos back, primero cierre el navigation drawer*/
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawer(GravityCompat.START);
+        } else super.onBackPressed();
     }
 }
