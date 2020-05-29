@@ -11,8 +11,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.market4me.models.Recipe;
@@ -32,7 +34,6 @@ public class DisplayRecipeFragment extends Fragment {
     private Recipe mRecipe;
     private String mRecipeId;
     private TextView mTitleDisplayed, mPeopleDisplayed, mTimeDisplayed, mIngredientsDisplayed, mNotesDisplayed;
-    private FloatingActionButton mFabEdit;
     private FirebaseStorage mStorage;
 
     // CONSTANTS
@@ -72,7 +73,7 @@ public class DisplayRecipeFragment extends Fragment {
         mIngredientsDisplayed = view.findViewById(R.id.tv_ingredients_displayed);
         mNotesDisplayed = view.findViewById(R.id.tv_notes_displayed);
         ImageView mRecipeImage = view.findViewById(R.id.imageview_displayed);
-        mFabEdit = view.findViewById(R.id.fab_edit);
+        FloatingActionButton mFabEdit = view.findViewById(R.id.fab_edit);
 
         viewBinder();
 
@@ -105,6 +106,19 @@ public class DisplayRecipeFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        // Navigation Drawer
+        DrawerLayout mDrawer = getActivity().findViewById(R.id.drawer_layout);
+
+        // Navigation Drawer Icon (Burger)
+        ActionBarDrawerToggle toggleBurger = new ActionBarDrawerToggle(
+                getActivity(),
+                mDrawer,
+                toolbarDisplay,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        mDrawer.addDrawerListener(toggleBurger);
+        toggleBurger.syncState();
 
         return view;
     }
