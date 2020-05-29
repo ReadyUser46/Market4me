@@ -14,17 +14,20 @@
         android:src="@mipmap/ic_launcher_round" />
 
     <TextView
+        android:id="@+id/nav_header_user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
-        android:text="User"
+        android:text="Sign in"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         android:textSize="16sp" />
 
     <TextView
+        android:id="@+id/nav_header_mail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="email@mail.com"
+        android:visibility="invisible"
         android:textSize="16sp" />
 
 

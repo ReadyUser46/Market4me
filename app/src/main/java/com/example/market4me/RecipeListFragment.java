@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +25,10 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.market4me.adapters.RecipeAdapter;
 import com.example.market4me.models.Recipe;
+import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -37,8 +40,8 @@ public class RecipeListFragment extends Fragment {
     private CollectionReference recipeRef = firebaseFirestore.collection("Recipes");
     private RecipeAdapter mRecipeAdapter;
     private Recipe mRecipe;
-    private DrawerLayout mDrawer;
 
+    private static final int RC_SIGN_IN = 237;
 
 
     @Override
@@ -58,6 +61,8 @@ public class RecipeListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
     }
 
     @Nullable
@@ -77,7 +82,7 @@ public class RecipeListFragment extends Fragment {
 
 
         // Navigation Drawer
-        mDrawer = getActivity().findViewById(R.id.drawer_layout);
+        DrawerLayout mDrawer = getActivity().findViewById(R.id.drawer_layout);
 
         // Navigation Drawer Icon (Burger)
         ActionBarDrawerToggle toggleBurger = new ActionBarDrawerToggle(

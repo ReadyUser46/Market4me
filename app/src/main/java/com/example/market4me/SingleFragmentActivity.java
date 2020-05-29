@@ -1,7 +1,9 @@
 package com.example.market4me;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,13 +13,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.example.market4me.auth.UserAuth;
 import com.google.android.material.navigation.NavigationView;
 
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
 
-
     private DrawerLayout mDrawer;
+    private TextView mUserName, mUserMail;
 
     protected abstract Fragment createFragment();
 
@@ -25,6 +28,8 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_frame_layout2);
+
+
 
         /*
         Al iniciar la activity, se infla un layout que tiene un contenedor para fragments
@@ -57,6 +62,31 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         navigationView.setCheckedItem(R.id.nav_list);
 
 
+
+        /*if (mAuth.getCurrentUser() != null) {
+            // already sign in
+            Log.i("patapum", "Current user: Hay un usuario logeado");
+            Log.i("patapum", "Current user: " + mAuth.getCurrentUser().getDisplayName());
+        } else {
+            // not sign in
+
+            Intent intent_signIn = AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setIsSmartLockEnabled(false)
+                    .build();
+
+            return intent_signIn;
+        }*/
+    }
+
+    public void userAuthentication(Context context) {
+
+        UserAuth userAuth = new UserAuth(context);
+
+        if (!userAuth.isUserSignedIn()) {
+
+
+        }
     }
 
     @Override
