@@ -34,6 +34,8 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     private UserAuth mUserAuth;
     private FirebaseAuth mAuth;
 
+    protected String mUserId;
+
     // CONSTANTS
     public static final int RC_SIGN_IN = 237;
 
@@ -44,6 +46,22 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_frame_layout2);
+
+        // Navigation Drawer
+        mDrawer = findViewById(R.id.drawer_layout);
+
+        // Navigation View
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationViewListener());
+        navigationView.setCheckedItem(R.id.nav_list);
+        View headerView = navigationView.getHeaderView(0);
+
+        // Authentification
+        mUserName = headerView.findViewById(R.id.nav_header_user);
+        mUserMail = headerView.findViewById(R.id.nav_header_mail);
+        mSignOut = headerView.findViewById(R.id.nav_header_sign_out);
+
+        userAuthentication(this);
 
          /*
         Al iniciar la activity, se infla un layout que tiene un contenedor para fragments
@@ -65,22 +83,6 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
         }
 
-        // Navigation Drawer
-        mDrawer = findViewById(R.id.drawer_layout);
-
-        // Navigation View
-        NavigationView navigationView = findViewById(R.id.navigation_view);
-        navigationView.setNavigationItemSelectedListener(new NavigationViewListener(fm, fragment));
-        navigationView.setCheckedItem(R.id.nav_list);
-        View headerView = navigationView.getHeaderView(0);
-
-        // Authentification
-        mUserName = headerView.findViewById(R.id.nav_header_user);
-        mUserMail = headerView.findViewById(R.id.nav_header_mail);
-        mSignOut = headerView.findViewById(R.id.nav_header_sign_out);
-
-        userAuthentication(this);
-
     }
 
     public void userAuthentication(Context context) {
@@ -90,7 +92,9 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
         mUserAuth = new UserAuth(context, mAuth, mUserName, mUserMail, mSignOut, this);
 
+        // usuario no logeado
         if (!mUserAuth.isUserSignedIn()) {
+
             mUserName.setText("Sign In");
             mUserName.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -98,12 +102,14 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
                     startActivityForResult(mUserAuth.signIn(), RC_SIGN_IN);
                 }
             });
-
+            // usuario logeado
         } else {
             mUserName.setText(mAuth.getCurrentUser().getDisplayName());
             mUserMail.setText(mAuth.getCurrentUser().getEmail());
             mUserMail.setVisibility(View.VISIBLE);
             mSignOut.setVisibility(View.VISIBLE);
+
+            mUserId = mAuth.getCurrentUser().getUid();
 
             mSignOut.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -112,7 +118,6 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
                 }
             });
         }
-
 
     }
 
@@ -136,6 +141,8 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
                         mUserAuth.signOut();
                     }
                 });
+                mUserId = mAuth.getCurrentUser().getUid();
+
                 Snackbar.make(findViewById(R.id.drawer_layout), "Bienvenido " + mAuth.getCurrentUser().getDisplayName(), BaseTransientBottomBar.LENGTH_SHORT).show();
 
 
@@ -180,11 +187,10 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     public class NavigationViewListener implements NavigationView.OnNavigationItemSelectedListener {
 
         FragmentManager fragmentManager;
-        Fragment fragment;
 
-        NavigationViewListener(FragmentManager fragmentManager, Fragment fragment) {
-            this.fragmentManager = fragmentManager;
-            this.fragment = fragment;
+        NavigationViewListener() {
+            fragmentManager = getSupportFragmentManager();
+
         }
 
         @Override

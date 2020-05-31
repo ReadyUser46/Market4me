@@ -5,30 +5,25 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
+import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 
 import com.example.market4me.adapters.RecipeAdapter;
 import com.example.market4me.models.Recipe;
-import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -36,12 +31,25 @@ import com.google.firebase.firestore.Query;
 
 public class RecipeListFragment extends Fragment {
 
-    private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-    private CollectionReference recipeRef = firebaseFirestore.collection("Recipes");
+    // MEMBER VARIABLES
+
     private RecipeAdapter mRecipeAdapter;
     private Recipe mRecipe;
+    private String mUserId;
 
-    private static final int RC_SIGN_IN = 237;
+    // CONSTANTS
+    private static final String ARG_USER_ID = "fireStore_UserId";
+
+
+    // Activity to Fragment Communication
+    public static RecipeListFragment newInstance(String userId) {
+        RecipeListFragment fragment = new RecipeListFragment();
+
+        Bundle args = new Bundle();
+        args.putString(ARG_USER_ID, userId);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
 
     @Override
@@ -61,6 +69,9 @@ public class RecipeListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle args = getArguments();
+        mUserId = args.getString(ARG_USER_ID);
 
 
     }
@@ -102,6 +113,8 @@ public class RecipeListFragment extends Fragment {
 
         //Al constructor del adapter hay que pasarle un objeto FirestoreRecyclerOptions.
         //No es más que un objeto que le dice al adapter en que orden mostrar los elementos
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        CollectionReference recipeRef = firebaseFirestore.collection("Users").document(mUserId).collection("Recipes");
         Query query = recipeRef.orderBy("title", Query.Direction.ASCENDING);
 
         FirestoreRecyclerOptions<Recipe> options = new FirestoreRecyclerOptions.Builder<Recipe>()
@@ -117,8 +130,7 @@ public class RecipeListFragment extends Fragment {
 
         // Deslizar para borrar
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-            private Drawable deleteIcon = getActivity().getDrawable(R.drawable.ic_delete_grey_24dp);
-            private final ColorDrawable background = new ColorDrawable(Color.WHITE);
+
 
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {

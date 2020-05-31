@@ -20,6 +20,8 @@ public class DisplayRecipeActivity extends SingleFragmentActivity {
         Bundle bundle = getIntent().getExtras();
         String recipeId = bundle.getString(EXTRA_RECIPE_ID);
         return DisplayRecipeFragment.newInstance(recipe, recipeId);
+
+        
     }
 
 
