@@ -26,6 +26,7 @@ import com.example.market4me.models.Recipe;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -74,6 +75,7 @@ public class RecipeListFragment extends Fragment {
 
         Bundle args = getArguments();
         mUserId = args.getString(ARG_USER_ID);
+        Log.i("patapum", "User Id received in RecipeListFragment: " + mUserId);
 
 
     }
@@ -82,7 +84,7 @@ public class RecipeListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_recipes_list, container, false);
+        final View view = inflater.inflate(R.layout.fragment_recipes_list, container, false);
 
         setUpRecyclerView(view);
 
@@ -111,21 +113,25 @@ public class RecipeListFragment extends Fragment {
         // Firebase Auth Listener
 
         //TODO: listener para users
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        /*FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        final FirebaseUser user = firebaseAuth.getCurrentUser();
         FirebaseAuth.AuthStateListener mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 Log.i("patapum", "Auth listener working!");
-                if (firebaseAuth.getCurrentUser() == null) {
-                    Log.i("patapum", "Listener: User signed out");
+                assert user != null;
+                if (!user.isAnonymous() && user !=null) {
+                    Log.i("patapum", "Listener: An user just signed in");
+                    setUpRecyclerView(view);
                 } else {
-                    Log.i("patapum", "ListenerUser signed in");
+                    Log.i("patapum", "Listener: An user just signed out");
+                    setUpRecyclerView(view);
                 }
 
             }
         };
 
-        firebaseAuth.addAuthStateListener(mAuthStateListener);
+        firebaseAuth.addAuthStateListener(mAuthStateListener);*/
 
         return view;
     }

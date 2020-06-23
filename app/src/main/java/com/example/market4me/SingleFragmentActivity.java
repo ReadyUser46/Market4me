@@ -22,6 +22,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
@@ -32,6 +33,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     private TextView mUserName, mUserMail, mSignOut;
     private UserAuth mUserAuth;
     private FirebaseAuth mAuth;
+    private FirebaseUser mCurrentUser;
 
     protected String mUserId;
 
@@ -60,10 +62,49 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         mUserMail = headerView.findViewById(R.id.nav_header_mail);
         mSignOut = headerView.findViewById(R.id.nav_header_sign_out);
 
-        mUserAuth = new UserAuth(this, mUserName, mUserMail, mSignOut, this);
-        mUserAuth.updateUI();
-        mUserId = mUserAuth.getmUserId();
-        //mUserId = "edUs4I79uDgTQJqXZK0pbdnILWt1";
+        mAuth = FirebaseAuth.getInstance();
+        mCurrentUser = mAuth.getCurrentUser();
+        mUserAuth = new UserAuth(this, mAuth, mUserName, mUserMail, mSignOut, this);
+
+        if (mCurrentUser == null) {
+            Log.i("patapum", "App init with null user");
+            mUserAuth.signInAnon(); /*Si el usuario no está logeado, lo logeamos anonimamente*/
+            updateUI();
+            mUserId = mUserAuth.getmUserId();
+
+        } else {
+            String userType = mCurrentUser.isAnonymous() ? "anon" : "registered";
+            updateUI();
+            mUserId = mAuth.getCurrentUser().getUid();
+            Log.i("patapum", "App init with an user: " + userType + " and id: " + mUserId);
+        }
+
+        mUserName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(mUserAuth.signIn(), RC_SIGN_IN);
+            }
+        });
+        mSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mUserAuth.signOut();
+                mUserAuth.signInAnon();
+                updateUI();
+            }
+        });
+        //mUserId = "ypqtGXmTvwgqIEfwDNcMt0eX0nD3";
+
+        // Firebase Auth Listener
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseAuth.AuthStateListener mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                //updateUI();
+            }
+        };
+        firebaseAuth.addAuthStateListener(mAuthStateListener);
+
 
 
 
@@ -89,6 +130,24 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     }
 
+    public void updateUI() {
+
+        FirebaseUser user = mAuth.getCurrentUser();
+        // Status text
+
+        if (user != null && user.isAnonymous()) {
+            mUserName.setText("Sign In");
+            mUserMail.setVisibility(View.INVISIBLE);
+            mSignOut.setVisibility(View.INVISIBLE);
+
+        } else if (user != null && !user.isAnonymous()) {
+            mUserName.setText(mAuth.getCurrentUser().getDisplayName());
+            mUserMail.setText(mAuth.getCurrentUser().getEmail());
+            mUserMail.setVisibility(View.VISIBLE);
+            mSignOut.setVisibility(View.VISIBLE);
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -99,9 +158,10 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
             // Successfully sign in
             if (resultCode == RESULT_OK) {
-                Log.i("patapum", "User signed in successfully");
-                mUserAuth.updateUI();
+                mUserId = mAuth.getCurrentUser().getUid();
+                updateUI();
                 Snackbar.make(findViewById(R.id.drawer_layout), "Bienvenido " + mUserAuth.getmUserName().getText().toString(), BaseTransientBottomBar.LENGTH_SHORT).show();
+                Log.i("patapum", "User signed in successfully with Id: " + mUserId);
             }
             // Sign in failed
             else {

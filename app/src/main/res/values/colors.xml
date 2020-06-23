@@ -10,4 +10,11 @@
     <color name="recipe_card_recyclerview">#58a5f0</color>
     <color name="backgroundColor">#f3e5f5</color>
 
+    <color name="dashBoard_blue">#303f9f</color>
+    <color name="dashBoard_green">#00bfa5</color>
+    <color name="dashBoard_orange">#ffab00</color>
+    <color name="dashBoard_pink">#c51162</color>
+    <color name="lightgray">#ededed</color>
+
+
 </resources>

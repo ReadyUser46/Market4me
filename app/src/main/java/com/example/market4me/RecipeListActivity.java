@@ -11,9 +11,10 @@ public class RecipeListActivity extends SingleFragmentActivity {
 
     @Override
     protected Fragment createFragment() {
-        Log.i("patapum", "User Id passed: " + mUserId);
+        String userId = (mUserId == null) ? "lTp9MOAdZ7UKMZyxjH2AxmGWlFp2" : mUserId;
+        Log.i("patapum", "User Id from last time: " + userId);
 
-        return RecipeListFragment.newInstance(mUserId);
+        return RecipeListFragment.newInstance(userId);
     }
 
     // intent encapsulado hacia esta activity
