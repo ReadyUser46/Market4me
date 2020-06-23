@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import com.example.market4me.adapters.RecipeAdapter;
 import com.example.market4me.models.Recipe;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -81,6 +83,7 @@ public class RecipeListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_recipes_list, container, false);
+
         setUpRecyclerView(view);
 
         FloatingActionButton floatingActionButton = view.findViewById(R.id.floatingButton);
@@ -105,6 +108,24 @@ public class RecipeListFragment extends Fragment {
         mDrawer.addDrawerListener(toggleBurger);
         toggleBurger.syncState();
 
+        // Firebase Auth Listener
+
+        //TODO: listener para users
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseAuth.AuthStateListener mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                Log.i("patapum", "Auth listener working!");
+                if (firebaseAuth.getCurrentUser() == null) {
+                    Log.i("patapum", "Listener: User signed out");
+                } else {
+                    Log.i("patapum", "ListenerUser signed in");
+                }
+
+            }
+        };
+
+        firebaseAuth.addAuthStateListener(mAuthStateListener);
 
         return view;
     }
@@ -114,6 +135,7 @@ public class RecipeListFragment extends Fragment {
         //Al constructor del adapter hay que pasarle un objeto FirestoreRecyclerOptions.
         //No es más que un objeto que le dice al adapter en que orden mostrar los elementos
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+
         CollectionReference recipeRef = firebaseFirestore.collection("Users").document(mUserId).collection("Recipes");
         Query query = recipeRef.orderBy("title", Query.Direction.ASCENDING);
 

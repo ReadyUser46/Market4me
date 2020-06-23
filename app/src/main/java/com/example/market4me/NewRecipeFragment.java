@@ -82,8 +82,6 @@ public class NewRecipeFragment extends Fragment {
     private List<TextInputLayout> mQuantityTils;
     private List<Spinner> mSpinners;
 
-    //private CollectionReference mRecipesRef;
-
     private ImageButton mImageButton;
     private ImageView mThumbnailPhoto;
     private Uri mPhotoUri;
@@ -197,8 +195,8 @@ public class NewRecipeFragment extends Fragment {
         // Custom listener para la camara
         mImageButton.setOnClickListener(new CameraIntentListener());
 
-        /*Populate FireStore database for testing
-        for (int i = 0; i < 20; i++) {
+        //Populate FireStore database for testing
+        /*for (int i = 0; i < 5; i++) {
             mRecipe.setTitle("Receta " + i);
             mRecipe.setPeople(1);
             mRecipe.setTime(1);
@@ -209,7 +207,9 @@ public class NewRecipeFragment extends Fragment {
             mRecipe.setQuantities(mQuantitiesList);
             mRecipe.setUnits(mUnitsList);
 
-            mRecipesRef.add(mRecipe);
+                    FirebaseFirestore.getInstance().collection("Users").document(mUserId).collection("Recipes").add(mRecipe);
+
+            //mRecipesRef.add(mRecipe);
 
         }*/
 

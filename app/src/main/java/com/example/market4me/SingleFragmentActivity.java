@@ -1,6 +1,5 @@
 package com.example.market4me;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,8 +38,8 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     // CONSTANTS
     public static final int RC_SIGN_IN = 237;
 
-
     protected abstract Fragment createFragment();
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,7 +60,12 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         mUserMail = headerView.findViewById(R.id.nav_header_mail);
         mSignOut = headerView.findViewById(R.id.nav_header_sign_out);
 
-        userAuthentication(this);
+        mUserAuth = new UserAuth(this, mUserName, mUserMail, mSignOut, this);
+        mUserAuth.updateUI();
+        mUserId = mUserAuth.getmUserId();
+        //mUserId = "edUs4I79uDgTQJqXZK0pbdnILWt1";
+
+
 
          /*
         Al iniciar la activity, se infla un layout que tiene un contenedor para fragments
@@ -85,67 +89,19 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     }
 
-    public void userAuthentication(Context context) {
-
-        mAuth = FirebaseAuth.getInstance();
-
-
-        mUserAuth = new UserAuth(context, mAuth, mUserName, mUserMail, mSignOut, this);
-
-        // usuario no logeado
-        if (!mUserAuth.isUserSignedIn()) {
-
-            mUserName.setText("Sign In");
-            mUserName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivityForResult(mUserAuth.signIn(), RC_SIGN_IN);
-                }
-            });
-            // usuario logeado
-        } else {
-            mUserName.setText(mAuth.getCurrentUser().getDisplayName());
-            mUserMail.setText(mAuth.getCurrentUser().getEmail());
-            mUserMail.setVisibility(View.VISIBLE);
-            mSignOut.setVisibility(View.VISIBLE);
-
-            mUserId = mAuth.getCurrentUser().getUid();
-
-            mSignOut.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mUserAuth.signOut();
-                }
-            });
-        }
-
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == SingleFragmentActivity.RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             // Successfully sign in
             if (resultCode == RESULT_OK) {
                 Log.i("patapum", "User signed in successfully");
-                mUserName.setText(mAuth.getCurrentUser().getDisplayName());
-                mUserMail.setText(mAuth.getCurrentUser().getEmail());
-                mUserMail.setVisibility(View.VISIBLE);
-                mSignOut.setVisibility(View.VISIBLE);
-                mSignOut.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mUserAuth.signOut();
-                    }
-                });
-                mUserId = mAuth.getCurrentUser().getUid();
-
-                Snackbar.make(findViewById(R.id.drawer_layout), "Bienvenido " + mAuth.getCurrentUser().getDisplayName(), BaseTransientBottomBar.LENGTH_SHORT).show();
-
-
+                mUserAuth.updateUI();
+                Snackbar.make(findViewById(R.id.drawer_layout), "Bienvenido " + mUserAuth.getmUserName().getText().toString(), BaseTransientBottomBar.LENGTH_SHORT).show();
             }
             // Sign in failed
             else {
