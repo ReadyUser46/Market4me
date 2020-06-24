@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.market4me.adapters.RecipeAdapter;
+import com.example.market4me.auth.UserAuth;
 import com.example.market4me.models.Recipe;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -86,6 +87,7 @@ public class RecipeListFragment extends Fragment {
 
         final View view = inflater.inflate(R.layout.fragment_recipes_list, container, false);
 
+        // Setup RecyclerView
         setUpRecyclerView(view);
 
         FloatingActionButton floatingActionButton = view.findViewById(R.id.floatingButton);
@@ -95,7 +97,6 @@ public class RecipeListFragment extends Fragment {
         Toolbar toolbar = view.findViewById(R.id.toolbarRecipesList);
         toolbar.setTitle(R.string.recipe_list_title);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-
 
         // Navigation Drawer
         DrawerLayout mDrawer = getActivity().findViewById(R.id.drawer_layout);
@@ -111,27 +112,15 @@ public class RecipeListFragment extends Fragment {
         toggleBurger.syncState();
 
         // Firebase Auth Listener
-
-        //TODO: listener para users
-        /*FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        final FirebaseUser user = firebaseAuth.getCurrentUser();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseAuth.AuthStateListener mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                Log.i("patapum", "Auth listener working!");
-                assert user != null;
-                if (!user.isAnonymous() && user !=null) {
-                    Log.i("patapum", "Listener: An user just signed in");
-                    setUpRecyclerView(view);
-                } else {
-                    Log.i("patapum", "Listener: An user just signed out");
-                    setUpRecyclerView(view);
-                }
-
+                Log.i("patapum", "Auth listener detected something!");
+                setUpRecyclerView(view);
             }
         };
-
-        firebaseAuth.addAuthStateListener(mAuthStateListener);*/
+        firebaseAuth.addAuthStateListener(mAuthStateListener);
 
         return view;
     }

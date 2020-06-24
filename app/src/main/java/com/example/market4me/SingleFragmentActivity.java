@@ -27,21 +27,15 @@ import com.google.firebase.auth.FirebaseUser;
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
 
-
     // MEMBER VARIABLES
     private DrawerLayout mDrawer;
-    private TextView mUserName, mUserMail, mSignOut;
     private UserAuth mUserAuth;
-    private FirebaseAuth mAuth;
-    private FirebaseUser mCurrentUser;
-
     protected String mUserId;
 
     // CONSTANTS
     public static final int RC_SIGN_IN = 237;
 
     protected abstract Fragment createFragment();
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,43 +51,32 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         navigationView.setCheckedItem(R.id.nav_list);
         View headerView = navigationView.getHeaderView(0);
 
-        // Authentification
-        mUserName = headerView.findViewById(R.id.nav_header_user);
-        mUserMail = headerView.findViewById(R.id.nav_header_mail);
-        mSignOut = headerView.findViewById(R.id.nav_header_sign_out);
+        // Nav Header Account
+        TextView userName = headerView.findViewById(R.id.nav_header_user);
+        TextView userMail = headerView.findViewById(R.id.nav_header_mail);
+        TextView signOut = headerView.findViewById(R.id.nav_header_sign_out);
 
-        mAuth = FirebaseAuth.getInstance();
-        mCurrentUser = mAuth.getCurrentUser();
-        mUserAuth = new UserAuth(this, mAuth, mUserName, mUserMail, mSignOut, this);
+        // Authentication
+        mUserAuth = new UserAuth(this, userName, userMail, signOut, this);
+        FirebaseUser mCurrentUser = mUserAuth.getCurrentUser();
 
+        // Check if user is signed in
         if (mCurrentUser == null) {
             Log.i("patapum", "App init with null user");
             mUserAuth.signInAnon(); /*Si el usuario no está logeado, lo logeamos anonimamente*/
-            updateUI();
-            mUserId = mUserAuth.getmUserId();
-
-        } else {
-            String userType = mCurrentUser.isAnonymous() ? "anon" : "registered";
-            updateUI();
-            mUserId = mAuth.getCurrentUser().getUid();
-            Log.i("patapum", "App init with an user: " + userType + " and id: " + mUserId);
+        } else if (mCurrentUser.isAnonymous()) {
+            mUserAuth.updateUI(true);
+            mUserId = mUserAuth.getUserId();
+            Log.i("patapum", "App init with anon user, and id: " + mUserId);
+        } else if (!mCurrentUser.isAnonymous()) {
+            mUserAuth.updateUI(false);
+            mUserId = mUserAuth.getUserId();
+            Log.i("patapum", "App init with registered user, and id: " + mUserId);
         }
 
-        mUserName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(mUserAuth.signIn(), RC_SIGN_IN);
-            }
-        });
-        mSignOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mUserAuth.signOut();
-                mUserAuth.signInAnon();
-                updateUI();
-            }
-        });
-        //mUserId = "ypqtGXmTvwgqIEfwDNcMt0eX0nD3";
+        // SignIn and SignOut listeners
+        userName.setOnClickListener(new ClickListenerAuth("signin"));
+        signOut.setOnClickListener(new ClickListenerAuth("signout"));
 
         // Firebase Auth Listener
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -104,8 +87,6 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
             }
         };
         firebaseAuth.addAuthStateListener(mAuthStateListener);
-
-
 
 
          /*
@@ -127,27 +108,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
             fm.beginTransaction().add(R.id.fragment_container2, fragment).commit();
 
         }
-
     }
-
-    public void updateUI() {
-
-        FirebaseUser user = mAuth.getCurrentUser();
-        // Status text
-
-        if (user != null && user.isAnonymous()) {
-            mUserName.setText("Sign In");
-            mUserMail.setVisibility(View.INVISIBLE);
-            mSignOut.setVisibility(View.INVISIBLE);
-
-        } else if (user != null && !user.isAnonymous()) {
-            mUserName.setText(mAuth.getCurrentUser().getDisplayName());
-            mUserMail.setText(mAuth.getCurrentUser().getEmail());
-            mUserMail.setVisibility(View.VISIBLE);
-            mSignOut.setVisibility(View.VISIBLE);
-        }
-    }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -158,9 +119,9 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
             // Successfully sign in
             if (resultCode == RESULT_OK) {
-                mUserId = mAuth.getCurrentUser().getUid();
-                updateUI();
-                Snackbar.make(findViewById(R.id.drawer_layout), "Bienvenido " + mUserAuth.getmUserName().getText().toString(), BaseTransientBottomBar.LENGTH_SHORT).show();
+                mUserId = mUserAuth.getUserId();
+                mUserAuth.updateUI(false);
+                Snackbar.make(findViewById(R.id.drawer_layout), "Bienvenido " + mUserAuth.getCurrentUser().getDisplayName(), BaseTransientBottomBar.LENGTH_SHORT).show();
                 Log.i("patapum", "User signed in successfully with Id: " + mUserId);
             }
             // Sign in failed
@@ -200,7 +161,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         }
     }
 
-    public class NavigationViewListener implements NavigationView.OnNavigationItemSelectedListener {
+    class NavigationViewListener implements NavigationView.OnNavigationItemSelectedListener {
 
         FragmentManager fragmentManager;
 
@@ -226,6 +187,32 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
             }
             mDrawer.closeDrawer(GravityCompat.START);
             return true;
+        }
+    }
+
+    class ClickListenerAuth implements View.OnClickListener {
+        String listenerType;
+
+        public ClickListenerAuth(String listenerType) {
+            this.listenerType = listenerType;
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            switch (listenerType) {
+                case "signin": {
+                    startActivityForResult(mUserAuth.signIn(), RC_SIGN_IN);
+                    break;
+                }
+                case "signout": {
+                    mUserAuth.signOut();
+                    mUserAuth.signInAnon();
+                    mUserAuth.updateUI(true);
+                    break;
+                }
+
+            }
         }
     }
 
