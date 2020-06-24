@@ -18,22 +18,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".NewRecipeActivity"
-
-            android:parentActivityName=".RecipeListActivity" />
-        <!-- IMPORTANTE -->
-        <!-- Con el atributo anterior, ponemos la flechita en la barra superior, para poder volver a la actividad anterior -->
-
-        <activity android:name=".RecipeListActivity">
+        <activity android:name=".RecipeListActivity" />
+        <activity android:name=".DisplayRecipeActivity" />
+        <activity android:name=".HomeDashBoardActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".DisplayRecipeActivity" />
+        <activity
+            android:name=".NewRecipeActivity"
+            android:parentActivityName=".RecipeListActivity" />
+        <!-- IMPORTANTE -->
+        <!-- Con el atributo anterior, ponemos la flechita en la barra superior, para poder volver a la actividad anterior -->
 
 
         <provider

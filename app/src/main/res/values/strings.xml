@@ -26,6 +26,10 @@
     <string name="share">Compartir</string>
     <string name="navigation_drawer_open">Abrir navigation drawer</string>
     <string name="navigation_drawer_close">Cerrar navigation drawer</string>
+    <string name="sign_in_cancelled">Proceso cancelado</string>
+    <string name="no_internet_connection">No se ha detectado conexión a internet</string>
+    <string name="unknown_error">Error inesperado</string>
+    <string name="signed_out_successfully">Ha cerrado sesión satisfactoriamente</string>
 
 
     <string-array name="quantity_units">

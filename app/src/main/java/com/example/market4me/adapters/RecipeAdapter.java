@@ -28,7 +28,6 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
     private Context mContext;
     private OnItemClickListener mListener;
     private ViewGroup mViewGroupRecycler;
-    private Recipe mRecipeDeleted;
 
     private final String TAG = "patapum";
 
@@ -47,8 +46,8 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
     @Override
     protected void onBindViewHolder(@NonNull RecipeHolder holder, int position, @NonNull Recipe model) {
         holder.tvTittle.setText(model.getTitle());
-        holder.tvTime.setText(String.format("%s: %s hora", mContext.getString(R.string.hint_time), String.valueOf(model.getTime())));
-        holder.tvPeople.setText(String.format("%s: %s", mContext.getString(R.string.hint_people), String.valueOf(model.getPeople())));
+        holder.tvTime.setText(String.format("%s: %s hora", mContext.getString(R.string.hint_time), model.getTime()));
+        holder.tvPeople.setText(String.format("%s: %s", mContext.getString(R.string.hint_people), model.getPeople()));
     }
 
     @NonNull

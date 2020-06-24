@@ -82,20 +82,30 @@ public class NewRecipeFragment extends Fragment {
     private List<TextInputLayout> mQuantityTils;
     private List<Spinner> mSpinners;
 
-    private CollectionReference mRecipesRef;
-
     private ImageButton mImageButton;
     private ImageView mThumbnailPhoto;
     private Uri mPhotoUri;
 
     private Recipe mRecipe;
     private String mRecipeId;
+    private String mUserId;
 
     private boolean mFlagExtras;
     private DrawerLayout mDrawer;
 
     // CONSTANTS
     private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final String ARG_USER_ID = "fireStore_UserId";
+
+    // Activity to Fragment Communication
+    public static NewRecipeFragment newInstance(String userId) {
+        NewRecipeFragment fragment = new NewRecipeFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_USER_ID, userId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,8 +113,8 @@ public class NewRecipeFragment extends Fragment {
         setHasOptionsMenu(true);
 
         // init Firebase
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        mRecipesRef = db.collection("Recipes");
+        //FirebaseFirestore db = FirebaseFirestore.getInstance();
+        //mRecipesRef = db.collection("Recipes");
 
         // init arraylists
         mIngredientEditTexts = new ArrayList<>();
@@ -116,6 +126,11 @@ public class NewRecipeFragment extends Fragment {
         mQuantitiesList = new ArrayList<>();
         mUnitsList = new ArrayList<>();
 
+        // get bundle (data) from activity
+        Bundle args = getArguments();
+        mUserId = args.getString(ARG_USER_ID);
+
+        //TODO Estos intents extras, ponerlos en el bundle de la activity to fragment
 
         // get intent extras
         mRecipe = (Recipe) getActivity().getIntent().getSerializableExtra(NewRecipeActivity.EXTRA_RECIPE_OBJECT2);
@@ -180,8 +195,8 @@ public class NewRecipeFragment extends Fragment {
         // Custom listener para la camara
         mImageButton.setOnClickListener(new CameraIntentListener());
 
-        /*Populate FireStore database for testing
-        for (int i = 0; i < 20; i++) {
+        //Populate FireStore database for testing
+        /*for (int i = 0; i < 5; i++) {
             mRecipe.setTitle("Receta " + i);
             mRecipe.setPeople(1);
             mRecipe.setTime(1);
@@ -192,7 +207,9 @@ public class NewRecipeFragment extends Fragment {
             mRecipe.setQuantities(mQuantitiesList);
             mRecipe.setUnits(mUnitsList);
 
-            mRecipesRef.add(mRecipe);
+                    FirebaseFirestore.getInstance().collection("Users").document(mUserId).collection("Recipes").add(mRecipe);
+
+            //mRecipesRef.add(mRecipe);
 
         }*/
 
@@ -424,9 +441,17 @@ public class NewRecipeFragment extends Fragment {
                 mRecipe.setPhotoName(mPhotoName);
                 mPhotoName = mRecipe.getPhotoName();
 
+                FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+
                 if (mFlagExtras) {
-                    mRecipesRef.document(mRecipeId).set(mRecipe);
-                } else mRecipesRef.add(mRecipe); // upload la receta a fireStore
+                    //RecipesRef.document(mRecipeId).set(mRecipe);
+                    firebaseFirestore.collection("Users").document(mUserId).collection("Recetas").document(mRecipeId).set(mRecipe);
+
+                } else {
+                    //mRecipesRef.add(mRecipe); // upload la receta a fireStore
+                    Log.i("patapum", "User ID = " + mUserId);
+                    firebaseFirestore.collection("Users").document(mUserId).collection("Recipes").add(mRecipe);
+                }
 
 
                 Intent intent = RecipeListActivity.newIntent(getContext()); // intent
