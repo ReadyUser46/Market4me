@@ -21,6 +21,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.Serializable;
+
 
 public class UserAuth {
 
@@ -31,9 +33,6 @@ public class UserAuth {
     private FirebaseUser mCurrentUser;
     private Activity activity;
 
-
-    // CONSTANTS
-    public static final int RC_SIGN_IN = 237;
 
     public UserAuth(Context context, TextView mUserName, TextView mUserMail, TextView mSignOut, Activity activity) {
         this.context = context;
@@ -68,12 +67,9 @@ public class UserAuth {
                 });
     }
 
-
     public void updateUI(boolean signInAvailable) {
 
-        FirebaseUser user = mAuth.getCurrentUser();
         // Status text
-
         if (signInAvailable) {
             mUserName.setText("Sign In");
             mUserMail.setVisibility(View.INVISIBLE);

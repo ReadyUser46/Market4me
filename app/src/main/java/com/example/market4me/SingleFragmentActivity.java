@@ -24,12 +24,14 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.Serializable;
+
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     // MEMBER VARIABLES
     private DrawerLayout mDrawer;
-    private UserAuth mUserAuth;
+    protected UserAuth mUserAuth;
     protected String mUserId;
 
     // CONSTANTS
@@ -52,12 +54,12 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         View headerView = navigationView.getHeaderView(0);
 
         // Nav Header Account
-        TextView userName = headerView.findViewById(R.id.nav_header_user);
+        TextView signIn = headerView.findViewById(R.id.nav_header_user);
         TextView userMail = headerView.findViewById(R.id.nav_header_mail);
         TextView signOut = headerView.findViewById(R.id.nav_header_sign_out);
 
         // Authentication
-        mUserAuth = new UserAuth(this, userName, userMail, signOut, this);
+        mUserAuth = new UserAuth(this, signIn, userMail, signOut, this);
         FirebaseUser mCurrentUser = mUserAuth.getCurrentUser();
 
         // Check if user is signed in
@@ -75,18 +77,8 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         }
 
         // SignIn and SignOut listeners
-        userName.setOnClickListener(new ClickListenerAuth("signin"));
+        signIn.setOnClickListener(new ClickListenerAuth("signin"));
         signOut.setOnClickListener(new ClickListenerAuth("signout"));
-
-        // Firebase Auth Listener
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseAuth.AuthStateListener mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                //updateUI();
-            }
-        };
-        firebaseAuth.addAuthStateListener(mAuthStateListener);
 
 
          /*

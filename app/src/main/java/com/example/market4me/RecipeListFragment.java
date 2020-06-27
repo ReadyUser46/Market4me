@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.market4me.adapters.RecipeAdapter;
 import com.example.market4me.auth.UserAuth;
 import com.example.market4me.models.Recipe;
+import com.firebase.ui.auth.data.model.User;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,19 +40,22 @@ public class RecipeListFragment extends Fragment {
 
     private RecipeAdapter mRecipeAdapter;
     private Recipe mRecipe;
-    private String mUserId;
+    private boolean authListenerFlag;
 
     // CONSTANTS
     private static final String ARG_USER_ID = "fireStore_UserId";
+    private static final String ARG_AUTH_OBJECT = "fireStore_user_auth";
 
 
     // Activity to Fragment Communication
-    public static RecipeListFragment newInstance(String userId) {
+    public static RecipeListFragment newInstance() {
         RecipeListFragment fragment = new RecipeListFragment();
 
-        Bundle args = new Bundle();
-        args.putString(ARG_USER_ID, userId);
-        fragment.setArguments(args);
+        //Bundle args = new Bundle();
+        //args.putSerializable(ARG_AUTH_OBJECT, userAuth);
+
+        //args.putString(ARG_USER_ID, userId);
+        //fragment.setArguments(args);
         return fragment;
     }
 
@@ -75,10 +79,10 @@ public class RecipeListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        mUserId = args.getString(ARG_USER_ID);
-        Log.i("patapum", "User Id received in RecipeListFragment: " + mUserId);
+        //mUserId = args.getString(ARG_USER_ID);
+        //mUserAuth = (UserAuth) args.getSerializable(ARG_AUTH_OBJECT);
 
-
+        //Log.i("patapum", "User Id received in RecipeListFragment: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
     }
 
     @Nullable
@@ -88,7 +92,9 @@ public class RecipeListFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_recipes_list, container, false);
 
         // Setup RecyclerView
-        setUpRecyclerView(view);
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Log.i("patapum", "User Id received in RecipeListFragment: " + userId);
+        setUpRecyclerView(view, userId);
 
         FloatingActionButton floatingActionButton = view.findViewById(R.id.floatingButton);
         floatingActionButton.setOnClickListener(new FloatingButtonListener());
@@ -117,7 +123,10 @@ public class RecipeListFragment extends Fragment {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 Log.i("patapum", "Auth listener detected something!");
-                setUpRecyclerView(view);
+                //String userId = firebaseAuth.getCurrentUser().getUid();
+                if (!authListenerFlag && firebaseAuth.getCurrentUser().getUid() != null) {
+                    setUpRecyclerView(view, firebaseAuth.getCurrentUser().getUid());
+                }
             }
         };
         firebaseAuth.addAuthStateListener(mAuthStateListener);
@@ -125,13 +134,16 @@ public class RecipeListFragment extends Fragment {
         return view;
     }
 
-    private void setUpRecyclerView(View v) {
+    private void setUpRecyclerView(View v, String userId) {
+
+        // The first time we get in the setUpRecyclerView, the Auth listener get activated
+        authListenerFlag = true;
 
         //Al constructor del adapter hay que pasarle un objeto FirestoreRecyclerOptions.
         //No es más que un objeto que le dice al adapter en que orden mostrar los elementos
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
-        CollectionReference recipeRef = firebaseFirestore.collection("Users").document(mUserId).collection("Recipes");
+        CollectionReference recipeRef = firebaseFirestore.collection("Users").document(userId).collection("Recipes");
         Query query = recipeRef.orderBy("title", Query.Direction.ASCENDING);
 
         FirestoreRecyclerOptions<Recipe> options = new FirestoreRecyclerOptions.Builder<Recipe>()
@@ -162,7 +174,6 @@ public class RecipeListFragment extends Fragment {
 
 
         }).attachToRecyclerView(recyclerView);
-
 
         // listener
         mRecipeAdapter.setOnItemClickListener(new AdapterListener());
