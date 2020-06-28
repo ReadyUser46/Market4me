@@ -84,7 +84,7 @@
                         android:layout_height="64dp"
                         android:background="@drawable/circular_shape_pink"
                         android:padding="10dp"
-                        android:src="@drawable/ic_add_black_24dp" />
+                        android:src="@drawable/ic_add" />
 
                     <TextView
                         android:layout_width="wrap_content"

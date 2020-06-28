@@ -31,6 +31,7 @@
     <string name="unknown_error">Error inesperado</string>
     <string name="signed_out_successfully">Ha cerrado sesión satisfactoriamente</string>
 
+    <string name="search_hint">Búsqueda rápida</string>
 
     <string-array name="quantity_units">
         <item>Kg</item>
