@@ -2,7 +2,6 @@ package com.example.market4me;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,6 +93,7 @@ public class DisplayRecipeFragment extends Fragment {
 
             GlideApp.with(getActivity())
                     .load(storagedPhotoReference)
+                    .centerCrop()
                     .into(mRecipeImage);
         }
 

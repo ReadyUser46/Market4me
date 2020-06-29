@@ -61,16 +61,16 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
         // Check if user is signed in
         if (mCurrentUser == null) {
-            Log.i("patapum", "App init with null user");
+            Log.i("patapum_auth", "App init with null user");
             mUserAuth.signInAnon(); /*Si el usuario no está logeado, lo logeamos anonimamente*/
         } else if (mCurrentUser.isAnonymous()) {
             mUserAuth.updateUI(true);
             mUserId = mUserAuth.getUserId();
-            Log.i("patapum", "App init with anon user, and id: " + mUserId);
+            Log.i("patapum_auth", "App init with anon user, and id: " + mUserId);
         } else if (!mCurrentUser.isAnonymous()) {
             mUserAuth.updateUI(false);
             mUserId = mUserAuth.getUserId();
-            Log.i("patapum", "App init with registered user, and id: " + mUserId);
+            Log.i("patapum_auth", "App init with registered user, and id: " + mUserId);
         }
 
         // SignIn and SignOut listeners
@@ -111,7 +111,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
                 mUserId = mUserAuth.getUserId();
                 mUserAuth.updateUI(false);
                 Snackbar.make(findViewById(R.id.drawer_layout), "Bienvenido " + mUserAuth.getCurrentUser().getDisplayName(), BaseTransientBottomBar.LENGTH_SHORT).show();
-                Log.i("patapum", "User signed in successfully with Id: " + mUserId);
+                Log.i("patapum_auth", "User signed in successfully with Id: " + mUserId);
             }
             // Sign in failed
             else {
@@ -129,7 +129,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
                 // Unknown error
                 Snackbar.make(findViewById(R.id.drawer_layout), R.string.unknown_error, BaseTransientBottomBar.LENGTH_SHORT).show();
-                Log.e("patapum", "Sign-in error: ", response.getError());
+                Log.e("patapum_auth", "Sign-in error: ", response.getError());
             }
         }
     }

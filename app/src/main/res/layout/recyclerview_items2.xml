@@ -2,7 +2,10 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="160dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="8dp"
     app:cardCornerRadius="20dp">
 
     <LinearLayout
@@ -13,41 +16,48 @@
         <ImageView
             android:id="@+id/list_card_image"
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="88dp" />
 
         <TextView
             android:id="@+id/list_card_name"
+            style="@style/TitleCardList"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp" />
 
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
 
 
             <TextView
                 android:id="@+id/list_card_time"
+                style="@style/FootageCardList"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_time" />
 
 
             <TextView
                 android:id="@+id/list_card_timeunits"
+                style="@style/FootageCardList"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp" />
 
 
             <TextView
                 android:id="@+id/list_card_people"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-
-            <TextView
+                style="@style/FootageCardList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="personas" />
+                android:layout_marginStart="8dp"
+                android:drawableStart="@drawable/ic_restaurant" />
+
 
         </LinearLayout>
     </LinearLayout>
