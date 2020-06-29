@@ -21,10 +21,7 @@ import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.io.Serializable;
 
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
@@ -42,7 +39,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_frame_layout2);
+        setContentView(R.layout.activity_frame_layout);
 
         // Navigation Drawer
         mDrawer = findViewById(R.id.drawer_layout);

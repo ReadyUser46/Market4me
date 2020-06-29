@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#3700B3</color>
+
+    <color name="colorPrimaryDark">#CC972C</color>
+
+    <color name="colorPrimaryDark_default">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
 
     <color name="colorHint">#808080</color>
@@ -15,15 +18,21 @@
     <color name="dashBoard_orange">#ffab00</color>
     <color name="dashBoard_pink">#c51162</color>
     <color name="lightgray">#ededed</color>
-
     <color name="white">#FFFFFF</color>
-    <!-- Adobe XD Home -->
 
+    <!-- Adobe XD Home -->
     <color name="pink_gradient_start">#F191CC</color>
     <color name="pink_gradient_end">#D88CBA</color>
     <color name="blue_search_icon">#92C8E8</color>
     <color name="blue_title_card_home">#334856</color>
     <color name="grey_description_card_home">#7D8184</color>
+
+    <!-- Adobe XD RecipeList-->
+    <color name="list_background">#E3BA4A</color>
+    <color name="list_2nd_color">#333333</color>
+    <color name="list_card_hint">#9E9E9E</color>
+
+
 
 
 </resources>

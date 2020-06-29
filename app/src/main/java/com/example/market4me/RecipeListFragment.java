@@ -7,8 +7,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -78,6 +82,8 @@ public class RecipeListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Menu
+        setHasOptionsMenu(true);
         Bundle args = getArguments();
         //mUserId = args.getString(ARG_USER_ID);
         //mUserAuth = (UserAuth) args.getSerializable(ARG_AUTH_OBJECT);
@@ -101,8 +107,10 @@ public class RecipeListFragment extends Fragment {
 
         // Implementar Toolbar
         Toolbar toolbar = view.findViewById(R.id.toolbarRecipesList);
-        toolbar.setTitle(R.string.recipe_list_title);
+        //toolbar.setTitle(R.string.recipe_list_title);
+
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // Navigation Drawer
         DrawerLayout mDrawer = getActivity().findViewById(R.id.drawer_layout);
@@ -115,6 +123,7 @@ public class RecipeListFragment extends Fragment {
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
         mDrawer.addDrawerListener(toggleBurger);
+
         toggleBurger.syncState();
 
         // Firebase Auth Listener
@@ -132,6 +141,31 @@ public class RecipeListFragment extends Fragment {
         firebaseAuth.addAuthStateListener(mAuthStateListener);
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate(R.menu.recipe_list_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.search_menu_icon:
+                Toast.makeText(getContext(),"Buscar",Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.settings_menu_icon:
+                Toast.makeText(getContext(),"Opciones",Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+
     }
 
     private void setUpRecyclerView(View v, String userId) {

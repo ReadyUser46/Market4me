@@ -7,6 +7,7 @@
     <string name="hint_quantity">Cantidad</string>
     <string name="hint_preparation">Pon tus notas o la preparación aquí</string>
     <string name="saveButton">Guardar</string>
+    <string name="search">Buscar</string>
 
     <string name="title_error">Elige un título</string>
     <string name="people_error">Elige el número de personas</string>
