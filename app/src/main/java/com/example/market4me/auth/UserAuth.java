@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.market4me.R;
-import com.example.market4me.SingleFragmentActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -20,8 +19,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.io.Serializable;
 
 
 public class UserAuth {
@@ -58,7 +55,7 @@ public class UserAuth {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Log.i("patapum", "User is now signed out");
+                        Log.i("patapum_auth", "User is now signed out");
                         Snackbar.make(
                                 activity.findViewById(R.id.drawer_layout),
                                 R.string.signed_out_successfully,
@@ -104,7 +101,7 @@ public class UserAuth {
                     public void onSuccess(AuthResult authResult) {
                         updateUI(true);
                         mUserId = mAuth.getCurrentUser().getUid();
-                        Log.i("patapum", "User sign in anonymously with Id: " + mUserId);
+                        Log.i("patapum_auth", "User sign in anonymously with Id: " + mUserId);
 
                     }
                 });

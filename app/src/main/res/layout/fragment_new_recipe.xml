@@ -34,7 +34,7 @@
                 android:hint="@string/hint_title"
                 app:endIconMode="clear_text"
                 app:errorEnabled="true"
-                app:startIconDrawable="@drawable/ic_short_text_grey_24dp">
+                app:startIconDrawable="@drawable/ic_titlename">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_title"
@@ -67,7 +67,7 @@
                 android:layout_marginTop="8dp"
                 android:hint="@string/hint_time"
                 app:errorEnabled="true"
-                app:startIconDrawable="@drawable/ic_access_grey_black_24dp">
+                app:startIconDrawable="@drawable/ic_time">
 
 
                 <com.google.android.material.textfield.TextInputEditText
