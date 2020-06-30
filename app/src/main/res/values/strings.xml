@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Market4me</string>
+    <string name="app_name2">market4me</string>
     <string name="hint_title">Título</string>
     <string name="hint_people">Personas</string>
     <string name="hint_time">Tiempo</string>

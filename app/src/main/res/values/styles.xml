@@ -3,7 +3,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/blue_search_icon</item>
+        <item name="colorPrimary">@color/ic_background</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccentTork</item>
 
@@ -47,7 +47,7 @@
 
     <style name="ToolbarRecipeList" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="android:layout_gravity">center_horizontal</item>
-        <item name="android:textColor">@color/list_2nd_color</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">20sp</item>
         <item name="fontFamily">@font/montserrat_semibold</item>
     </style>
@@ -65,8 +65,20 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:drawablePadding">2dp</item>
         <item name="android:textSize">13sp</item>
-
     </style>
+
+    <style name="MontserratBold">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">@font/montserrat_bold</item>
+    </style>
+
+    <style name="NewRecipeText">
+        <item name="android:textColor">@color/ic_background</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/segoe_ui_regular</item>
+    </style>
+
 
 </resources>
 

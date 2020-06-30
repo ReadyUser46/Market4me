@@ -33,6 +33,13 @@
     <color name="list_card_hint">#9E9E9E</color>
 
 
+    <!-- Adobe XD NewRecipe-->
+    <color name="blue_grad_start">#0578C4</color>
+    <color name="blue_grad_center">#058CCA</color>
+    <color name="blue_grad_end">#05B3AB</color>
+    <color name="ic_background">#1A6867</color>
+
+    <color name="ic_background_hint">#e0e0e0</color>
 
 
 </resources>

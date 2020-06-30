@@ -50,7 +50,7 @@
                 android:layout_marginTop="8dp"
                 android:hint="@string/hint_people"
                 app:errorEnabled="true"
-                app:startIconDrawable="@drawable/ic_people_black_24dp">
+                app:startIconDrawable="@drawable/ic_people">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_people"
@@ -114,7 +114,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
                     android:contentDescription="TakePicture"
-                    android:src="@drawable/ic_photo_camera_black_24dp" />
+                    android:src="@drawable/ic_camera" />
 
                 <ImageView
                     android:id="@+id/imageview_thumbnail_photo"

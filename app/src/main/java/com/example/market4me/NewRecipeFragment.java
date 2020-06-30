@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -19,9 +20,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -77,19 +78,20 @@ public class NewRecipeFragment extends Fragment {
     private List<Spinner> mSpinners;
 
     private ImageButton mImageButton;
-    private ImageView mThumbnailPhoto;
+    private TextView mImgBtnText;
     private Uri mPhotoUri;
 
     private Recipe mRecipe;
     private String mRecipeId;
     private String mUserId;
 
-    private boolean mFlagExtras;
+    private boolean mFlagEdit;
     private DrawerLayout mDrawer;
 
     // CONSTANTS
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final String ARG_USER_ID = "fireStore_UserId";
+    private LinearLayout mRootLayout2;
 
     // Activity to Fragment Communication
     public static NewRecipeFragment newInstance(String userId) {
@@ -124,18 +126,18 @@ public class NewRecipeFragment extends Fragment {
         Bundle args = getArguments();
         mUserId = args.getString(ARG_USER_ID);
 
-        //TODO Estos intents extras, ponerlos en el bundle de la activity to fragment
-
         // get intent extras
         mRecipe = (Recipe) getActivity().getIntent().getSerializableExtra(NewRecipeActivity.EXTRA_RECIPE_OBJECT2);
         mRecipeId = getActivity().getIntent().getStringExtra(NewRecipeActivity.EXTRA_RECIPE_ID2);
         Log.i("patapum", "mRecipeId= " + mRecipeId);
 
+
+        // new or edit
         if (mRecipe == null) {
             mRecipe = new Recipe();
         } else {
             Log.i("patapum", "Hay intent extras");
-            mFlagExtras = true;
+            mFlagEdit = true;
         }
 
     }
@@ -145,7 +147,7 @@ public class NewRecipeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         // Inflamos el layout
-        View view = inflater.inflate(R.layout.fragment_new_recipe, container, false);
+        View view = inflater.inflate(R.layout.fragment_new_recipe2, container, false);
 
 
         // Binding of every element on the screen to his view + spinners
@@ -155,10 +157,12 @@ public class NewRecipeFragment extends Fragment {
         Toolbar toolbarNewRecipe = view.findViewById(R.id.toolbarNewRecipe);
         toolbarNewRecipe.setTitle(R.string.new_recipe_title);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarNewRecipe);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+
 
         // Edit or New Recipe
-        int blockPosition = 3;
-        if (mFlagExtras) {
+        int blockPosition = 2;
+        if (mFlagEdit) {
             mTitleEditText.setText(mRecipe.getTitle());
             mPeopleEditText.setText(String.valueOf(mRecipe.getPeople()));
             mTimeEditText.setText(String.valueOf(mRecipe.getTime()));
@@ -168,6 +172,7 @@ public class NewRecipeFragment extends Fragment {
             mUnitsList = mRecipe.getUnits();
 
             for (int i = 0; i < mIngredientsList.size(); i++) {
+
                 addBlockEditTexts(blockPosition, i, false);
                 blockPosition++;
             }
@@ -176,6 +181,9 @@ public class NewRecipeFragment extends Fragment {
             // Create new block
             /* Crear y situar el primer bloque de editTexts en tiempo real. Le adjuntamos el listener también */
             addBlockEditTexts(blockPosition, 0, true);
+
+            //View inflatedLayout = inflater.inflate(R.layout.block_ingredients,mRootLayout, false);
+            //mRootLayout.addView(inflatedLayout,blockPosition);
         }
 
         // Listener para todos los editTexts excepto el bloque
@@ -237,24 +245,15 @@ public class NewRecipeFragment extends Fragment {
                     .load(mPhotoUri)
                     .into(mThumbnailPhoto);*/
 
+            mImageButton.setBackgroundColor(Color.TRANSPARENT);
+            mImgBtnText.setVisibility(View.INVISIBLE);
+
+
             Glide.
                     with(getActivity())
                     .load(mPhotoUri)
-                    .into(mThumbnailPhoto);
-
-            if (mPhotoUri != null) {
-
-
-                FirebaseStorage mStorage = FirebaseStorage.getInstance();
-                StorageReference storageReference = mStorage.getReference().child("Pictures").child(mUserId).child(mPhotoName);
-                storageReference.putFile(mPhotoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(getActivity(), "Uploading finished", Toast.LENGTH_LONG).show();
-
-                    }
-                });
-            }
+                    .centerCrop()
+                    .into(mImageButton);
         }
     }
 
@@ -284,6 +283,7 @@ public class NewRecipeFragment extends Fragment {
     private void findViews(View view) {
 
         mRootLayout = view.findViewById(R.id.linearlayout_ingredients);
+        mRootLayout2 = view.findViewById(R.id.tmp_rootlayout);
 
         mTilTitle = view.findViewById(R.id.til_et_title);
         mTilPeople = view.findViewById(R.id.til_et_people);
@@ -296,22 +296,23 @@ public class NewRecipeFragment extends Fragment {
 
         mSaveButton = view.findViewById(R.id.but_save);
         mImageButton = view.findViewById(R.id.ibtn_take_picture);
-        mThumbnailPhoto = view.findViewById(R.id.imageview_thumbnail_photo);
+        mImgBtnText = view.findViewById(R.id.tv_imgbtn);
 
     }
 
     private void addBlockEditTexts(int blockPosition, int index, boolean activated) {
         ViewCreator viewCreator = new ViewCreator();
+        mRootLayout.addView(viewCreator.newBlockEditTexts(getContext()), blockPosition);
 
-        viewCreator.newBlockEditTexts(getContext());
         TextInputEditText ingredientET = viewCreator.getNewIngredientET();
         TextInputEditText quantityET = viewCreator.getNewQuantityET();
         TextInputLayout tilIngredient = viewCreator.getNewTilIngredient();
         TextInputLayout tilQuantity = viewCreator.getNewTilQuantity();
         Spinner spinner = viewCreator.getNewSpinner();
 
+
         try { /*edit recipe*/
-            if (mFlagExtras && index < mIngredientsList.size()) {
+            if (mFlagEdit && index < mIngredientsList.size()) {
                 ingredientET.setText(mIngredientsList.get(index));
                 quantityET.setText(String.valueOf(mQuantitiesList.get(index)));
             }
@@ -325,7 +326,6 @@ public class NewRecipeFragment extends Fragment {
         mQuantityTils.add(tilQuantity);
         mSpinners.add(spinner);
 
-        mRootLayout.addView(viewCreator.getTempLinearLayout(), blockPosition);
 
         /* listeners */
         ingredientET.addTextChangedListener(new AddEditTextsListener(
@@ -437,16 +437,25 @@ public class NewRecipeFragment extends Fragment {
 
                 FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
-                if (mFlagExtras) {
-                    //RecipesRef.document(mRecipeId).set(mRecipe);
+                if (mFlagEdit) {
+                    // Update recipe
                     firebaseFirestore.collection("Users").document(mUserId).collection("Recetas").document(mRecipeId).set(mRecipe);
 
                 } else {
-                    //mRecipesRef.add(mRecipe); // upload la receta a fireStore
+                    // New Recipe
                     Log.i("patapum", "User ID = " + mUserId);
                     firebaseFirestore.collection("Users").document(mUserId).collection("Recipes").add(mRecipe);
-                }
 
+                    FirebaseStorage mStorage = FirebaseStorage.getInstance();
+                    StorageReference storageReference = mStorage.getReference().child("Pictures").child(mUserId).child(mPhotoName);
+                    storageReference.putFile(mPhotoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Toast.makeText(getActivity(), "Uploading finished", Toast.LENGTH_LONG).show();
+
+                        }
+                    });
+                }
 
                 Intent intent = RecipeListActivity.newIntent(getContext()); // intent
                 startActivity(intent);

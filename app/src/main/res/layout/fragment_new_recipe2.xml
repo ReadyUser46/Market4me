@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_new_recipe">
+
+        <TextView
+            android:id="@+id/textView"
+            style="@style/MontserratBold"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="56dp"
+            android:text="Crea una nueva receta"
+            app:layout_constraintEnd_toStartOf="@+id/imageView2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="65dp"
+            android:layout_marginTop="32dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_restaurant"
+            android:tint="@color/ic_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/white"
+            app:cardCornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView2">
+
+            <!-- Scrollable content -->
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/linearlayout_ingredients"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    tools:context=".NewRecipeActivity">
+                    <!--android:focusable="true" android:focusableInTouchMode="true":
+                        it prevent autofocus edittexts-->
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_et_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/hint_title"
+                        app:endIconMode="clear_text"
+                        app:errorEnabled="true"
+                        app:hintTextColor="@color/blue_grad_center"
+                        app:startIconDrawable="@drawable/ic_titlename">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_title"
+                            style="@style/NewRecipeText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/til_et_people"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="@string/hint_people"
+                            app:errorEnabled="true"
+                            app:hintTextColor="@color/blue_grad_center"
+                            app:startIconDrawable="@drawable/ic_people">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/et_people"
+                                style="@style/NewRecipeText"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:inputType="number" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/til_et_time"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="@string/hint_time"
+                            app:errorEnabled="true"
+                            app:hintTextColor="@color/blue_grad_center"
+                            app:startIconDrawable="@drawable/ic_time">
+
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/et_time"
+                                style="@style/NewRecipeText"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:inputType="number" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/tmp_rootlayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_et_preparation"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:hint="@string/hint_preparation"
+                        app:endIconMode="clear_text"
+                        app:hintTextColor="@color/blue_grad_center"
+                        app:startIconDrawable="@drawable/ic_note_grey_24dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_preparation"
+                            style="@style/NewRecipeText"
+
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="88dp"
+                        android:layout_marginTop="4dp">
+
+                        <ImageButton
+                            android:id="@+id/ibtn_take_picture"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="TakePicture"
+                            android:src="@drawable/ic_camera" />
+
+                        <TextView
+                            android:id="@+id/tv_imgbtn"
+                            style="@style/NewRecipeText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="64dp"
+                            android:clickable="false"
+                            android:text="add picture"
+                            android:textColor="@color/colorHint"
+                            android:textSize="12sp" />
+                    </FrameLayout>
+
+                    <Button
+                        android:id="@+id/but_save"
+                        android:layout_width="112dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/background_save_btn"
+                        android:text="@string/saveButton"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.cardview.widget.CardView>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <!-- App bar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent">
+
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbarNewRecipe"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:elevation="8dp"
+            android:fitsSystemWindows="true"
+            android:theme="@style/ToolbarRecipeList">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name2" />
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
