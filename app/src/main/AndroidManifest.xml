@@ -19,16 +19,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivityTest">
-
-        </activity>
-        <activity android:name=".RecipeListActivity" />
-        <activity android:name=".DisplayRecipeActivity" />
-        <activity android:name=".HomeDashBoardActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".RecipeListActivity" />
+        <activity android:name=".DisplayRecipeActivity" />
+        <activity android:name=".HomeDashBoardActivity">
+
         </activity>
         <activity
             android:name=".NewRecipeActivity"

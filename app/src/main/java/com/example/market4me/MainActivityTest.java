@@ -1,59 +1,85 @@
 package com.example.market4me;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.market4me.adapters.RecipeAdapter;
-import com.example.market4me.models.Recipe;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
+import com.google.android.material.textfield.TextInputLayout;
+
+import java.util.ArrayList;
 
 public class MainActivityTest extends AppCompatActivity {
 
-    private RecipeAdapter mRecipeAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_recipes_list);
+        setContentView(R.layout.test_main);
 
-        // SearchView
-        /*SearchView searchView = findViewById(R.id.searchview_home);
-        ImageView searchIcon = searchView.findViewById(androidx.appcompat.R.id.search_mag_icon);
-        searchIcon.setColorFilter(getResources().getColor(R.color.white));
-        searchView.setQueryHint("Búsquea rápida");*/
+        ArrayList<TextInputLayout> tilList = new ArrayList<>();
 
-
-        // Implementar Toolbar
-        Toolbar toolbar = findViewById(R.id.toolbarRecipesList);
-        toolbar.setTitle(R.string.recipe_list_title);
-        setSupportActionBar(toolbar);
+        final TextView tv1, tv2, tv3;
+        tv1 = findViewById(R.id.tv1);
+        tv2 = findViewById(R.id.tv2);
+        tv3 = findViewById(R.id.tv3);
 
 
-        // Floating button
-        FloatingActionButton floatingActionButton = findViewById(R.id.floatingButton);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+        LayoutInflater inflater = getLayoutInflater();
+        LinearLayout rootLayout = findViewById(R.id.test_rootlayout);
+        final TextInputLayout view1 = (TextInputLayout) inflater.inflate(R.layout.et_test, rootLayout, false);
+        final TextInputLayout view2 = (TextInputLayout) inflater.inflate(R.layout.et_test, rootLayout, false);
+        tilList.add(view1);
+        tilList.add(view2);
+
+
+        // add views
+        rootLayout.addView(view1);
+        rootLayout.addView(view2);
+
+
+        // listener in list of tils
+
+        for (TextInputLayout til : tilList) {
+            til.getEditText().addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (s.length() > 2) tv1.setText("YAAAAAY");
+                    else tv1.setText("jijijijj");
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+        }
+
+        tv2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivityTest.this,RecipeListActivity.class);
-                startActivity(intent);
+
+                // get text
+                String string1 = view1.getEditText().getText().toString();
+                String string2 = view2.getEditText().getText().toString();
+
+
+                // display text
+                tv3.setText(string1 + string2);
+
             }
         });
-
 
     }
 
