@@ -36,10 +36,10 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.market4me.models.Recipe;
-import com.example.market4me.utils.ViewCreator;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -86,12 +86,10 @@ public class NewRecipeFragment extends Fragment {
     private String mUserId;
 
     private boolean mFlagEdit;
-    private DrawerLayout mDrawer;
 
     // CONSTANTS
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final String ARG_USER_ID = "fireStore_UserId";
-    private LinearLayout mRootLayout2;
 
     // Activity to Fragment Communication
     public static NewRecipeFragment newInstance(String userId) {
@@ -136,8 +134,9 @@ public class NewRecipeFragment extends Fragment {
         if (mRecipe == null) {
             mRecipe = new Recipe();
         } else {
-            Log.i("patapum", "Hay intent extras");
             mFlagEdit = true;
+            Log.i("patapum", "mFlagEdit: " + mFlagEdit);
+
         }
 
     }
@@ -147,7 +146,7 @@ public class NewRecipeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         // Inflamos el layout
-        View view = inflater.inflate(R.layout.fragment_new_recipe2, container, false);
+        View view = inflater.inflate(R.layout.fragment_new_recipe, container, false);
 
 
         // Binding of every element on the screen to his view + spinners
@@ -173,17 +172,16 @@ public class NewRecipeFragment extends Fragment {
 
             for (int i = 0; i < mIngredientsList.size(); i++) {
 
-                addBlockEditTexts(blockPosition, i, false);
+                test_addBlockEditTexts(inflater, i, blockPosition, false);
                 blockPosition++;
             }
-            addBlockEditTexts(blockPosition, 9999, true);
+            //dummy block
+            test_addBlockEditTexts(inflater, 99999, blockPosition, true);
         } else {
             // Create new block
-            /* Crear y situar el primer bloque de editTexts en tiempo real. Le adjuntamos el listener también */
-            addBlockEditTexts(blockPosition, 0, true);
+            /* Inflar y situar el primer bloque de editTexts en tiempo real. Le adjuntamos el listener también */
+            test_addBlockEditTexts(inflater, 0, blockPosition, true);
 
-            //View inflatedLayout = inflater.inflate(R.layout.block_ingredients,mRootLayout, false);
-            //mRootLayout.addView(inflatedLayout,blockPosition);
         }
 
         // Listener para todos los editTexts excepto el bloque
@@ -216,7 +214,7 @@ public class NewRecipeFragment extends Fragment {
         }*/
 
         // Navigation Drawer
-        mDrawer = getActivity().findViewById(R.id.drawer_layout);
+        DrawerLayout mDrawer = getActivity().findViewById(R.id.drawer_layout);
 
         // Navigation Drawer Icon (Burger)
         ActionBarDrawerToggle toggleBurger = new ActionBarDrawerToggle(
@@ -283,7 +281,6 @@ public class NewRecipeFragment extends Fragment {
     private void findViews(View view) {
 
         mRootLayout = view.findViewById(R.id.linearlayout_ingredients);
-        mRootLayout2 = view.findViewById(R.id.tmp_rootlayout);
 
         mTilTitle = view.findViewById(R.id.til_et_title);
         mTilPeople = view.findViewById(R.id.til_et_people);
@@ -300,16 +297,19 @@ public class NewRecipeFragment extends Fragment {
 
     }
 
-    private void addBlockEditTexts(int blockPosition, int index, boolean activated) {
-        ViewCreator viewCreator = new ViewCreator();
-        mRootLayout.addView(viewCreator.newBlockEditTexts(getContext()), blockPosition);
+    private void test_addBlockEditTexts(LayoutInflater inflater, int index, int position, boolean listenerON) {
 
-        TextInputEditText ingredientET = viewCreator.getNewIngredientET();
-        TextInputEditText quantityET = viewCreator.getNewQuantityET();
-        TextInputLayout tilIngredient = viewCreator.getNewTilIngredient();
-        TextInputLayout tilQuantity = viewCreator.getNewTilQuantity();
-        Spinner spinner = viewCreator.getNewSpinner();
+        // inflamos linear layout
+        LinearLayout block = (LinearLayout) inflater.inflate(R.layout.block_ingredients, mRootLayout, false);
+        // lo añadimos a su parent view
+        mRootLayout.addView(block, position);
 
+        // Referenciamos los child del linear layout
+        TextInputLayout tilIngredient = (TextInputLayout) block.getChildAt(0);
+        TextInputLayout tilQuantity = (TextInputLayout) block.getChildAt(1);
+        TextInputEditText ingredientET = (TextInputEditText) tilIngredient.getEditText();
+        TextInputEditText quantityET = (TextInputEditText) tilQuantity.getEditText();
+        Spinner spinner = (Spinner) block.getChildAt(2);
 
         try { /*edit recipe*/
             if (mFlagEdit && index < mIngredientsList.size()) {
@@ -330,10 +330,13 @@ public class NewRecipeFragment extends Fragment {
         /* listeners */
         ingredientET.addTextChangedListener(new AddEditTextsListener(
                 getContext(),
-                blockPosition,
-                activated,
+                inflater,
+                position,
+                listenerON,
                 tilIngredient));
         quantityET.addTextChangedListener(new RemoveErrorListener(tilQuantity));
+
+
     }
 
     private File createPhotoFile() {
@@ -431,7 +434,13 @@ public class NewRecipeFragment extends Fragment {
                 mRecipe.setPreparation(preparation);
                 mRecipe.setIngredients(mIngredientsList);
                 mRecipe.setQuantities(mQuantitiesList);
+                //mRecipe.setUnits(mUnitsList);
+
+                mUnitsList.add("gramos");
+
                 mRecipe.setUnits(mUnitsList);
+
+
                 mRecipe.setPhotoName(mPhotoName);
                 mPhotoName = mRecipe.getPhotoName();
 
@@ -444,19 +453,26 @@ public class NewRecipeFragment extends Fragment {
                 } else {
                     // New Recipe
                     Log.i("patapum", "User ID = " + mUserId);
-                    firebaseFirestore.collection("Users").document(mUserId).collection("Recipes").add(mRecipe);
-
-                    FirebaseStorage mStorage = FirebaseStorage.getInstance();
-                    StorageReference storageReference = mStorage.getReference().child("Pictures").child(mUserId).child(mPhotoName);
-                    storageReference.putFile(mPhotoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    firebaseFirestore.collection("Users").document(mUserId).collection("Recipes").add(mRecipe).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Toast.makeText(getActivity(), "Uploading finished", Toast.LENGTH_LONG).show();
-
+                        public void onSuccess(DocumentReference documentReference) {
+                            Log.i("patapum", "Receta subida");
                         }
                     });
-                }
 
+                    if (mPhotoName != null) {
+                        FirebaseStorage mStorage = FirebaseStorage.getInstance();
+                        StorageReference storageReference = mStorage.getReference().child("Pictures").child(mUserId).child(mPhotoName);
+                        storageReference.putFile(mPhotoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                Toast.makeText(getActivity(), "Uploading finished", Toast.LENGTH_LONG).show();
+
+
+                            }
+                        });
+                    }
+                }
                 Intent intent = RecipeListActivity.newIntent(getContext()); // intent
                 startActivity(intent);
 
@@ -516,11 +532,12 @@ public class NewRecipeFragment extends Fragment {
         int position;
         boolean isActivated;
         TextInputLayout tilIngredient;
+        LayoutInflater inflater;
 
-
-        private AddEditTextsListener(Context context, int position, boolean isActivated, TextInputLayout tilIngredient) {
+        private AddEditTextsListener(Context context, LayoutInflater inflater, int position, boolean isActivated, TextInputLayout tilIngredient) {
             this.context = context;
             this.position = position;
+            this.inflater = inflater;
             this.isActivated = isActivated;
             this.tilIngredient = tilIngredient;
         }
@@ -535,38 +552,12 @@ public class NewRecipeFragment extends Fragment {
 
             if (s.length() > 0) tilIngredient.setError(null);
 
-            //Añadimos bloque EditTexts con listeners
+            //add block
             if (isActivated) {
-
                 position++;
-                ViewCreator viewCreator = new ViewCreator();
-                viewCreator.newBlockEditTexts(getContext());
-                TextInputEditText ingredientET = viewCreator.getNewIngredientET();
-                TextInputEditText quantityET = viewCreator.getNewQuantityET();
-                TextInputLayout tilIngredient = viewCreator.getNewTilIngredient();
-                TextInputLayout tilQuantity = viewCreator.getNewTilQuantity();
-                Spinner spinner = viewCreator.getNewSpinner();
-
-                mIngredientEditTexts.add(ingredientET);
-                mQuantityEditTexts.add(quantityET);
-                mIngredientTils.add(tilIngredient);
-                mQuantityTils.add(tilQuantity);
-                mSpinners.add(spinner);
-
-                mRootLayout.addView(viewCreator.getTempLinearLayout(), position);
-
-                /* listeners attached */
-                ingredientET.addTextChangedListener(new AddEditTextsListener(
-                        getContext(),
-                        position,
-                        isActivated,
-                        tilIngredient));
-                quantityET.addTextChangedListener(new RemoveErrorListener(tilQuantity));
-
+                test_addBlockEditTexts(inflater, 99, position, isActivated);
             }
-
             isActivated = false;
-
         }
 
         @Override
@@ -578,10 +569,10 @@ public class NewRecipeFragment extends Fragment {
 
     class RemoveErrorListener implements TextWatcher {
 
-        TextInputLayout mTextInputLayout;
+        TextInputLayout textInputLayout;
 
         public RemoveErrorListener(TextInputLayout textInputLayout) {
-            mTextInputLayout = textInputLayout;
+            this.textInputLayout = textInputLayout;
         }
 
         @Override
@@ -592,7 +583,7 @@ public class NewRecipeFragment extends Fragment {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (s.length() > 0) {
-                mTextInputLayout.setError(null);
+                textInputLayout.setError(null);
             }
         }
 
