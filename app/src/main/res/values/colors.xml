@@ -10,13 +10,8 @@
     <color name="colorHint">#808080</color>
 
     <color name="colorAccentTork">#0277bd</color>
-    <color name="recipe_card_recyclerview">#58a5f0</color>
-    <color name="backgroundColor">#f3e5f5</color>
 
-    <color name="dashBoard_blue">#303f9f</color>
-    <color name="dashBoard_green">#00bfa5</color>
-    <color name="dashBoard_orange">#ffab00</color>
-    <color name="dashBoard_pink">#c51162</color>
+
     <color name="lightgray">#ededed</color>
     <color name="white">#FFFFFF</color>
 
@@ -38,8 +33,11 @@
     <color name="blue_grad_center">#058CCA</color>
     <color name="blue_grad_end">#05B3AB</color>
     <color name="ic_background">#1A6867</color>
-
     <color name="ic_background_hint">#e0e0e0</color>
+
+    <!-- Adobe XD NewRecipe-->
+    <color name="backgroundColor">#F7F7F7</color>
+    <color name="points_display">#FF8C2B</color>
 
 
 </resources>

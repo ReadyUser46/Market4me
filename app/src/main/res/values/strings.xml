@@ -34,6 +34,9 @@
     <string name="signed_out_successfully">Ha cerrado sesión satisfactoriamente</string>
 
     <string name="search_hint">Búsqueda rápida</string>
+    <string name="hint_ingredients">Ingredientes</string>
+    <string name="instructions">Instrucciones</string>
+    <string name="edit">Editar</string>
 
     <string-array name="quantity_units">
         <item>Kg</item>

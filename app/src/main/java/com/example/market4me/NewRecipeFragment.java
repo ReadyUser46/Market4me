@@ -80,6 +80,7 @@ public class NewRecipeFragment extends Fragment {
     private ImageButton mImageButton;
     private TextView mImgBtnText;
     private Uri mPhotoUri;
+    private boolean pictureTaken;
 
     private Recipe mRecipe;
     private String mRecipeId;
@@ -235,17 +236,12 @@ public class NewRecipeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
-
             Log.i("patapum", "mPhotoUri_onActivityResult = " + mPhotoUri);
-
-            /*Picasso.get()
-                    .load(mPhotoUri)
-                    .into(mThumbnailPhoto);*/
 
             mImageButton.setBackgroundColor(Color.TRANSPARENT);
             mImgBtnText.setVisibility(View.INVISIBLE);
 
+            pictureTaken = true;
 
             Glide.
                     with(getActivity())
@@ -424,6 +420,8 @@ public class NewRecipeFragment extends Fragment {
 
             }
 
+            // picture
+
 
             if (fieldsValidation) { // Ningún editText queda vacío
 
@@ -434,21 +432,26 @@ public class NewRecipeFragment extends Fragment {
                 mRecipe.setPreparation(preparation);
                 mRecipe.setIngredients(mIngredientsList);
                 mRecipe.setQuantities(mQuantitiesList);
-                //mRecipe.setUnits(mUnitsList);
-
-                mUnitsList.add("gramos");
-
                 mRecipe.setUnits(mUnitsList);
-
-
-                mRecipe.setPhotoName(mPhotoName);
-                mPhotoName = mRecipe.getPhotoName();
+                if (pictureTaken) mRecipe.setPhotoName(mPhotoName);
 
                 FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
+                if (pictureTaken) {
+                    FirebaseStorage mStorage = FirebaseStorage.getInstance();
+                    StorageReference storageReference = mStorage.getReference().child("Pictures").child(mUserId).child(mPhotoName);
+                    storageReference.putFile(mPhotoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Toast.makeText(getActivity(), "Uploading picture finished", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+
                 if (mFlagEdit) {
                     // Update recipe
-                    firebaseFirestore.collection("Users").document(mUserId).collection("Recetas").document(mRecipeId).set(mRecipe);
+                    firebaseFirestore.collection("Users").document(mUserId).collection("Recipes").document(mRecipeId).set(mRecipe);
+
 
                 } else {
                     // New Recipe
@@ -460,18 +463,6 @@ public class NewRecipeFragment extends Fragment {
                         }
                     });
 
-                    if (mPhotoName != null) {
-                        FirebaseStorage mStorage = FirebaseStorage.getInstance();
-                        StorageReference storageReference = mStorage.getReference().child("Pictures").child(mUserId).child(mPhotoName);
-                        storageReference.putFile(mPhotoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                Toast.makeText(getActivity(), "Uploading finished", Toast.LENGTH_LONG).show();
-
-
-                            }
-                        });
-                    }
                 }
                 Intent intent = RecipeListActivity.newIntent(getContext()); // intent
                 startActivity(intent);

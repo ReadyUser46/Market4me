@@ -52,12 +52,6 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
     @Override
     protected void onBindViewHolder(@NonNull RecipeHolder holder, int position, @NonNull Recipe model) {
 
-        /* DEFAULT
-        holder.tvTittle.setText(model.getTitle());
-        holder.tvTime.setText(String.format("%s: %s hora", mContext.getString(R.string.hint_time), model.getTime()));
-        holder.tvPeople.setText(String.format("%s: %s", mContext.getString(R.string.hint_people), model.getPeople()));
-        */
-
         Object imageName;
         if (model.getPhotoName() != null) {
 
@@ -97,7 +91,7 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
     @Override
     public RecipeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         mViewGroupRecycler = parent;
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_items2, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_items, parent, false);
 
         return new RecipeHolder(view);
     }

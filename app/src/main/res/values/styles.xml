@@ -52,6 +52,14 @@
         <item name="fontFamily">@font/montserrat_semibold</item>
     </style>
 
+    <style name="ToolbarDisplay" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">20sp</item>
+        <item name="fontFamily">@font/montserrat_semibold</item>
+
+    </style>
+
     <style name="TitleCardList">
         <item name="android:textColor">@color/list_2nd_color</item>
         <item name="android:textSize">16sp</item>
@@ -77,6 +85,33 @@
         <item name="android:textColor">@color/ic_background</item>
         <item name="android:textSize">16sp</item>
         <item name="android:fontFamily">@font/segoe_ui_regular</item>
+    </style>
+
+    <style name="Display_title">
+        <item name="android:textColor">@color/list_2nd_color</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">@font/montserrat_semibold</item>
+    </style>
+
+    <style name="Display_section" parent="Display_title">
+
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:gravity">center</item>
+
+
+    </style>
+
+
+    <style name="Display_ingredients">
+        <item name="android:textColor">@color/list_2nd_color</item>
+        <item name="fontFamily">@font/montserrat_light</item>
+        <item name="drawableTint">@color/points_display</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:background">@color/white</item>
+
+
     </style>
 
 
