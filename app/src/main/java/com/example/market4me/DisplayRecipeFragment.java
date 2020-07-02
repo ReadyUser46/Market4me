@@ -76,7 +76,7 @@ public class DisplayRecipeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_display_recipe, container, false);
+        View view = inflater.inflate(R.layout.fragment_display_recipe2, container, false);
 
         mTitleDisplayed = view.findViewById(R.id.tv_title_displayed);
         mPeopleDisplayed = view.findViewById(R.id.tv_people_displayed);
