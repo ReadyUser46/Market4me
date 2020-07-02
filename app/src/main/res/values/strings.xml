@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Market4me</string>
+    <string name="app_name2">market4me</string>
     <string name="hint_title">Título</string>
     <string name="hint_people">Personas</string>
     <string name="hint_time">Tiempo</string>
@@ -7,6 +8,7 @@
     <string name="hint_quantity">Cantidad</string>
     <string name="hint_preparation">Pon tus notas o la preparación aquí</string>
     <string name="saveButton">Guardar</string>
+    <string name="search">Buscar</string>
 
     <string name="title_error">Elige un título</string>
     <string name="people_error">Elige el número de personas</string>
@@ -31,6 +33,10 @@
     <string name="unknown_error">Error inesperado</string>
     <string name="signed_out_successfully">Ha cerrado sesión satisfactoriamente</string>
 
+    <string name="search_hint">Búsqueda rápida</string>
+    <string name="hint_ingredients">Ingredientes</string>
+    <string name="instructions">Instrucciones</string>
+    <string name="edit">Editar</string>
 
     <string-array name="quantity_units">
         <item>Kg</item>

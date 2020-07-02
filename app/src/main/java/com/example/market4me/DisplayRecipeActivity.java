@@ -12,6 +12,8 @@ public class DisplayRecipeActivity extends SingleFragmentActivity {
 
     public static final String EXTRA_RECIPE_OBJECT = "pass.recipe.object.from.recyclerview";
     public static final String EXTRA_RECIPE_ID = "pass.recipe.id.from.recyclerview";
+    public static final String EXTRA_USER_ID = "pass.user.id.from.recyclerview";
+
 
     @Override
     protected Fragment createFragment() {
@@ -19,7 +21,7 @@ public class DisplayRecipeActivity extends SingleFragmentActivity {
         Recipe recipe = (Recipe) getIntent().getSerializableExtra(EXTRA_RECIPE_OBJECT);
         Bundle bundle = getIntent().getExtras();
         String recipeId = bundle.getString(EXTRA_RECIPE_ID);
-        return DisplayRecipeFragment.newInstance(recipe, recipeId);
+        return DisplayRecipeFragment.newInstance(recipe, recipeId, mUserId);
 
         
     }

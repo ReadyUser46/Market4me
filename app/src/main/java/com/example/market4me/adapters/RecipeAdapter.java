@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.market4me.R;
 import com.example.market4me.models.Recipe;
+import com.example.market4me.utils.GlideApp;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
@@ -20,6 +22,8 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 
 /*ADAPTER CLASS*/
@@ -28,6 +32,7 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
     private Context mContext;
     private OnItemClickListener mListener;
     private ViewGroup mViewGroupRecycler;
+    private String mUserId;
 
     private final String TAG = "patapum";
 
@@ -38,16 +43,48 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
      *
      * @param options
      */
-    public RecipeAdapter(@NonNull FirestoreRecyclerOptions<Recipe> options, Context context) {
+    public RecipeAdapter(@NonNull FirestoreRecyclerOptions<Recipe> options, Context context, String userId) {
         super(options);
-        this.mContext = context;
+        mContext = context;
+        mUserId = userId;
     }
 
     @Override
     protected void onBindViewHolder(@NonNull RecipeHolder holder, int position, @NonNull Recipe model) {
+
+        Object imageName;
+        if (model.getPhotoName() != null) {
+
+            FirebaseStorage mStorage = FirebaseStorage.getInstance();
+            StorageReference storagedPhotoReference = mStorage.getReference().child("Pictures").child(mUserId).child(model.getPhotoName());
+            imageName = storagedPhotoReference;
+
+        } else {
+
+            String imageUri = "@drawable/receta1";
+            imageName = mContext.getResources().getIdentifier(imageUri, null, mContext.getPackageName());
+        }
+
+        GlideApp.with(mContext)
+                .load(imageName)
+                .centerCrop()
+                .into(holder.imageView);
+
+
+        /*String imageUri = "@drawable/receta1";
+        Glide.with(mContext)
+                .load(mContext.getResources().getIdentifier(imageUri, null, mContext.getPackageName()))
+                .centerCrop()
+                .into(holder.imageView);*/
+
+
         holder.tvTittle.setText(model.getTitle());
-        holder.tvTime.setText(String.format("%s: %s hora", mContext.getString(R.string.hint_time), model.getTime()));
-        holder.tvPeople.setText(String.format("%s: %s", mContext.getString(R.string.hint_people), model.getPeople()));
+        holder.tvTime.setText(String.valueOf(model.getTime()));
+        String timeUnits = (model.getTime() == 1) ? "hora" : "horas";
+        holder.tvTimeUnits.setText(timeUnits);
+        String numPeople = (model.getPeople() == 1) ? "Persona" : "Personas";
+        holder.tvPeople.setText(String.format("%s %s", model.getPeople(), numPeople));
+
     }
 
     @NonNull
@@ -55,10 +92,8 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
     public RecipeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         mViewGroupRecycler = parent;
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_items, parent, false);
-        RecipeHolder holder = new RecipeHolder(view);
 
-
-        return holder;
+        return new RecipeHolder(view);
     }
 
     public void deleteUndoRecipe(int position) {
@@ -94,14 +129,18 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
 
     /*HOLDER CLASS*/
     class RecipeHolder extends RecyclerView.ViewHolder {
-        TextView tvTittle, tvPeople, tvTime;
+        ImageView imageView;
+        TextView tvTittle, tvPeople, tvTime, tvTimeUnits;
 
         public RecipeHolder(@NonNull View itemView) {
             super(itemView);
 
-            tvTittle = itemView.findViewById(R.id.tv_title);
-            tvPeople = itemView.findViewById(R.id.tv_people);
-            tvTime = itemView.findViewById(R.id.tv_time);
+            imageView = itemView.findViewById(R.id.list_card_image);
+            tvTittle = itemView.findViewById(R.id.list_card_name);
+            tvPeople = itemView.findViewById(R.id.list_card_people);
+            tvTime = itemView.findViewById(R.id.list_card_time);
+            tvTimeUnits = itemView.findViewById(R.id.list_card_timeunits);
+
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

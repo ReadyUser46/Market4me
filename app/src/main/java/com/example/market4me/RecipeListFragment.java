@@ -1,14 +1,15 @@
 package com.example.market4me;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,13 +23,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.market4me.adapters.RecipeAdapter;
-import com.example.market4me.auth.UserAuth;
 import com.example.market4me.models.Recipe;
-import com.firebase.ui.auth.data.model.User;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -78,6 +76,8 @@ public class RecipeListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Menu
+        setHasOptionsMenu(true);
         Bundle args = getArguments();
         //mUserId = args.getString(ARG_USER_ID);
         //mUserAuth = (UserAuth) args.getSerializable(ARG_AUTH_OBJECT);
@@ -101,8 +101,10 @@ public class RecipeListFragment extends Fragment {
 
         // Implementar Toolbar
         Toolbar toolbar = view.findViewById(R.id.toolbarRecipesList);
-        toolbar.setTitle(R.string.recipe_list_title);
+        //toolbar.setTitle(R.string.recipe_list_title);
+
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // Navigation Drawer
         DrawerLayout mDrawer = getActivity().findViewById(R.id.drawer_layout);
@@ -115,6 +117,7 @@ public class RecipeListFragment extends Fragment {
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
         mDrawer.addDrawerListener(toggleBurger);
+
         toggleBurger.syncState();
 
         // Firebase Auth Listener
@@ -134,6 +137,31 @@ public class RecipeListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate(R.menu.recipe_list_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.search_menu_icon:
+                Toast.makeText(getContext(), "Buscar", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.settings_menu_icon:
+                Toast.makeText(getContext(), "Opciones", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+
+    }
+
     private void setUpRecyclerView(View v, String userId) {
 
         // The first time we get in the setUpRecyclerView, the Auth listener get activated
@@ -150,7 +178,7 @@ public class RecipeListFragment extends Fragment {
                 .setQuery(query, Recipe.class)
                 .build();
 
-        mRecipeAdapter = new RecipeAdapter(options, getContext()); // le pasamos el context para poder tener acceso a string resources
+        mRecipeAdapter = new RecipeAdapter(options, getContext(), userId); // le pasamos el context para poder tener acceso a string resources
         RecyclerView recyclerView = v.findViewById(R.id.recipesRecyclerView);
         recyclerView.setHasFixedSize(true); // Si todas las views tienen el mismo tamaño, se optimiza el código mucho poniendo a true.
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

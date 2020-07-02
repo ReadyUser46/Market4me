@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/search_menu_icon"
+        android:icon="@drawable/ic_search"
+        android:title="@string/search"
+        app:showAsAction="ifRoom"
+        app:iconTint="@color/list_2nd_color"/>
+
+    <item
+        android:id="@+id/settings_menu_icon"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_settings"
+        app:iconTint="@color/list_2nd_color"
+        android:title="@string/options" />
+</menu>

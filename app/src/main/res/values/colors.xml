@@ -1,20 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#3700B3</color>
+
+    <color name="colorPrimaryDark">#CC972C</color>
+
+    <color name="colorPrimaryDark_default">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
 
     <color name="colorHint">#808080</color>
 
     <color name="colorAccentTork">#0277bd</color>
-    <color name="recipe_card_recyclerview">#58a5f0</color>
-    <color name="backgroundColor">#f3e5f5</color>
 
-    <color name="dashBoard_blue">#303f9f</color>
-    <color name="dashBoard_green">#00bfa5</color>
-    <color name="dashBoard_orange">#ffab00</color>
-    <color name="dashBoard_pink">#c51162</color>
+
     <color name="lightgray">#ededed</color>
+    <color name="white">#FFFFFF</color>
+
+    <!-- Adobe XD Home -->
+    <color name="pink_gradient_start">#F191CC</color>
+    <color name="pink_gradient_end">#D88CBA</color>
+    <color name="blue_search_icon">#92C8E8</color>
+    <color name="blue_title_card_home">#334856</color>
+    <color name="grey_description_card_home">#7D8184</color>
+
+    <!-- Adobe XD RecipeList-->
+    <color name="list_background">#E3BA4A</color>
+    <color name="list_2nd_color">#333333</color>
+    <color name="list_card_hint">#9E9E9E</color>
+
+
+    <!-- Adobe XD NewRecipe-->
+    <color name="blue_grad_start">#0578C4</color>
+    <color name="blue_grad_center">#058CCA</color>
+    <color name="blue_grad_end">#05B3AB</color>
+    <color name="ic_background">#1A6867</color>
+    <color name="ic_background_hint">#e0e0e0</color>
+
+    <!-- Adobe XD NewRecipe-->
+    <color name="backgroundColor">#F7F7F7</color>
+    <color name="points_display">#FF8C2B</color>
 
 
 </resources>

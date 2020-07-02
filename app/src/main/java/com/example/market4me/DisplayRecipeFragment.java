@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -19,6 +22,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.market4me.models.Recipe;
 import com.example.market4me.utils.GlideApp;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -35,16 +39,20 @@ public class DisplayRecipeFragment extends Fragment {
     private String mRecipeId;
     private TextView mTitleDisplayed, mPeopleDisplayed, mTimeDisplayed, mIngredientsDisplayed, mNotesDisplayed;
     private FirebaseStorage mStorage;
+    private String mUserId;
 
     // CONSTANTS
     private static final String ARG_RECIPE = "recipe_object";
     private static final String ARG_RECIPE_ID = "recipe_id";
+    private static final String ARG_USER_ID = "user_id";
+    private boolean start;
+    MenuItem menuItem;
 
-
-    public static DisplayRecipeFragment newInstance(Recipe recipe, String recipeId) {
+    public static DisplayRecipeFragment newInstance(Recipe recipe, String recipeId, String userId) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(ARG_RECIPE, recipe);
         bundle.putString(ARG_RECIPE_ID, recipeId);
+        bundle.putString(ARG_USER_ID, userId);
 
         DisplayRecipeFragment fragment = new DisplayRecipeFragment();
         fragment.setArguments(bundle);
@@ -54,10 +62,13 @@ public class DisplayRecipeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //mRecipe = (Recipe) getActivity().getIntent().getSerializableExtra(DisplayRecipeActivity.EXTRA_RECIPE_OBJECT);
+        setHasOptionsMenu(true);
         mStorage = FirebaseStorage.getInstance();
+
+        // get arguments
         mRecipe = (Recipe) getArguments().getSerializable(ARG_RECIPE);
         mRecipeId = getArguments().getString(ARG_RECIPE_ID);
+        mUserId = getArguments().getString(ARG_USER_ID);
 
 
     }
@@ -65,7 +76,7 @@ public class DisplayRecipeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_display_recipe, container, false);
+        View view = inflater.inflate(R.layout.fragment_display_recipe2, container, false);
 
         mTitleDisplayed = view.findViewById(R.id.tv_title_displayed);
         mPeopleDisplayed = view.findViewById(R.id.tv_people_displayed);
@@ -81,8 +92,33 @@ public class DisplayRecipeFragment extends Fragment {
         Toolbar toolbarDisplay = view.findViewById(R.id.toolbarDisplayRecipe);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarDisplay);
 
-        CollapsingToolbarLayout collapsingToolbar = view.findViewById(R.id.collapsingToolbarDisplay);
-        collapsingToolbar.setTitle("MiReceta");
+
+        // Collapsing Toolbar. Hide title
+        final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbarDisplay);
+        AppBarLayout appBarLayout = view.findViewById(R.id.app_bar);
+
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = true;
+            int scrollRange = -1;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    collapsingToolbarLayout.setTitle(mRecipe.getTitle());
+                    menuItem.setVisible(true);
+                    isShow = true;
+                } else if (isShow) {
+                    collapsingToolbarLayout.setTitle(" ");//careful there should a space between double quote otherwise it wont work
+                    isShow = false;
+                    if (start) menuItem.setVisible(false);
+
+
+                }
+            }
+        });
 
         // Retrieve image from Firebase Storage
         if (mRecipe.getPhotoName() == null || mRecipe.getPhotoName().trim().equals("")) {
@@ -90,10 +126,12 @@ public class DisplayRecipeFragment extends Fragment {
             Snackbar.make(view, "No hay foto", BaseTransientBottomBar.LENGTH_LONG).show();
 
         } else {
-            StorageReference storagedPhotoReference = mStorage.getReference().child("Pictures").child(mRecipe.getPhotoName());
+            Log.i("patapum", "UserId from DisplayRecipeFragment: " + mUserId);
+            StorageReference storagedPhotoReference = mStorage.getReference().child("Pictures").child(mUserId).child(mRecipe.getPhotoName());
 
             GlideApp.with(getActivity())
                     .load(storagedPhotoReference)
+                    .centerCrop()
                     .into(mRecipeImage);
         }
 
@@ -101,7 +139,6 @@ public class DisplayRecipeFragment extends Fragment {
         mFabEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent intent = new Intent(getActivity(), NewRecipeActivity.class);
                 Intent intent = NewRecipeActivity.newIntent(getActivity(), mRecipe, mRecipeId);
                 startActivity(intent);
             }
@@ -123,6 +160,34 @@ public class DisplayRecipeFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.display_recipe_menu, menu);
+
+        menuItem = menu.findItem(R.id.edit_menu_icon);
+        menuItem.setVisible(false);
+        start = true;
+        super.onCreateOptionsMenu(menu, inflater);
+
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId() == R.id.edit_menu_icon) {
+            Intent intent = NewRecipeActivity.newIntent(getActivity(), mRecipe, mRecipeId);
+            startActivity(intent);
+            return true;
+        } else
+            return super.onOptionsItemSelected(item);
+
+    }
+
     private void viewBinder() {
         // Cogemos ingredientes, cantidades y unidades del objeto receta que el usuario y los
         // los ponemos en sus respectivos arraylists.
@@ -138,14 +203,15 @@ public class DisplayRecipeFragment extends Fragment {
             ultraString.append("\u2022 ");
             ultraString.append(mQuantities.get(i)).append(" ").append(mUnits.get(i));
             ultraString.append(" de ").append(mIngredients.get(i));
-            ultraString.append("\n");
+            ultraString.append("\n\n");
 
         }
 
         // Set texts to textviews
         mTitleDisplayed.setText(mRecipe.getTitle());
-        mPeopleDisplayed.setText("Personas: " + mRecipe.getPeople());
-        mTimeDisplayed.setText("Tiempo: " + mRecipe.getTime());
+        mPeopleDisplayed.setText(String.format("%s %s", mRecipe.getPeople(), getString(R.string.hint_people)));
+        String timeUnits = (mRecipe.getTime() == 1) ? "hora" : "horas";
+        mTimeDisplayed.setText(String.format("%s %s", mRecipe.getTime(), timeUnits));
         mIngredientsDisplayed.setText(ultraString.toString());
         mNotesDisplayed.setText(mRecipe.getPreparation());
 

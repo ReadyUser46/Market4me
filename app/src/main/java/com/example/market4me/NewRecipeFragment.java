@@ -4,12 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -19,12 +18,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,17 +36,14 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.market4me.models.Recipe;
-import com.example.market4me.utils.ViewCreator;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -83,15 +78,15 @@ public class NewRecipeFragment extends Fragment {
     private List<Spinner> mSpinners;
 
     private ImageButton mImageButton;
-    private ImageView mThumbnailPhoto;
+    private TextView mImgBtnText;
     private Uri mPhotoUri;
+    private boolean pictureTaken;
 
     private Recipe mRecipe;
     private String mRecipeId;
     private String mUserId;
 
-    private boolean mFlagExtras;
-    private DrawerLayout mDrawer;
+    private boolean mFlagEdit;
 
     // CONSTANTS
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -130,18 +125,19 @@ public class NewRecipeFragment extends Fragment {
         Bundle args = getArguments();
         mUserId = args.getString(ARG_USER_ID);
 
-        //TODO Estos intents extras, ponerlos en el bundle de la activity to fragment
-
         // get intent extras
         mRecipe = (Recipe) getActivity().getIntent().getSerializableExtra(NewRecipeActivity.EXTRA_RECIPE_OBJECT2);
         mRecipeId = getActivity().getIntent().getStringExtra(NewRecipeActivity.EXTRA_RECIPE_ID2);
         Log.i("patapum", "mRecipeId= " + mRecipeId);
 
+
+        // new or edit
         if (mRecipe == null) {
             mRecipe = new Recipe();
         } else {
-            Log.i("patapum", "Hay intent extras");
-            mFlagExtras = true;
+            mFlagEdit = true;
+            Log.i("patapum", "mFlagEdit: " + mFlagEdit);
+
         }
 
     }
@@ -161,10 +157,12 @@ public class NewRecipeFragment extends Fragment {
         Toolbar toolbarNewRecipe = view.findViewById(R.id.toolbarNewRecipe);
         toolbarNewRecipe.setTitle(R.string.new_recipe_title);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarNewRecipe);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+
 
         // Edit or New Recipe
-        int blockPosition = 3;
-        if (mFlagExtras) {
+        int blockPosition = 2;
+        if (mFlagEdit) {
             mTitleEditText.setText(mRecipe.getTitle());
             mPeopleEditText.setText(String.valueOf(mRecipe.getPeople()));
             mTimeEditText.setText(String.valueOf(mRecipe.getTime()));
@@ -174,14 +172,17 @@ public class NewRecipeFragment extends Fragment {
             mUnitsList = mRecipe.getUnits();
 
             for (int i = 0; i < mIngredientsList.size(); i++) {
-                addBlockEditTexts(blockPosition, i, false);
+
+                test_addBlockEditTexts(inflater, i, blockPosition, false);
                 blockPosition++;
             }
-            addBlockEditTexts(blockPosition, 9999, true);
+            //dummy block
+            test_addBlockEditTexts(inflater, 99999, blockPosition, true);
         } else {
             // Create new block
-            /* Crear y situar el primer bloque de editTexts en tiempo real. Le adjuntamos el listener también */
-            addBlockEditTexts(blockPosition, 0, true);
+            /* Inflar y situar el primer bloque de editTexts en tiempo real. Le adjuntamos el listener también */
+            test_addBlockEditTexts(inflater, 0, blockPosition, true);
+
         }
 
         // Listener para todos los editTexts excepto el bloque
@@ -214,7 +215,7 @@ public class NewRecipeFragment extends Fragment {
         }*/
 
         // Navigation Drawer
-        mDrawer = getActivity().findViewById(R.id.drawer_layout);
+        DrawerLayout mDrawer = getActivity().findViewById(R.id.drawer_layout);
 
         // Navigation Drawer Icon (Burger)
         ActionBarDrawerToggle toggleBurger = new ActionBarDrawerToggle(
@@ -235,32 +236,18 @@ public class NewRecipeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
-
             Log.i("patapum", "mPhotoUri_onActivityResult = " + mPhotoUri);
 
-            /*Picasso.get()
-                    .load(mPhotoUri)
-                    .into(mThumbnailPhoto);*/
+            mImageButton.setBackgroundColor(Color.TRANSPARENT);
+            mImgBtnText.setVisibility(View.INVISIBLE);
+
+            pictureTaken = true;
 
             Glide.
                     with(getActivity())
                     .load(mPhotoUri)
-                    .into(mThumbnailPhoto);
-
-            if (mPhotoUri != null) {
-
-
-                FirebaseStorage mStorage = FirebaseStorage.getInstance();
-                StorageReference storageReference = mStorage.getReference().child("Pictures").child(mPhotoName);
-                storageReference.putFile(mPhotoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(getActivity(), "Uploading finished", Toast.LENGTH_LONG).show();
-
-                    }
-                });
-            }
+                    .centerCrop()
+                    .into(mImageButton);
         }
     }
 
@@ -302,22 +289,26 @@ public class NewRecipeFragment extends Fragment {
 
         mSaveButton = view.findViewById(R.id.but_save);
         mImageButton = view.findViewById(R.id.ibtn_take_picture);
-        mThumbnailPhoto = view.findViewById(R.id.imageview_thumbnail_photo);
+        mImgBtnText = view.findViewById(R.id.tv_imgbtn);
 
     }
 
-    private void addBlockEditTexts(int blockPosition, int index, boolean activated) {
-        ViewCreator viewCreator = new ViewCreator();
+    private void test_addBlockEditTexts(LayoutInflater inflater, int index, int position, boolean listenerON) {
 
-        viewCreator.newBlockEditTexts(getContext());
-        TextInputEditText ingredientET = viewCreator.getNewIngredientET();
-        TextInputEditText quantityET = viewCreator.getNewQuantityET();
-        TextInputLayout tilIngredient = viewCreator.getNewTilIngredient();
-        TextInputLayout tilQuantity = viewCreator.getNewTilQuantity();
-        Spinner spinner = viewCreator.getNewSpinner();
+        // inflamos linear layout
+        LinearLayout block = (LinearLayout) inflater.inflate(R.layout.block_ingredients, mRootLayout, false);
+        // lo añadimos a su parent view
+        mRootLayout.addView(block, position);
+
+        // Referenciamos los child del linear layout
+        TextInputLayout tilIngredient = (TextInputLayout) block.getChildAt(0);
+        TextInputLayout tilQuantity = (TextInputLayout) block.getChildAt(1);
+        TextInputEditText ingredientET = (TextInputEditText) tilIngredient.getEditText();
+        TextInputEditText quantityET = (TextInputEditText) tilQuantity.getEditText();
+        Spinner spinner = (Spinner) block.getChildAt(2);
 
         try { /*edit recipe*/
-            if (mFlagExtras && index < mIngredientsList.size()) {
+            if (mFlagEdit && index < mIngredientsList.size()) {
                 ingredientET.setText(mIngredientsList.get(index));
                 quantityET.setText(String.valueOf(mQuantitiesList.get(index)));
             }
@@ -331,15 +322,17 @@ public class NewRecipeFragment extends Fragment {
         mQuantityTils.add(tilQuantity);
         mSpinners.add(spinner);
 
-        mRootLayout.addView(viewCreator.getTempLinearLayout(), blockPosition);
 
         /* listeners */
         ingredientET.addTextChangedListener(new AddEditTextsListener(
                 getContext(),
-                blockPosition,
-                activated,
+                inflater,
+                position,
+                listenerON,
                 tilIngredient));
         quantityET.addTextChangedListener(new RemoveErrorListener(tilQuantity));
+
+
     }
 
     private File createPhotoFile() {
@@ -427,6 +420,8 @@ public class NewRecipeFragment extends Fragment {
 
             }
 
+            // picture
+
 
             if (fieldsValidation) { // Ningún editText queda vacío
 
@@ -438,22 +433,37 @@ public class NewRecipeFragment extends Fragment {
                 mRecipe.setIngredients(mIngredientsList);
                 mRecipe.setQuantities(mQuantitiesList);
                 mRecipe.setUnits(mUnitsList);
-                mRecipe.setPhotoName(mPhotoName);
-                mPhotoName = mRecipe.getPhotoName();
+                if (pictureTaken) mRecipe.setPhotoName(mPhotoName);
 
                 FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
-                if (mFlagExtras) {
-                    //RecipesRef.document(mRecipeId).set(mRecipe);
-                    firebaseFirestore.collection("Users").document(mUserId).collection("Recetas").document(mRecipeId).set(mRecipe);
-
-                } else {
-                    //mRecipesRef.add(mRecipe); // upload la receta a fireStore
-                    Log.i("patapum", "User ID = " + mUserId);
-                    firebaseFirestore.collection("Users").document(mUserId).collection("Recipes").add(mRecipe);
+                if (pictureTaken) {
+                    FirebaseStorage mStorage = FirebaseStorage.getInstance();
+                    StorageReference storageReference = mStorage.getReference().child("Pictures").child(mUserId).child(mPhotoName);
+                    storageReference.putFile(mPhotoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Toast.makeText(getActivity(), "Uploading picture finished", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
 
+                if (mFlagEdit) {
+                    // Update recipe
+                    firebaseFirestore.collection("Users").document(mUserId).collection("Recipes").document(mRecipeId).set(mRecipe);
 
+
+                } else {
+                    // New Recipe
+                    Log.i("patapum", "User ID = " + mUserId);
+                    firebaseFirestore.collection("Users").document(mUserId).collection("Recipes").add(mRecipe).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            Log.i("patapum", "Receta subida");
+                        }
+                    });
+
+                }
                 Intent intent = RecipeListActivity.newIntent(getContext()); // intent
                 startActivity(intent);
 
@@ -513,11 +523,12 @@ public class NewRecipeFragment extends Fragment {
         int position;
         boolean isActivated;
         TextInputLayout tilIngredient;
+        LayoutInflater inflater;
 
-
-        private AddEditTextsListener(Context context, int position, boolean isActivated, TextInputLayout tilIngredient) {
+        private AddEditTextsListener(Context context, LayoutInflater inflater, int position, boolean isActivated, TextInputLayout tilIngredient) {
             this.context = context;
             this.position = position;
+            this.inflater = inflater;
             this.isActivated = isActivated;
             this.tilIngredient = tilIngredient;
         }
@@ -532,38 +543,12 @@ public class NewRecipeFragment extends Fragment {
 
             if (s.length() > 0) tilIngredient.setError(null);
 
-            //Añadimos bloque EditTexts con listeners
+            //add block
             if (isActivated) {
-
                 position++;
-                ViewCreator viewCreator = new ViewCreator();
-                viewCreator.newBlockEditTexts(getContext());
-                TextInputEditText ingredientET = viewCreator.getNewIngredientET();
-                TextInputEditText quantityET = viewCreator.getNewQuantityET();
-                TextInputLayout tilIngredient = viewCreator.getNewTilIngredient();
-                TextInputLayout tilQuantity = viewCreator.getNewTilQuantity();
-                Spinner spinner = viewCreator.getNewSpinner();
-
-                mIngredientEditTexts.add(ingredientET);
-                mQuantityEditTexts.add(quantityET);
-                mIngredientTils.add(tilIngredient);
-                mQuantityTils.add(tilQuantity);
-                mSpinners.add(spinner);
-
-                mRootLayout.addView(viewCreator.getTempLinearLayout(), position);
-
-                /* listeners attached */
-                ingredientET.addTextChangedListener(new AddEditTextsListener(
-                        getContext(),
-                        position,
-                        isActivated,
-                        tilIngredient));
-                quantityET.addTextChangedListener(new RemoveErrorListener(tilQuantity));
-
+                test_addBlockEditTexts(inflater, 99, position, isActivated);
             }
-
             isActivated = false;
-
         }
 
         @Override
@@ -575,10 +560,10 @@ public class NewRecipeFragment extends Fragment {
 
     class RemoveErrorListener implements TextWatcher {
 
-        TextInputLayout mTextInputLayout;
+        TextInputLayout textInputLayout;
 
         public RemoveErrorListener(TextInputLayout textInputLayout) {
-            mTextInputLayout = textInputLayout;
+            this.textInputLayout = textInputLayout;
         }
 
         @Override
@@ -589,7 +574,7 @@ public class NewRecipeFragment extends Fragment {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (s.length() > 0) {
-                mTextInputLayout.setError(null);
+                textInputLayout.setError(null);
             }
         }
 

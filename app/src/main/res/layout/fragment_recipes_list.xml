@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/pizza">
+    android:background="@color/list_background">
 
 
     <!--Objeto Con Scroll -->
@@ -12,29 +12,45 @@
         android:id="@+id/recipesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="32dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <!-- App bar -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent">
 
         <!-- Toolbar -->
-        <include
+
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbarRecipesList"
-            layout="@layout/toolbar" />
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:elevation="8dp"
+            android:fitsSystemWindows="true"
+            android:theme="@style/ToolbarRecipeList"
+            app:layout_collapseMode="pin"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name2" />
+        </androidx.appcompat.widget.Toolbar>
 
 
     </com.google.android.material.appbar.AppBarLayout>
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:backgroundTint="@color/list_2nd_color"
         android:id="@+id/floatingButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_add_black_24dp" />
+        android:src="@drawable/ic_add" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

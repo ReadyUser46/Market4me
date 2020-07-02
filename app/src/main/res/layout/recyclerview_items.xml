@@ -1,50 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
     android:layout_marginStart="8dp"
-    android:layout_marginTop="8dp"
     android:layout_marginEnd="8dp"
-    app:cardBackgroundColor="@color/recipe_card_recyclerview">
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="20dp">
 
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="Titulooooooooooo"
-            android:textSize="22sp" />
-
-
-
-        <TextView
-            android:id="@+id/tv_people"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_title"
-            android:text="Número de personas" />
-
-        <TextView
-            android:id="@+id/tv_time"
+        <ImageView
+            android:id="@+id/list_card_image"
             android:layout_width="match_parent"
+            android:layout_height="88dp" />
+
+        <TextView
+            android:id="@+id/list_card_name"
+            style="@style/TitleCardList"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/tv_people"
-            android:layout_marginStart="36dp"
-            android:layout_toEndOf="@id/tv_people"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp" />
 
 
-            android:text="Tiempo" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
 
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/list_card_time"
+                style="@style/FootageCardList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_time" />
+
+
+            <TextView
+                android:id="@+id/list_card_timeunits"
+                style="@style/FootageCardList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp" />
+
+
+            <TextView
+                android:id="@+id/list_card_people"
+                style="@style/FootageCardList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:drawableStart="@drawable/ic_restaurant2" />
+
+
+        </LinearLayout>
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>

@@ -2,17 +2,118 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/ic_background</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccentTork</item>
 
-        <!-- Para el Navigation Drawer -->
+        <!-- Para el Navigation Drawer (aunque la status bar aparece en gris en AndroidStudio) -->
         <item name="android:windowTranslucentStatus">true</item>
+
+    </style>
+
+    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <!-- Gets rid of the search icon -->
+        <item name="searchIcon">@drawable/ic_search</item>
+        <!-- Gets rid of the "underline" in the text -->
+        <item name="queryBackground">@color/white</item>
+        <!-- Gets rid of the search icon when the SearchView is expanded -->
+        <item name="searchHintIcon">@null</item>
+        <!-- The hint text that appears when the user has not typed anything -->
+        <item name="queryHint">@string/search_hint</item>
+    </style>
+
+    <style name="TitleCardHome">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textColor">@color/blue_title_card_home</item>
+        <item name="android:textSize">15sp</item>
+        <item name="fontFamily">@font/roboto_black</item>
+    </style>
+
+    <style name="DescriptionCardHome">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textColor">@color/grey_description_card_home</item>
+        <item name="android:textSize">10sp</item>
+        <item name="fontFamily">@font/segoe_ui_regular</item>
+        <item name="android:letterSpacing">0.2</item>
+    </style>
+
+    <style name="HeaderCardHome">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">30sp</item>
+        <item name="fontFamily">@font/roboto_black</item>
+    </style>
+
+    <style name="ToolbarRecipeList" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">20sp</item>
+        <item name="fontFamily">@font/montserrat_semibold</item>
+    </style>
+
+    <style name="ToolbarDisplay" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">20sp</item>
+        <item name="fontFamily">@font/montserrat_semibold</item>
+
+    </style>
+
+    <style name="TitleCardList">
+        <item name="android:textColor">@color/list_2nd_color</item>
+        <item name="android:textSize">16sp</item>
+        <item name="fontFamily">@font/montserrat_medium</item>
+    </style>
+
+    <style name="FootageCardList">
+        <item name="android:textColor">@color/list_card_hint</item>
+        <item name="fontFamily">@font/montserrat_light</item>
+        <item name="drawableTint">@color/list_card_hint</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:drawablePadding">2dp</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="MontserratBold">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">@font/montserrat_bold</item>
+    </style>
+
+    <style name="NewRecipeText">
+        <item name="android:textColor">@color/ic_background</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/segoe_ui_regular</item>
+    </style>
+
+    <style name="Display_title">
+        <item name="android:textColor">@color/list_2nd_color</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">@font/montserrat_semibold</item>
+    </style>
+
+    <style name="Display_section" parent="Display_title">
+
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:gravity">center</item>
 
 
     </style>
+
+
+    <style name="Display_ingredients">
+        <item name="android:textColor">@color/list_2nd_color</item>
+        <item name="fontFamily">@font/montserrat_light</item>
+        <item name="drawableTint">@color/points_display</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:background">@color/white</item>
+
+
+    </style>
+
 
 </resources>
 

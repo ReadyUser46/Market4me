@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -29,7 +27,7 @@ public class HomeDashBoardFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         // Navigation Drawer
         DrawerLayout mDrawer = getActivity().findViewById(R.id.drawer_layout);
@@ -38,7 +36,6 @@ public class HomeDashBoardFragment extends Fragment {
         ActionBarDrawerToggle toggleBurger = new ActionBarDrawerToggle(
                 getActivity(),
                 mDrawer,
-
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
         mDrawer.addDrawerListener(toggleBurger);
@@ -46,12 +43,12 @@ public class HomeDashBoardFragment extends Fragment {
 
 
         // Cards
-        CardView card1 = view.findViewById(R.id.card1);
-        CardView card2 = view.findViewById(R.id.card2);
+        CardView card1 = view.findViewById(R.id.card1_home);
+        CardView card2 = view.findViewById(R.id.card2_home);
 
         // CardListeners
-        card1.setOnClickListener(new CardListener(RecipeListActivity.class));
-        card2.setOnClickListener(new CardListener(NewRecipeActivity.class));
+        card1.setOnClickListener(new CardListener(NewRecipeActivity.class));
+        card2.setOnClickListener(new CardListener(RecipeListActivity.class));
 
         return view;
     }
