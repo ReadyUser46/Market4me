@@ -7,7 +7,6 @@
         android:name="android.hardware.camera"
         android:required="false" />
     <!-- Le indicamos a google play que esta app escribe y lee en memoria (para guardar las fotos)  -->
-
     <uses-permission android:name="android.permission.INTERNET" />
 
 

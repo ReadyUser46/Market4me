@@ -3,7 +3,6 @@ package com.example.market4me;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,6 +35,7 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.market4me.models.Recipe;
+import com.example.market4me.utils.CameraUtils;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -46,9 +46,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -232,26 +230,6 @@ public class NewRecipeFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Log.i("patapum", "mPhotoUri_onActivityResult = " + mPhotoUri);
-
-            mImageButton.setBackgroundColor(Color.TRANSPARENT);
-            mImgBtnText.setVisibility(View.INVISIBLE);
-
-            pictureTaken = true;
-
-            Glide.
-                    with(getActivity())
-                    .load(mPhotoUri)
-                    .centerCrop()
-                    .into(mImageButton);
-        }
-    }
-
-    @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
@@ -333,13 +311,6 @@ public class NewRecipeFragment extends Fragment {
         quantityET.addTextChangedListener(new RemoveErrorListener(tilQuantity));
 
 
-    }
-
-    private File createPhotoFile() {
-        // Create a file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        mPhotoName = "IMG_" + timeStamp + ".jpg";
-        return new File(getActivity().getFilesDir(), mPhotoName);
     }
 
     class SaveButtonListener implements View.OnClickListener { //Inner class which implements a custom listener
@@ -473,8 +444,25 @@ public class NewRecipeFragment extends Fragment {
         }
     }
 
-    class CameraIntentListener implements View.OnClickListener {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+
+            mImageButton.setBackgroundColor(Color.TRANSPARENT);
+            mImgBtnText.setVisibility(View.INVISIBLE);
+            pictureTaken = true; // boolean for upload pic to FireStore Storage
+
+            Glide.
+                    with(getActivity())
+                    .load(mPhotoUri)
+                    .centerCrop()
+                    .into(mImageButton);
+        }
+    }
+
+    class CameraIntentListener implements View.OnClickListener {
 
         @Override
         public void onClick(View v) {
@@ -482,35 +470,19 @@ public class NewRecipeFragment extends Fragment {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             PackageManager packageManager = Objects.requireNonNull(getActivity()).getPackageManager();
 
-
-            // Comprobamos que el dispositivo tiene una camara antes de darle funcionalidad al boton
-            // y que el packagemanager tiene alguna app que pueda manejar este intent. Boolean canTakePhoto
+             /*Comprobamos que el dispositivo tiene una camara antes de darle funcionalidad al boton
+             y que el packagemanager tiene alguna app que pueda manejar este intent. Boolean canTakePhoto*/
             if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) &&
                     takePictureIntent.resolveActivity(packageManager) != null) {
 
-
-                File mPhotoFile = createPhotoFile();
-
+                File photoFile = CameraUtils.onCreateFile(getContext(), null);
+                Log.i("patapum_pic", "photoFile = " + photoFile);
                 mPhotoUri = FileProvider.getUriForFile(getContext(),
                         "com.example.market4me.fileprovider",
-                        mPhotoFile);
-
-
-                // si le damos un output a la foto, no habrá data en onActivityResult para la miniatura
+                        photoFile);
+                Log.i("patapum_pic", "photoUri = " + mPhotoUri);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoUri);
 
-                List<ResolveInfo> cameraActivities = packageManager.queryIntentActivities(takePictureIntent,
-                        PackageManager.MATCH_DEFAULT_ONLY);
-
-                for (ResolveInfo activity : cameraActivities) {
-                    getActivity().grantUriPermission(activity.activityInfo.packageName,
-                            mPhotoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
-                }
-                Log.i("patapum", "mPhotoUri_intent = " + mPhotoUri);
-
-
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             } else {
                 Toast.makeText(getActivity(), getActivity().getString(R.string.no_camera_error), Toast.LENGTH_SHORT).show();
             }

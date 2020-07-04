@@ -1,14 +1,18 @@
 package com.example.market4me.auth;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.market4me.R;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -19,24 +23,26 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 
 public class UserAuth {
 
-    private Context context;
     private FirebaseAuth mAuth;
     private TextView mSignIn, mSignOut;
+    private ImageView imageView;
     private String mUserId;
-    private FirebaseUser mCurrentUser;
+    private FirebaseUser firebaseUser;
     private Activity activity;
 
-    public UserAuth(Context context, TextView mSignIn, TextView mSignOut, Activity activity) {
-        this.context = context;
-        this.mAuth = FirebaseAuth.getInstance();
+    public UserAuth(TextView mSignIn, TextView mSignOut, ImageView imageView, Activity activity) {
+        this.imageView = imageView;
         this.mSignIn = mSignIn;
         this.mSignOut = mSignOut;
         this.activity = activity;
-        mCurrentUser = mAuth.getCurrentUser();
+        this.mAuth = FirebaseAuth.getInstance();
+        firebaseUser = mAuth.getCurrentUser();
+
     }
 
     public Intent signIn() {
@@ -49,7 +55,7 @@ public class UserAuth {
 
     public void signOut() {
         AuthUI.getInstance()
-                .signOut(context)
+                .signOut(activity)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -62,18 +68,52 @@ public class UserAuth {
                 });
     }
 
+    public void updatePicture(Uri uri) {
+
+        UserProfileChangeRequest update = new UserProfileChangeRequest.Builder()
+                .setPhotoUri(uri)
+                .build();
+
+        firebaseUser.updateProfile(update)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) Log.i("patapum_auth", "User picture updated");
+                    }
+                });
+    }
+
     public void updateUI(boolean userLogged) {
 
         // Status text
         if (!userLogged) {
             mSignIn.setText(R.string.sign);
             mSignOut.setVisibility(View.INVISIBLE);
+            Drawable userPic = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.dummy_user, null);
 
+            Glide.
+                    with(activity)
+                    .load(userPic)
+                    .centerCrop()
+                    .into(imageView);
         }
+
         if (userLogged) {
+
             mSignIn.setText(mAuth.getCurrentUser().getDisplayName());
             mSignOut.setVisibility(View.VISIBLE);
+            Uri userPic = firebaseUser.getPhotoUrl();
+
+            Glide.
+                    with(activity)
+                    .load(userPic)
+                    .centerCrop()
+                    .into(imageView);
+
+
         }
+
+
     }
 
     public String getUserId() {
@@ -81,7 +121,7 @@ public class UserAuth {
     }
 
     public FirebaseUser getCurrentUser() {
-        return mCurrentUser;
+        return firebaseUser;
     }
 
     public void signInAnon() {

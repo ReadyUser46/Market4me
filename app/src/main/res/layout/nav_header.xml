@@ -10,7 +10,6 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/navigation_drawer_user_account_picture_cover"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
@@ -20,7 +19,7 @@
     </FrameLayout>
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/navigation_header_user_picture"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginStart="32dp"
@@ -41,7 +40,7 @@
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/navigation_header_user_picture" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

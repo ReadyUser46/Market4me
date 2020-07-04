@@ -1,27 +1,35 @@
 package com.example.market4me;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.bumptech.glide.Glide;
 import com.example.market4me.auth.UserAuth;
+import com.example.market4me.utils.CameraUtils;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.io.File;
 
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
@@ -33,6 +41,10 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     // CONSTANTS
     public static final int RC_SIGN_IN = 237;
+    static final int REQUEST_IMAGE_CAPTURE = 2;
+    private ImageView mUserPic_imageview;
+    private Uri photoUri;
+
 
     protected abstract Fragment createFragment();
 
@@ -53,20 +65,22 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         // Nav Header Account
         TextView signIn = headerView.findViewById(R.id.nav_header_signin);
         TextView signOut = findViewById(R.id.nav_header_sign_out);
+        mUserPic_imageview = headerView.findViewById(R.id.navigation_header_user_picture);
+
 
         // Authentication
-        mUserAuth = new UserAuth(this, signIn, signOut, this);
-        FirebaseUser mCurrentUser = mUserAuth.getCurrentUser();
+        mUserAuth = new UserAuth(signIn, signOut, mUserPic_imageview, this);
+        FirebaseUser currentUser = mUserAuth.getCurrentUser();
 
         // Check if user is signed in
-        if (mCurrentUser == null) {
+        if (currentUser == null) {
             Log.i("patapum_auth", "App init with null user");
             mUserAuth.signInAnon(); /*Si el usuario no está logeado, lo logeamos anonimamente*/
-        } else if (mCurrentUser.isAnonymous()) {
+        } else if (currentUser.isAnonymous()) {
             mUserAuth.updateUI(false);
             mUserId = mUserAuth.getUserId();
             Log.i("patapum_auth", "App init with anon user, and id: " + mUserId);
-        } else if (!mCurrentUser.isAnonymous()) {
+        } else if (!currentUser.isAnonymous()) {
             mUserAuth.updateUI(true);
             mUserId = mUserAuth.getUserId();
             Log.i("patapum_auth", "App init with registered user, and id: " + mUserId);
@@ -89,13 +103,34 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         */
         // FRAGMENT MANAGER
         FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.fragment_container2);
+        Fragment fragment = fm.findFragmentById(R.id.fragment_container);
 
         if (fragment == null) {
             fragment = createFragment();
-            fm.beginTransaction().add(R.id.fragment_container2, fragment).commit();
+            fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
 
         }
+
+
+        // Fregao
+        mUserPic_imageview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                File photoFile = CameraUtils.onCreateFile(SingleFragmentActivity.this, null);
+                Log.i("patapum_pic", "photoFile = " + photoFile);
+                photoUri = FileProvider.getUriForFile(SingleFragmentActivity.this,
+                        "com.example.market4me.fileprovider",
+                        photoFile);
+
+                Log.i("patapum_pic", "photoUri = " + photoUri);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        });
+
+
     }
 
     @Override
@@ -131,6 +166,15 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
                 Log.e("patapum_auth", "Sign-in error: ", response.getError());
             }
         }
+
+        if (requestCode == SingleFragmentActivity.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+
+            mUserAuth.updatePicture(photoUri);
+            Glide.with(this)
+                    .load(photoUri)
+                    .circleCrop()
+                    .into(mUserPic_imageview);
+        }
     }
 
     @Override
@@ -163,11 +207,11 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
             switch (item.getItemId()) {
                 case (R.id.nav_new_recipe):
-                    fragmentManager.beginTransaction().add(R.id.fragment_container2, new NewRecipeFragment()).commit();
+                    fragmentManager.beginTransaction().add(R.id.fragment_container, new NewRecipeFragment()).commit();
                     break;
 
                 case (R.id.nav_list):
-                    fragmentManager.beginTransaction().add(R.id.fragment_container2, new RecipeListFragment()).commit();
+                    fragmentManager.beginTransaction().add(R.id.fragment_container, new RecipeListFragment()).commit();
 
                     break;
                 default:
