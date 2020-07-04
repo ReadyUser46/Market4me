@@ -28,7 +28,26 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/drawer_menu" />
+        app:menu="@menu/drawer_menu">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:listDivider"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="40dp" />
+
+        <TextView
+            android:id="@+id/nav_header_sign_out"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/logout"
+            android:drawableStart="@drawable/ic_logout"
+            android:drawablePadding="8dp"
+            android:layout_gravity="bottom" />
+    </com.google.android.material.navigation.NavigationView>
 
 
 </androidx.drawerlayout.widget.DrawerLayout>

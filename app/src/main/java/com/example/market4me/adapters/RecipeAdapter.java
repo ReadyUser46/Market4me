@@ -126,7 +126,6 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
 
     }
 
-
     /*HOLDER CLASS*/
     class RecipeHolder extends RecyclerView.ViewHolder {
         ImageView imageView;

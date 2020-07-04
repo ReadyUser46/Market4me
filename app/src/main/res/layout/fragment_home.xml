@@ -9,18 +9,18 @@
         android:id="@+id/view3"
         android:layout_width="match_parent"
         android:layout_height="190dp"
-        android:background="@drawable/pink_gradient_background"
+        android:background="@drawable/background_home_header"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:orientation="vertical"
-        android:gravity="center_vertical">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             style="@style/HeaderCardHome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="¿Qué comemos hoy?" />
+            android:text="@string/home_header_title" />
     </LinearLayout>
 
     <androidx.appcompat.widget.SearchView
@@ -29,7 +29,7 @@
         android:layout_width="340dp"
         android:layout_height="64dp"
         android:layout_marginTop="156dp"
-        android:background="@drawable/search_background"
+        android:background="@drawable/background_search"
         android:elevation="16dp"
         android:layoutDirection="rtl"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,6 +63,7 @@
                 android:layout_marginStart="50dp"
                 android:layout_marginTop="-26dp"
                 android:background="@drawable/card_circle_icon"
+                android:contentDescription="@string/new_recipe_title"
                 android:elevation="6dp"
                 android:scaleType="center"
                 android:src="@drawable/ic_add"
@@ -73,6 +74,7 @@
                 android:id="@+id/card1_image"
                 android:layout_width="match_parent"
                 android:layout_height="130dp"
+                android:contentDescription="@string/imagen_opcion_1"
                 android:scaleType="centerCrop"
                 android:src="@drawable/card1_background" />
 
@@ -89,14 +91,14 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="26dp"
-                    android:text="Receta" />
+                    android:text="@string/home_card1_title" />
 
                 <TextView
                     style="@style/DescriptionCardHome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="Crea una nueva receta" />
+                    android:text="@string/home_card1_desc" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -128,6 +130,7 @@
                 android:layout_marginStart="50dp"
                 android:layout_marginTop="-26dp"
                 android:background="@drawable/card_circle_icon"
+                android:contentDescription="@string/nav_lista_recetas"
                 android:elevation="6dp"
                 android:scaleType="center"
                 android:src="@drawable/ic_recipebook"
@@ -138,6 +141,7 @@
                 android:id="@+id/card2_image"
                 android:layout_width="match_parent"
                 android:layout_height="130dp"
+                android:contentDescription="@string/imagen_opcion_2"
                 android:scaleType="centerCrop"
                 android:src="@drawable/card2_background" />
 
@@ -155,14 +159,14 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="26dp"
-                    android:text="Lista" />
+                    android:text="@string/home_card2_title" />
 
                 <TextView
                     style="@style/DescriptionCardHome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="Consulta tus recetas" />
+                    android:text="@string/home_card2_desc" />
             </LinearLayout>
         </RelativeLayout>
 

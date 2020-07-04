@@ -51,12 +51,11 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         View headerView = navigationView.getHeaderView(0);
 
         // Nav Header Account
-        TextView signIn = headerView.findViewById(R.id.nav_header_user);
-        TextView userMail = headerView.findViewById(R.id.nav_header_mail);
-        TextView signOut = headerView.findViewById(R.id.nav_header_sign_out);
+        TextView signIn = headerView.findViewById(R.id.nav_header_signin);
+        TextView signOut = findViewById(R.id.nav_header_sign_out);
 
         // Authentication
-        mUserAuth = new UserAuth(this, signIn, userMail, signOut, this);
+        mUserAuth = new UserAuth(this, signIn, signOut, this);
         FirebaseUser mCurrentUser = mUserAuth.getCurrentUser();
 
         // Check if user is signed in
@@ -64,11 +63,11 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
             Log.i("patapum_auth", "App init with null user");
             mUserAuth.signInAnon(); /*Si el usuario no está logeado, lo logeamos anonimamente*/
         } else if (mCurrentUser.isAnonymous()) {
-            mUserAuth.updateUI(true);
+            mUserAuth.updateUI(false);
             mUserId = mUserAuth.getUserId();
             Log.i("patapum_auth", "App init with anon user, and id: " + mUserId);
         } else if (!mCurrentUser.isAnonymous()) {
-            mUserAuth.updateUI(false);
+            mUserAuth.updateUI(true);
             mUserId = mUserAuth.getUserId();
             Log.i("patapum_auth", "App init with registered user, and id: " + mUserId);
         }
@@ -109,7 +108,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
             // Successfully sign in
             if (resultCode == RESULT_OK) {
                 mUserId = mUserAuth.getUserId();
-                mUserAuth.updateUI(false);
+                mUserAuth.updateUI(true);
                 Snackbar.make(findViewById(R.id.drawer_layout), "Bienvenido " + mUserAuth.getCurrentUser().getDisplayName(), BaseTransientBottomBar.LENGTH_SHORT).show();
                 Log.i("patapum_auth", "User signed in successfully with Id: " + mUserId);
             }
@@ -197,7 +196,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
                 case "signout": {
                     mUserAuth.signOut();
                     mUserAuth.signInAnon();
-                    mUserAuth.updateUI(true);
+                    mUserAuth.updateUI(false);
                     break;
                 }
 

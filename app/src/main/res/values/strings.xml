@@ -37,6 +37,15 @@
     <string name="hint_ingredients">Ingredientes</string>
     <string name="instructions">Instrucciones</string>
     <string name="edit">Editar</string>
+    <string name="home_header_title">¿Qué comemos hoy?</string>
+    <string name="imagen_opcion_1">Imagen opción 1</string>
+    <string name="imagen_opcion_2">imagen opción 2</string>
+    <string name="home_card1_title">Receta</string>
+    <string name="home_card1_desc">Crea una nueva receta</string>
+    <string name="home_card2_title">Lista</string>
+    <string name="home_card2_desc">Consulta tus recetas</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="sign">Iniciar sesión</string>
 
     <string-array name="quantity_units">
         <item>Kg</item>

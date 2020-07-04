@@ -16,7 +16,7 @@
         app:endIconMode="clear_text"
         app:errorEnabled="true"
         app:hintTextColor="@color/blue_grad_center"
-        app:startIconDrawable="@drawable/ic_titlename">
+        app:startIconDrawable="@drawable/ic_list">
 
         <com.google.android.material.textfield.TextInputEditText
             style="@style/NewRecipeText"
@@ -33,7 +33,7 @@
         app:endIconMode="clear_text"
         app:errorEnabled="true"
         app:hintTextColor="@color/blue_grad_center"
-        app:startIconDrawable="@drawable/ic_titlename">
+        app:startIconDrawable="@drawable/ic_list">
 
         <com.google.android.material.textfield.TextInputEditText
             style="@style/NewRecipeText"

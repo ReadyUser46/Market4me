@@ -3,56 +3,45 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="176dp"
-    android:background="@color/colorAccentTork"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+    android:layout_height="176dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/navigation_drawer_user_account_picture_cover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/header_picture"
+            tools:ignore="ContentDescription" />
+
+    </FrameLayout>
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:layout_marginStart="32dp"
-        android:layout_marginBottom="8dp"
-        android:src="@mipmap/ic_launcher_round"
-        app:layout_constraintBottom_toTopOf="@+id/nav_header_user"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/nav_header_user"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginBottom="8dp"
-        android:paddingTop="8dp"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/nav_header_mail"
+        android:layout_marginTop="56dp"
+        android:background="@drawable/dummy_user"
         app:layout_constraintStart_toStartOf="parent"
-        tools:hint="Pedro Manuel" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/nav_header_mail"
+        android:id="@+id/nav_header_signin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="4dp"
-        android:textSize="16sp"
-        android:visibility="invisible"
+        android:text="@string/sign"
+        style="@style/TitleCardList"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:hint="correoElectronico@mail.com" />
-
-    <TextView
-        android:id="@+id/nav_header_sign_out"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="76dp"
-        android:layout_marginBottom="8dp"
-        android:text="Sign Out"
-        android:textSize="16sp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/nav_header_mail"
-        app:layout_constraintStart_toEndOf="@+id/nav_header_user" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

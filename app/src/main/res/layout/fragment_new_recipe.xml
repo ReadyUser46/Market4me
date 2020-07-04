@@ -76,7 +76,7 @@
                         app:endIconMode="clear_text"
                         app:errorEnabled="true"
                         app:hintTextColor="@color/blue_grad_center"
-                        app:startIconDrawable="@drawable/ic_titlename">
+                        app:startIconDrawable="@drawable/ic_list">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_title"
@@ -139,7 +139,7 @@
                         android:hint="@string/hint_preparation"
                         app:endIconMode="clear_text"
                         app:hintTextColor="@color/blue_grad_center"
-                        app:startIconDrawable="@drawable/ic_note_grey_24dp">
+                        app:startIconDrawable="@drawable/ic_notes">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_preparation"
@@ -170,7 +170,7 @@
                             android:layout_marginTop="64dp"
                             android:clickable="false"
                             android:text="add picture"
-                            android:textColor="@color/colorHint"
+                            android:textColor="?android:textColorHint"
                             android:textSize="12sp" />
                     </FrameLayout>
 

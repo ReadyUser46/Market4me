@@ -25,17 +25,15 @@ public class UserAuth {
 
     private Context context;
     private FirebaseAuth mAuth;
-    private TextView mUserName, mUserMail, mSignOut;
+    private TextView mSignIn, mSignOut;
     private String mUserId;
     private FirebaseUser mCurrentUser;
     private Activity activity;
 
-
-    public UserAuth(Context context, TextView mUserName, TextView mUserMail, TextView mSignOut, Activity activity) {
+    public UserAuth(Context context, TextView mSignIn, TextView mSignOut, Activity activity) {
         this.context = context;
         this.mAuth = FirebaseAuth.getInstance();
-        this.mUserName = mUserName;
-        this.mUserMail = mUserMail;
+        this.mSignIn = mSignIn;
         this.mSignOut = mSignOut;
         this.activity = activity;
         mCurrentUser = mAuth.getCurrentUser();
@@ -64,19 +62,16 @@ public class UserAuth {
                 });
     }
 
-    public void updateUI(boolean signInAvailable) {
+    public void updateUI(boolean userLogged) {
 
         // Status text
-        if (signInAvailable) {
-            mUserName.setText("Sign In");
-            mUserMail.setVisibility(View.INVISIBLE);
+        if (!userLogged) {
+            mSignIn.setText(R.string.sign);
             mSignOut.setVisibility(View.INVISIBLE);
 
         }
-        if (!signInAvailable) {
-            mUserName.setText(mAuth.getCurrentUser().getDisplayName());
-            mUserMail.setText(mAuth.getCurrentUser().getEmail());
-            mUserMail.setVisibility(View.VISIBLE);
+        if (userLogged) {
+            mSignIn.setText(mAuth.getCurrentUser().getDisplayName());
             mSignOut.setVisibility(View.VISIBLE);
         }
     }
@@ -87,10 +82,6 @@ public class UserAuth {
 
     public FirebaseUser getCurrentUser() {
         return mCurrentUser;
-    }
-
-    public FirebaseAuth getmAuth() {
-        return mAuth;
     }
 
     public void signInAnon() {
