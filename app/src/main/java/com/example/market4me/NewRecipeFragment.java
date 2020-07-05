@@ -1,5 +1,6 @@
 package com.example.market4me;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -29,13 +30,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.FileProvider;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.market4me.models.Recipe;
 import com.example.market4me.utils.CameraUtils;
+import com.example.market4me.utils.ImageCompressionAsyncTask;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -74,7 +75,7 @@ public class NewRecipeFragment extends Fragment {
 
     private ImageButton mImageButton;
     private TextView mImgBtnText;
-    private Uri mPhotoUri;
+    private Uri mPictureUri;
     private boolean pictureTaken;
 
     private Recipe mRecipe;
@@ -83,6 +84,7 @@ public class NewRecipeFragment extends Fragment {
 
     private boolean mFlagEdit;
     private String mPictureName;
+    private File recipePicture;
 
     // CONSTANTS
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -246,16 +248,11 @@ public class NewRecipeFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        switch (item.getItemId()) {
-
-            case R.id.save_menu_icon:
-                new SaveButtonListener().onClick(null);
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-
+        if (item.getItemId() == R.id.save_menu_icon) {
+            new SaveButtonListener().onClick(null);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
 
     }
 
@@ -263,6 +260,7 @@ public class NewRecipeFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // Picture back from camera
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
             mImageButton.setBackgroundColor(Color.TRANSPARENT);
@@ -272,7 +270,7 @@ public class NewRecipeFragment extends Fragment {
 
             Glide.
                     with(getActivity())
-                    .load(mPhotoUri)
+                    .load(mPictureUri)
                     .centerCrop()
                     .into(mImageButton);
         }
@@ -416,14 +414,33 @@ public class NewRecipeFragment extends Fragment {
                 FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
                 if (pictureTaken) {
-                    FirebaseStorage mStorage = FirebaseStorage.getInstance();
-                    StorageReference storageReference = mStorage.getReference().child("Pictures").child(mUserId).child(mPictureName);
-                    storageReference.putFile(mPhotoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
+                    // Compress image
+                    @SuppressLint("StaticFieldLeak")
+                    ImageCompressionAsyncTask imageCompressionAsyncTask = new ImageCompressionAsyncTask(getContext()) {
+
                         @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Toast.makeText(getActivity(), "Uploading picture finished", Toast.LENGTH_LONG).show();
+                        protected void onPostExecute(String path) {
+
+                            Log.i("patapum", "onPostExecute: Picture compressed");
+                            // Get uri for compressed picture
+                            Uri compressPictureUri = CameraUtils
+                                    .onGetUriForFile(getContext(), new File(path));
+
+                            // Upload compressed picture to FireStorage
+                            FirebaseStorage mStorage = FirebaseStorage.getInstance();
+                            StorageReference storageReference = mStorage.getReference().child("Pictures").child(mUserId).child(mPictureName);
+                            storageReference.putFile(compressPictureUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    Toast.makeText(getActivity(), "onSucess: Picture uploaded", Toast.LENGTH_LONG).show();
+                                }
+                            });
+
                         }
-                    });
+                    };
+                    imageCompressionAsyncTask.execute(recipePicture.getAbsolutePath());
+
                 }
 
                 if (mFlagEdit) {
@@ -437,7 +454,7 @@ public class NewRecipeFragment extends Fragment {
                     firebaseFirestore.collection("Users").document(mUserId).collection("Recipes").add(mRecipe).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
-                            Log.i("patapum", "Receta subida");
+
                         }
                     });
 
@@ -464,13 +481,10 @@ public class NewRecipeFragment extends Fragment {
             if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) &&
                     takePictureIntent.resolveActivity(packageManager) != null) {
 
-                File photoFile = CameraUtils.onCreateFile(getContext(), null);
-                Log.i("patapum_pic", "photoFile = " + photoFile);
-                mPhotoUri = FileProvider.getUriForFile(getContext(),
-                        "com.example.market4me.fileprovider",
-                        photoFile);
-                Log.i("patapum_pic", "photoUri = " + mPhotoUri);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoUri);
+                recipePicture = CameraUtils.onCreateFile(getContext(), null);
+                mPictureUri = CameraUtils.onGetUriForFile(getContext(), recipePicture);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPictureUri);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 
             } else {
                 Toast.makeText(getActivity(), getActivity().getString(R.string.no_camera_error), Toast.LENGTH_SHORT).show();
