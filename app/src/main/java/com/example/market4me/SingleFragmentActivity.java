@@ -13,7 +13,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -43,7 +42,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     public static final int RC_SIGN_IN = 237;
     static final int REQUEST_IMAGE_CAPTURE = 2;
     private ImageView mUserPic_imageview;
-    private Uri photoUri;
+    private Uri mPictureUri;
 
 
     protected abstract Fragment createFragment();
@@ -111,21 +110,14 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
         }
 
-
-        // Fregao
         mUserPic_imageview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                File photoFile = CameraUtils.onCreateFile(SingleFragmentActivity.this, null);
-                Log.i("patapum_pic", "photoFile = " + photoFile);
-                photoUri = FileProvider.getUriForFile(SingleFragmentActivity.this,
-                        "com.example.market4me.fileprovider",
-                        photoFile);
-
-                Log.i("patapum_pic", "photoUri = " + photoUri);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                File recipePhoto = CameraUtils.onCreateFile(SingleFragmentActivity.this, null);
+                mPictureUri = CameraUtils.onGetUriForFile(SingleFragmentActivity.this, recipePhoto);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPictureUri);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         });
@@ -169,9 +161,9 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
         if (requestCode == SingleFragmentActivity.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
-            mUserAuth.updatePicture(photoUri);
+            mUserAuth.updatePicture(mPictureUri);
             Glide.with(this)
-                    .load(photoUri)
+                    .load(mPictureUri)
                     .circleCrop()
                     .into(mUserPic_imageview);
         }
