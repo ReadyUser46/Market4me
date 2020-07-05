@@ -12,14 +12,16 @@ import java.util.Locale;
 public class CameraUtils {
 
 
+    private static File picturePath;
+    private static String pictureName;
+
     public static File onCreateFile(Context context, String subDir) {
 
         // file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmSS", Locale.US).format(new Date());
-        String pictureName = "IMG_" + timeStamp + ".jpg";
+        pictureName = "IMG_" + timeStamp + ".jpg";
 
         // file path
-        File picturePath;
         if (subDir != null) {
             picturePath = new File(context.getFilesDir(), subDir);
             if (!picturePath.exists()) picturePath.mkdir();
@@ -32,7 +34,7 @@ public class CameraUtils {
 
     }
 
-    public static Bitmap getScaledBitmap(String path, int destWidth, int destHeight) {
+    public static Bitmap getScaledBitmap(int destWidth, int destHeight) {
 
         // Read in the dimensions of the image on disk
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -51,8 +53,10 @@ public class CameraUtils {
         options.inSampleSize = scaleFactor;
 
         // Create final bitmap
-        return BitmapFactory.decodeFile(path, options);
+        return BitmapFactory.decodeFile(picturePath.toString(), options);
     }
 
-
+    public static String getPictureName() {
+        return pictureName;
+    }
 }

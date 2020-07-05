@@ -60,11 +60,8 @@ public class NewRecipeFragment extends Fragment {
 
     private TextInputEditText mTitleEditText, mPeopleEditText, mTimeEditText, mPreparationEditText;
     private TextInputLayout mTilTitle, mTilPeople, mTilTime;
-    private Button mSaveButton;
     private int mTime, mPeople;
     private String mTitle;
-
-    private String mPhotoName;
 
     private List<String> mIngredientsList;
     private List<Integer> mQuantitiesList;
@@ -85,6 +82,7 @@ public class NewRecipeFragment extends Fragment {
     private String mUserId;
 
     private boolean mFlagEdit;
+    private String mPictureName;
 
     // CONSTANTS
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -147,9 +145,18 @@ public class NewRecipeFragment extends Fragment {
         // Inflamos el layout
         View view = inflater.inflate(R.layout.fragment_new_recipe, container, false);
 
-
-        // Binding of every element on the screen to his view + spinners
-        findViews(view);
+        // References for the views on the layout
+        mRootLayout = view.findViewById(R.id.linearlayout_ingredients);
+        mTilTitle = view.findViewById(R.id.til_et_title);
+        mTilPeople = view.findViewById(R.id.til_et_people);
+        mTilTime = view.findViewById(R.id.til_et_time);
+        mTitleEditText = view.findViewById(R.id.et_title);
+        mPeopleEditText = view.findViewById(R.id.et_people);
+        mTimeEditText = view.findViewById(R.id.et_time);
+        mPreparationEditText = view.findViewById(R.id.et_preparation);
+        mImageButton = view.findViewById(R.id.ibtn_take_picture);
+        mImgBtnText = view.findViewById(R.id.tv_imgbtn);
+        Button mSaveButton = view.findViewById(R.id.but_save);
 
         // Toolbar implementation
         Toolbar toolbarNewRecipe = view.findViewById(R.id.toolbarNewRecipe);
@@ -252,23 +259,23 @@ public class NewRecipeFragment extends Fragment {
 
     }
 
-    private void findViews(View view) {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        mRootLayout = view.findViewById(R.id.linearlayout_ingredients);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
-        mTilTitle = view.findViewById(R.id.til_et_title);
-        mTilPeople = view.findViewById(R.id.til_et_people);
-        mTilTime = view.findViewById(R.id.til_et_time);
+            mImageButton.setBackgroundColor(Color.TRANSPARENT);
+            mImgBtnText.setVisibility(View.INVISIBLE);
+            mPictureName = CameraUtils.getPictureName();
+            pictureTaken = true; // boolean for upload pic to FireStore Storage
 
-        mTitleEditText = view.findViewById(R.id.et_title);
-        mPeopleEditText = view.findViewById(R.id.et_people);
-        mTimeEditText = view.findViewById(R.id.et_time);
-        mPreparationEditText = view.findViewById(R.id.et_preparation);
-
-        mSaveButton = view.findViewById(R.id.but_save);
-        mImageButton = view.findViewById(R.id.ibtn_take_picture);
-        mImgBtnText = view.findViewById(R.id.tv_imgbtn);
-
+            Glide.
+                    with(getActivity())
+                    .load(mPhotoUri)
+                    .centerCrop()
+                    .into(mImageButton);
+        }
     }
 
     private void test_addBlockEditTexts(LayoutInflater inflater, int index, int position, boolean listenerON) {
@@ -404,13 +411,13 @@ public class NewRecipeFragment extends Fragment {
                 mRecipe.setIngredients(mIngredientsList);
                 mRecipe.setQuantities(mQuantitiesList);
                 mRecipe.setUnits(mUnitsList);
-                if (pictureTaken) mRecipe.setPhotoName(mPhotoName);
+                if (pictureTaken) mRecipe.setPhotoName(mPictureName);
 
                 FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
                 if (pictureTaken) {
                     FirebaseStorage mStorage = FirebaseStorage.getInstance();
-                    StorageReference storageReference = mStorage.getReference().child("Pictures").child(mUserId).child(mPhotoName);
+                    StorageReference storageReference = mStorage.getReference().child("Pictures").child(mUserId).child(mPictureName);
                     storageReference.putFile(mPhotoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -441,24 +448,6 @@ public class NewRecipeFragment extends Fragment {
 
             }
 
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
-            mImageButton.setBackgroundColor(Color.TRANSPARENT);
-            mImgBtnText.setVisibility(View.INVISIBLE);
-            pictureTaken = true; // boolean for upload pic to FireStore Storage
-
-            Glide.
-                    with(getActivity())
-                    .load(mPhotoUri)
-                    .centerCrop()
-                    .into(mImageButton);
         }
     }
 
