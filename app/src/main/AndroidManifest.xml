@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.market4me">
+    package="com.torkdev.market4me">
 
     <!-- Le indicamos a google play que esta app usa la camara pero no es indispensable para la app -->
     <uses-feature
@@ -17,12 +17,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivityTest">
+        <activity android:name="com.torkdev.market4me.MainActivityTest">
 
         </activity>
-        <activity android:name=".RecipeListActivity" />
-        <activity android:name=".DisplayRecipeActivity" />
-        <activity android:name=".HomeDashBoardActivity">
+        <activity android:name="com.torkdev.market4me.RecipeListActivity" />
+        <activity android:name="com.torkdev.market4me.DisplayRecipeActivity" />
+        <activity android:name="com.torkdev.market4me.HomeDashBoardActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,8 +31,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".NewRecipeActivity"
-            android:parentActivityName=".RecipeListActivity" />
+            android:name="com.torkdev.market4me.NewRecipeActivity"
+            android:parentActivityName="com.torkdev.market4me.RecipeListActivity" />
 
         <!-- IMPORTANTE -->
         <!-- Con el atributo anterior, ponemos la flechita en la barra superior, para poder volver a la actividad anterior -->
@@ -40,7 +40,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.market4me.fileprovider"
+            android:authorities="com.torkdev.market4me.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

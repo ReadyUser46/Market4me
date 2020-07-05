@@ -1,13 +1,6 @@
-package com.example.market4me.models;
+package com.torkdev.market4me.models;
 
-import android.content.Context;
-import android.net.Uri;
-
-import java.io.File;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Recipe implements Serializable {

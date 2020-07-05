@@ -1,4 +1,4 @@
-package com.example.market4me.utils;
+package com.torkdev.market4me.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;

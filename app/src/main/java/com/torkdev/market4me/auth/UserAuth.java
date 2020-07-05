@@ -1,4 +1,4 @@
-package com.example.market4me.auth;
+package com.torkdev.market4me.auth;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.bumptech.glide.Glide;
-import com.example.market4me.R;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -24,6 +23,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.torkdev.market4me.R;
 
 
 public class UserAuth {

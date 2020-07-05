@@ -1,4 +1,4 @@
-package com.example.market4me.models;
+package com.torkdev.market4me.models;
 
 import java.util.ArrayList;
 import java.util.List;

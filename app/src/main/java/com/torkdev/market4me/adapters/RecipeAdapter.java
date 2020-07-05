@@ -1,4 +1,4 @@
-package com.example.market4me.adapters;
+package com.torkdev.market4me.adapters;
 
 import android.content.Context;
 import android.util.Log;
@@ -11,9 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.market4me.R;
-import com.example.market4me.models.Recipe;
-import com.example.market4me.utils.GlideApp;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.ObservableSnapshotArray;
@@ -24,6 +21,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.torkdev.market4me.R;
+import com.torkdev.market4me.models.Recipe;
+import com.torkdev.market4me.utils.GlideApp;
 
 
 /*ADAPTER CLASS*/

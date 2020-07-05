@@ -1,4 +1,4 @@
-package com.example.market4me.utils;
+package com.torkdev.market4me.utils;
 
 import android.content.Context;
 import android.text.InputType;
@@ -10,9 +10,9 @@ import android.widget.Spinner;
 
 import androidx.core.content.res.ResourcesCompat;
 
-import com.example.market4me.R;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.torkdev.market4me.R;
 
 public class ViewCreator {
 

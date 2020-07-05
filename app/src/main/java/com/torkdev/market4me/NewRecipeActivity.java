@@ -1,15 +1,12 @@
-package com.example.market4me;
+package com.torkdev.market4me;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
-import com.example.market4me.models.Recipe;
+import com.torkdev.market4me.models.Recipe;
 
 public class NewRecipeActivity extends SingleFragmentActivity {
 

@@ -1,4 +1,4 @@
-package com.example.market4me;
+package com.torkdev.market4me;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -34,9 +34,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
-import com.example.market4me.models.Recipe;
-import com.example.market4me.utils.CameraUtils;
-import com.example.market4me.utils.ImageCompressionAsyncTask;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -45,6 +42,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.torkdev.market4me.models.Recipe;
+import com.torkdev.market4me.utils.CameraUtils;
+import com.torkdev.market4me.utils.ImageCompressionAsyncTask;
 
 import java.io.File;
 import java.util.ArrayList;

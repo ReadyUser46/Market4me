@@ -1,8 +1,7 @@
-package com.example.market4me;
+package com.torkdev.market4me;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import androidx.fragment.app.Fragment;
 

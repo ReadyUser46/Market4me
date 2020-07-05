@@ -1,4 +1,4 @@
-package com.example.market4me;
+package com.torkdev.market4me;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,8 +22,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.market4me.adapters.RecipeAdapter;
-import com.example.market4me.models.Recipe;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +29,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.torkdev.market4me.adapters.RecipeAdapter;
+import com.torkdev.market4me.models.Recipe;
 
 public class RecipeListFragment extends Fragment {
 

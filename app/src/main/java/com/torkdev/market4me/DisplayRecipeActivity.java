@@ -1,4 +1,4 @@
-package com.example.market4me;
+package com.torkdev.market4me;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.market4me.models.Recipe;
+import com.torkdev.market4me.models.Recipe;
 
 public class DisplayRecipeActivity extends SingleFragmentActivity {
 

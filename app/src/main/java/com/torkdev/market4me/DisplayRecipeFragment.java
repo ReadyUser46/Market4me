@@ -1,4 +1,4 @@
-package com.example.market4me;
+package com.torkdev.market4me;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,8 +20,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import com.example.market4me.models.Recipe;
-import com.example.market4me.utils.GlideApp;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -29,6 +27,8 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.torkdev.market4me.models.Recipe;
+import com.torkdev.market4me.utils.GlideApp;
 
 import java.util.List;
 
