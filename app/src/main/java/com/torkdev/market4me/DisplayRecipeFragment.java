@@ -2,7 +2,6 @@ package com.torkdev.market4me;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -94,7 +93,7 @@ public class DisplayRecipeFragment extends Fragment {
 
 
         // Collapsing Toolbar. Hide title
-        final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbarDisplay);
+        final CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsingToolbarDisplay);
         AppBarLayout appBarLayout = view.findViewById(R.id.app_bar);
 
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
@@ -126,7 +125,6 @@ public class DisplayRecipeFragment extends Fragment {
             Snackbar.make(view, "No hay foto", BaseTransientBottomBar.LENGTH_LONG).show();
 
         } else {
-            Log.i("patapum", "UserId from DisplayRecipeFragment: " + mUserId);
             StorageReference storagedPhotoReference = mStorage.getReference().child("Pictures").child(mUserId).child(mRecipe.getPhotoName());
 
             GlideApp.with(getActivity())

@@ -11,7 +11,6 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -126,15 +125,12 @@ public class NewRecipeFragment extends Fragment {
         // get intent extras
         mRecipe = (Recipe) getActivity().getIntent().getSerializableExtra(NewRecipeActivity.EXTRA_RECIPE_OBJECT2);
         mRecipeId = getActivity().getIntent().getStringExtra(NewRecipeActivity.EXTRA_RECIPE_ID2);
-        Log.i("patapum", "mRecipeId= " + mRecipeId);
-
 
         // new or edit
         if (mRecipe == null) {
             mRecipe = new Recipe();
         } else {
             mFlagEdit = true;
-            Log.i("patapum", "mFlagEdit: " + mFlagEdit);
 
         }
 
@@ -422,7 +418,6 @@ public class NewRecipeFragment extends Fragment {
                         @Override
                         protected void onPostExecute(String path) {
 
-                            Log.i("patapum", "onPostExecute: Picture compressed");
                             // Get uri for compressed picture
                             Uri compressPictureUri = CameraUtils
                                     .onGetUriForFile(getContext(), new File(path));
@@ -450,7 +445,6 @@ public class NewRecipeFragment extends Fragment {
 
                 } else {
                     // New Recipe
-                    Log.i("patapum", "User ID = " + mUserId);
                     firebaseFirestore.collection("Users").document(mUserId).collection("Recipes").add(mRecipe).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -59,7 +58,6 @@ public class UserAuth {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Log.i("patapum_auth", "User is now signed out");
                         Snackbar.make(
                                 activity.findViewById(R.id.drawer_layout),
                                 R.string.signed_out_successfully,
@@ -74,13 +72,7 @@ public class UserAuth {
                 .setPhotoUri(uri)
                 .build();
 
-        firebaseUser.updateProfile(update)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) Log.i("patapum_auth", "User picture updated");
-                    }
-                });
+        firebaseUser.updateProfile(update);
     }
 
     public void updateUI(boolean userLogged) {
@@ -132,7 +124,6 @@ public class UserAuth {
                     public void onSuccess(AuthResult authResult) {
                         updateUI(true);
                         mUserId = mAuth.getCurrentUser().getUid();
-                        Log.i("patapum_auth", "User sign in anonymously with Id: " + mUserId);
 
                     }
                 });

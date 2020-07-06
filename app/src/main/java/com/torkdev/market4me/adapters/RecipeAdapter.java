@@ -1,7 +1,6 @@
 package com.torkdev.market4me.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,9 +32,6 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
     private OnItemClickListener mListener;
     private ViewGroup mViewGroupRecycler;
     private String mUserId;
-
-    private final String TAG = "patapum";
-
 
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
@@ -108,7 +104,6 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
         documentReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.i(TAG, "OnSuccess; Item deleted");
             }
         });
 

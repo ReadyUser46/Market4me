@@ -8,7 +8,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.core.content.FileProvider;
 
@@ -50,12 +49,6 @@ public class CameraUtils {
         // file uri
         final String authProvider = context.getPackageName() + ".fileprovider";
         Uri pictureUri = FileProvider.getUriForFile(context, authProvider, pictureFile);
-
-        Log.i("patapum_pic", "pictureName = " + pictureName);
-        Log.i("patapum_pic", "pictureFile = " + pictureFile);
-        Log.i("patapum_pic", "pictureUri = " + pictureUri);
-        Log.i("patapum_pic", "pictureFile.getAbsolutePath() = " + pictureFile.getAbsolutePath());
-
         return pictureUri;
     }
 

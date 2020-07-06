@@ -2,7 +2,6 @@ package com.torkdev.market4me;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -81,8 +80,6 @@ public class RecipeListFragment extends Fragment {
         Bundle args = getArguments();
         //mUserId = args.getString(ARG_USER_ID);
         //mUserAuth = (UserAuth) args.getSerializable(ARG_AUTH_OBJECT);
-
-        //Log.i("patapum", "User Id received in RecipeListFragment: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
     }
 
     @Nullable
@@ -93,7 +90,6 @@ public class RecipeListFragment extends Fragment {
 
         // Setup RecyclerView
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Log.i("patapum", "User Id received in RecipeListFragment: " + userId);
         setUpRecyclerView(view, userId);
 
         FloatingActionButton floatingActionButton = view.findViewById(R.id.floatingButton);
@@ -125,7 +121,6 @@ public class RecipeListFragment extends Fragment {
         FirebaseAuth.AuthStateListener mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                Log.i("patapum", "Auth listener detected something!");
                 //String userId = firebaseAuth.getCurrentUser().getUid();
                 if (!authListenerFlag && firebaseAuth.getCurrentUser().getUid() != null) {
                     setUpRecyclerView(view, firebaseAuth.getCurrentUser().getUid());
