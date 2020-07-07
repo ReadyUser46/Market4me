@@ -10,8 +10,6 @@ public class RecipeListActivity extends SingleFragmentActivity {
 
     @Override
     protected Fragment createFragment() {
-        //String userId = (mUserId == null) ? "lTp9MOAdZ7UKMZyxjH2AxmGWlFp2" : mUserId;
-
         return RecipeListFragment.newInstance();
     }
 

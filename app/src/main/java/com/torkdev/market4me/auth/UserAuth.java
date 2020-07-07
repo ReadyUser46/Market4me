@@ -109,8 +109,6 @@ public class UserAuth {
                     .load(userPic)
                     .centerCrop()
                     .into(imageView);
-
-
         }
 
 
@@ -130,7 +128,7 @@ public class UserAuth {
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
-                        updateUI(true);
+                        updateUI(false);
                         mUserId = mAuth.getCurrentUser().getUid();
                         Log.i("patapum_auth", "User sign in anonymously with Id: " + mUserId);
 

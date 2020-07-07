@@ -8,35 +8,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:68640669753:android:b6cdcc51964ef7d6f10de8",
-        "android_client_info": {
-          "package_name": "com.example.market4me"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "68640669753-edfvpso5nemh5fjk98hdceoseha7almj.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDd3Ak3X_IcHfskibc4t3L6FAVxNp3rg9M"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "68640669753-edfvpso5nemh5fjk98hdceoseha7almj.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:68640669753:android:bed31d38192453f0f10de8",
         "android_client_info": {
           "package_name": "com.torkdev.market4me"

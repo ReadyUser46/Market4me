@@ -61,6 +61,7 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
 
         } else {
 
+            // dummy picture
             String imageUri = "@drawable/receta1";
             imageName = mContext.getResources().getIdentifier(imageUri, null, mContext.getPackageName());
         }
@@ -69,13 +70,6 @@ public class RecipeAdapter extends FirestoreRecyclerAdapter<Recipe, RecipeAdapte
                 .load(imageName)
                 .centerCrop()
                 .into(holder.imageView);
-
-
-        /*String imageUri = "@drawable/receta1";
-        Glide.with(mContext)
-                .load(mContext.getResources().getIdentifier(imageUri, null, mContext.getPackageName()))
-                .centerCrop()
-                .into(holder.imageView);*/
 
 
         holder.tvTittle.setText(model.getTitle());

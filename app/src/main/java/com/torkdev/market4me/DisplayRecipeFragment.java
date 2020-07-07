@@ -94,7 +94,7 @@ public class DisplayRecipeFragment extends Fragment {
 
 
         // Collapsing Toolbar. Hide title
-        final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbarDisplay);
+        final CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsingToolbarDisplay);
         AppBarLayout appBarLayout = view.findViewById(R.id.app_bar);
 
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
@@ -135,7 +135,7 @@ public class DisplayRecipeFragment extends Fragment {
                     .into(mRecipeImage);
         }
 
-        // FAB listener
+        // FAB Edit listener
         mFabEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

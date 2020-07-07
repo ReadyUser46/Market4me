@@ -37,24 +37,15 @@ public class RecipeListFragment extends Fragment {
     // MEMBER VARIABLES
 
     private RecipeAdapter mRecipeAdapter;
-    private Recipe mRecipe;
-    private boolean authListenerFlag;
-
-    // CONSTANTS
-    private static final String ARG_USER_ID = "fireStore_UserId";
-    private static final String ARG_AUTH_OBJECT = "fireStore_user_auth";
 
 
     // Activity to Fragment Communication
     public static RecipeListFragment newInstance() {
-        RecipeListFragment fragment = new RecipeListFragment();
-
         //Bundle args = new Bundle();
         //args.putSerializable(ARG_AUTH_OBJECT, userAuth);
-
         //args.putString(ARG_USER_ID, userId);
         //fragment.setArguments(args);
-        return fragment;
+        return new RecipeListFragment();
     }
 
 
@@ -81,8 +72,6 @@ public class RecipeListFragment extends Fragment {
         Bundle args = getArguments();
         //mUserId = args.getString(ARG_USER_ID);
         //mUserAuth = (UserAuth) args.getSerializable(ARG_AUTH_OBJECT);
-
-        //Log.i("patapum", "User Id received in RecipeListFragment: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
     }
 
     @Nullable
@@ -93,15 +82,41 @@ public class RecipeListFragment extends Fragment {
 
         // Setup RecyclerView
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Log.i("patapum", "User Id received in RecipeListFragment: " + userId);
-        setUpRecyclerView(view, userId);
+        FirestoreRecyclerOptions<Recipe> options = setupRecyclerOptions(userId, "title");
 
+        mRecipeAdapter = new RecipeAdapter(options, getContext(), userId); // le pasamos el context para poder tener acceso a string resources
+        RecyclerView recyclerView = view.findViewById(R.id.recipesRecyclerView);
+        recyclerView.setHasFixedSize(true); // Si todas las views tienen el mismo tamaño, se optimiza el código mucho poniendo a true.
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(mRecipeAdapter);
+
+        // Deslizar para borrar
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                mRecipeAdapter.deleteUndoRecipe(viewHolder.getAdapterPosition());
+
+            }
+
+
+        }).attachToRecyclerView(recyclerView);
+
+        // listener recyclerview
+        mRecipeAdapter.setOnItemClickListener(new AdapterListener());
+
+        // Floating button 'new'
         FloatingActionButton floatingActionButton = view.findViewById(R.id.floatingButton);
         floatingActionButton.setOnClickListener(new FloatingButtonListener());
 
         // Implementar Toolbar
         Toolbar toolbar = view.findViewById(R.id.toolbarRecipesList);
-        //toolbar.setTitle(R.string.recipe_list_title);
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -122,17 +137,20 @@ public class RecipeListFragment extends Fragment {
 
         // Firebase Auth Listener
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseAuth.AuthStateListener mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+        FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                Log.i("patapum", "Auth listener detected something!");
-                //String userId = firebaseAuth.getCurrentUser().getUid();
-                if (!authListenerFlag && firebaseAuth.getCurrentUser().getUid() != null) {
-                    setUpRecyclerView(view, firebaseAuth.getCurrentUser().getUid());
+                Log.i("patapum_auth", "Auth listener detected something!");
+                if (firebaseAuth.getCurrentUser() != null) {
+                    Log.i("patapum_auth", "Auth listener refresh UI");
+                    String currentUser = firebaseAuth.getCurrentUser().getUid();
+                    FirestoreRecyclerOptions<Recipe> newOptions = setupRecyclerOptions(currentUser, "title");
+                    mRecipeAdapter.updateOptions(newOptions);
                 }
             }
         };
-        firebaseAuth.addAuthStateListener(mAuthStateListener);
+        firebaseAuth.addAuthStateListener(authStateListener);
+
 
         return view;
     }
@@ -162,49 +180,16 @@ public class RecipeListFragment extends Fragment {
 
     }
 
-    private void setUpRecyclerView(View v, String userId) {
+    private FirestoreRecyclerOptions<Recipe> setupRecyclerOptions(String userId, String queryField) {
 
-        // The first time we get in the setUpRecyclerView, the Auth listener get activated
-        authListenerFlag = true;
-
-        //Al constructor del adapter hay que pasarle un objeto FirestoreRecyclerOptions.
-        //No es más que un objeto que le dice al adapter en que orden mostrar los elementos
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-
         CollectionReference recipeRef = firebaseFirestore.collection("Users").document(userId).collection("Recipes");
-        Query query = recipeRef.orderBy("title", Query.Direction.ASCENDING);
 
-        FirestoreRecyclerOptions<Recipe> options = new FirestoreRecyclerOptions.Builder<Recipe>()
+        Query query = recipeRef.orderBy(queryField, Query.Direction.ASCENDING);
+
+        return new FirestoreRecyclerOptions.Builder<Recipe>()
                 .setQuery(query, Recipe.class)
                 .build();
-
-        mRecipeAdapter = new RecipeAdapter(options, getContext(), userId); // le pasamos el context para poder tener acceso a string resources
-        RecyclerView recyclerView = v.findViewById(R.id.recipesRecyclerView);
-        recyclerView.setHasFixedSize(true); // Si todas las views tienen el mismo tamaño, se optimiza el código mucho poniendo a true.
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(mRecipeAdapter);
-
-
-        // Deslizar para borrar
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-
-
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                mRecipeAdapter.deleteUndoRecipe(viewHolder.getAdapterPosition());
-
-            }
-
-
-        }).attachToRecyclerView(recyclerView);
-
-        // listener
-        mRecipeAdapter.setOnItemClickListener(new AdapterListener());
     }
 
     class FloatingButtonListener implements View.OnClickListener {
@@ -221,7 +206,7 @@ public class RecipeListFragment extends Fragment {
     class AdapterListener implements RecipeAdapter.OnItemClickListener {
         @Override
         public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
-            mRecipe = documentSnapshot.toObject(Recipe.class);
+            Recipe mRecipe = documentSnapshot.toObject(Recipe.class);
             String recipeId = documentSnapshot.getId();
             Intent intent = DisplayRecipeActivity.newIntent(getContext(), mRecipe, recipeId);
             startActivity(intent);
