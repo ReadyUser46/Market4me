@@ -46,6 +46,7 @@
     <string name="home_card2_desc">Consulta tus recetas</string>
     <string name="logout">Cerrar sesión</string>
     <string name="sign">Iniciar sesión</string>
+    <string name="home">Inicio</string>
 
     <string-array name="quantity_units">
         <item>Kg</item>

@@ -20,6 +20,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             style="@style/NewRecipeText"
+            android:inputType="text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -30,7 +31,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="1.4"
         android:hint="@string/hint_quantity"
-        app:endIconMode="clear_text"
         app:errorEnabled="true"
         app:hintTextColor="@color/blue_grad_center"
         app:startIconDrawable="@drawable/ic_list">

@@ -88,7 +88,7 @@ public class NewRecipeFragment extends Fragment {
 
     // CONSTANTS
     private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final String ARG_USER_ID = "fireStore_UserId";
+    public static final String ARG_USER_ID = "fireStore_UserId";
 
     // Activity to Fragment Communication
     public static NewRecipeFragment newInstance(String userId) {
@@ -104,10 +104,6 @@ public class NewRecipeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-        // init Firebase
-        //FirebaseFirestore db = FirebaseFirestore.getInstance();
-        //mRecipesRef = db.collection("Recipes");
 
         // init arraylists
         mIngredientEditTexts = new ArrayList<>();
@@ -126,18 +122,14 @@ public class NewRecipeFragment extends Fragment {
         // get intent extras
         mRecipe = (Recipe) getActivity().getIntent().getSerializableExtra(NewRecipeActivity.EXTRA_RECIPE_OBJECT2);
         mRecipeId = getActivity().getIntent().getStringExtra(NewRecipeActivity.EXTRA_RECIPE_ID2);
-        Log.i("patapum", "mRecipeId= " + mRecipeId);
-
 
         // new or edit
         if (mRecipe == null) {
             mRecipe = new Recipe();
         } else {
             mFlagEdit = true;
-            Log.i("patapum", "mFlagEdit: " + mFlagEdit);
-
         }
-
+        Log.i("patapum", "(mFlagEdit) Editar Receta: " + mFlagEdit);
     }
 
     @Nullable
@@ -162,7 +154,6 @@ public class NewRecipeFragment extends Fragment {
 
         // Toolbar implementation
         Toolbar toolbarNewRecipe = view.findViewById(R.id.toolbarNewRecipe);
-        toolbarNewRecipe.setTitle(R.string.new_recipe_title);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarNewRecipe);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -203,24 +194,6 @@ public class NewRecipeFragment extends Fragment {
         // Custom listener para la camara
         mImageButton.setOnClickListener(new CameraIntentListener());
 
-        //Populate FireStore database for testing
-        /*for (int i = 0; i < 5; i++) {
-            mRecipe.setTitle("Receta " + i);
-            mRecipe.setPeople(1);
-            mRecipe.setTime(1);
-            mIngredientsList.add("patatas");
-            mQuantitiesList.add(1);
-            mUnitsList.add("Kg");
-            mRecipe.setIngredients(mIngredientsList);
-            mRecipe.setQuantities(mQuantitiesList);
-            mRecipe.setUnits(mUnitsList);
-
-                    FirebaseFirestore.getInstance().collection("Users").document(mUserId).collection("Recipes").add(mRecipe);
-
-            //mRecipesRef.add(mRecipe);
-
-        }*/
-
         // Navigation Drawer
         DrawerLayout mDrawer = getActivity().findViewById(R.id.drawer_layout);
 
@@ -242,7 +215,9 @@ public class NewRecipeFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
+        menu.clear();
         inflater.inflate(R.menu.new_recipe_menu, menu);
+
     }
 
     @Override
@@ -411,6 +386,7 @@ public class NewRecipeFragment extends Fragment {
                 mRecipe.setUnits(mUnitsList);
                 if (pictureTaken) mRecipe.setPhotoName(mPictureName);
 
+                // init Firebase
                 FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
                 if (pictureTaken) {

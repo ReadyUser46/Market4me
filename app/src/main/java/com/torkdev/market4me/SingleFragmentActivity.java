@@ -39,7 +39,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     protected String mUserId;
 
     // CONSTANTS
-    public static final int RC_SIGN_IN = 237;
+    private static final int RC_SIGN_IN = 237;
     static final int REQUEST_IMAGE_CAPTURE = 2;
     private ImageView mUserPic_imageview;
     private Uri mPictureUri;
@@ -58,7 +58,6 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         // Navigation View
         NavigationView navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(new NavigationViewListener());
-        navigationView.setCheckedItem(R.id.nav_list);
         View headerView = navigationView.getHeaderView(0);
 
         // Nav Header Account
@@ -88,6 +87,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         // SignIn and SignOut listeners
         signIn.setOnClickListener(new ClickListenerAuth("signin"));
         signOut.setOnClickListener(new ClickListenerAuth("signout"));
+
 
 
          /*
@@ -187,28 +187,34 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     class NavigationViewListener implements NavigationView.OnNavigationItemSelectedListener {
 
-        FragmentManager fragmentManager;
-
-        NavigationViewListener() {
-            fragmentManager = getSupportFragmentManager();
-
-        }
-
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
             switch (item.getItemId()) {
+
+                case (R.id.nav_home):
+
+                    getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new HomeDashBoardFragment()).commit();
+                    break;
+
                 case (R.id.nav_new_recipe):
-                    fragmentManager.beginTransaction().add(R.id.fragment_container, new NewRecipeFragment()).commit();
+
+                    NewRecipeFragment fragment = new NewRecipeFragment();
+                    Bundle args = new Bundle();
+                    args.putString(NewRecipeFragment.ARG_USER_ID, mUserId);
+                    fragment.setArguments(args);
+                    getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment).commit();
                     break;
 
                 case (R.id.nav_list):
-                    fragmentManager.beginTransaction().add(R.id.fragment_container, new RecipeListFragment()).commit();
-
+                    getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new RecipeListFragment()).commit();
                     break;
+
                 default:
                     throw new IllegalStateException("Unexpected value: " + item.getItemId());
             }
+
+            item.setChecked(true);
             mDrawer.closeDrawer(GravityCompat.START);
             return true;
         }

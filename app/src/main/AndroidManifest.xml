@@ -17,12 +17,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.torkdev.market4me.MainActivityTest">
+        <activity
+            android:name="com.torkdev.market4me.MainActivityTest"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
 
-        </activity>
-        <activity android:name="com.torkdev.market4me.RecipeListActivity" />
-        <activity android:name="com.torkdev.market4me.DisplayRecipeActivity" />
-        <activity android:name="com.torkdev.market4me.HomeDashBoardActivity">
+        <activity
+            android:name="com.torkdev.market4me.RecipeListActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.torkdev.market4me.DisplayRecipeActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.torkdev.market4me.HomeDashBoardActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,10 +43,8 @@
         </activity>
         <activity
             android:name="com.torkdev.market4me.NewRecipeActivity"
-            android:parentActivityName="com.torkdev.market4me.RecipeListActivity" />
-
-        <!-- IMPORTANTE -->
-        <!-- Con el atributo anterior, ponemos la flechita en la barra superior, para poder volver a la actividad anterior -->
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
 
 
         <provider

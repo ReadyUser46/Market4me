@@ -69,7 +69,7 @@ public class RecipeListFragment extends Fragment {
 
         // Menu
         setHasOptionsMenu(true);
-        Bundle args = getArguments();
+        //Bundle args = getArguments();
         //mUserId = args.getString(ARG_USER_ID);
         //mUserAuth = (UserAuth) args.getSerializable(ARG_AUTH_OBJECT);
     }
@@ -82,7 +82,7 @@ public class RecipeListFragment extends Fragment {
 
         // Setup RecyclerView
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        FirestoreRecyclerOptions<Recipe> options = setupRecyclerOptions(userId, "title");
+        FirestoreRecyclerOptions<Recipe> options = setupRecyclerOptions(userId);
 
         mRecipeAdapter = new RecipeAdapter(options, getContext(), userId); // le pasamos el context para poder tener acceso a string resources
         RecyclerView recyclerView = view.findViewById(R.id.recipesRecyclerView);
@@ -115,9 +115,8 @@ public class RecipeListFragment extends Fragment {
         FloatingActionButton floatingActionButton = view.findViewById(R.id.floatingButton);
         floatingActionButton.setOnClickListener(new FloatingButtonListener());
 
-        // Implementar Toolbar
+        // Toolbar Implementation
         Toolbar toolbar = view.findViewById(R.id.toolbarRecipesList);
-
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -144,7 +143,7 @@ public class RecipeListFragment extends Fragment {
                 if (firebaseAuth.getCurrentUser() != null) {
                     Log.i("patapum_auth", "Auth listener refresh UI");
                     String currentUser = firebaseAuth.getCurrentUser().getUid();
-                    FirestoreRecyclerOptions<Recipe> newOptions = setupRecyclerOptions(currentUser, "title");
+                    FirestoreRecyclerOptions<Recipe> newOptions = setupRecyclerOptions(currentUser);
                     mRecipeAdapter.updateOptions(newOptions);
                 }
             }
@@ -159,7 +158,11 @@ public class RecipeListFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
+        /*Usamos menu.clear porque si no, al cambiar de un fragment a otro desde el nav. view
+         * se inflaría un menú encima de otro y se superponen. */
+        menu.clear();
         inflater.inflate(R.menu.recipe_list_menu, menu);
+
     }
 
     @Override
@@ -180,12 +183,12 @@ public class RecipeListFragment extends Fragment {
 
     }
 
-    private FirestoreRecyclerOptions<Recipe> setupRecyclerOptions(String userId, String queryField) {
+    private FirestoreRecyclerOptions<Recipe> setupRecyclerOptions(String userId) {
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         CollectionReference recipeRef = firebaseFirestore.collection("Users").document(userId).collection("Recipes");
 
-        Query query = recipeRef.orderBy(queryField, Query.Direction.ASCENDING);
+        Query query = recipeRef.orderBy("title", Query.Direction.ASCENDING);
 
         return new FirestoreRecyclerOptions.Builder<Recipe>()
                 .setQuery(query, Recipe.class)
